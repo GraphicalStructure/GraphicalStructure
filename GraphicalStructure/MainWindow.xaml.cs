@@ -2058,7 +2058,7 @@ namespace GraphicalStructure
 
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf);
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 
 
                 //绘制下层路径
@@ -2159,6 +2159,7 @@ namespace GraphicalStructure
                 //将上下层路径添加到组中
                 geometryGroup.Children.Add(topPg);
                 geometryGroup.Children.Add(bottomPg);
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                 insertShape.Height += 40;
                 ((Components)components[index]).height = insertShape.Height;
@@ -2379,6 +2380,7 @@ namespace GraphicalStructure
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(topPg);
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 }
                 if (i == ((Components)components[index]).layerNum)
                 {
@@ -2478,6 +2480,8 @@ namespace GraphicalStructure
                     }
 
                     bottomPg.Figures.Add(bottomPf);
+
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(bottomPg);
