@@ -1,0 +1,48 @@
+*KEYWORD
+$xy
+*MAT_NULL
+$      MID        RO        PC        MU     TEROD     CEROD        YM        PR
+         1         0         0         0         0         0         0         0
+*EOS_LINEAR_POLYNOMIAL
+$    EOSID        C0        C1        C2        C3        C4        C5        C6
+         1         0         0         0         0         0         0         0
+$       E0        V0
+         0         0
+$
+$
+$xy
+*MAT_NULL
+$      MID        RO        PC        MU     TEROD     CEROD        YM        PR
+         2  1.00e-03       0.0       0.0       0.0       0.0       0.0       0.0
+*EOS_LINEAR_POLYNOMIAL
+$    EOSID        C0        C1        C2        C3        C4        C5        C6
+         1         0         0         0         0         0         0         0
+$       E0        V0
+         0         0
+$
+$
+$CL-20基
+*MAT_HIGH_EXPLOSIVE_BURN
+$      MID        RO        PC        MU     TEROD     CEROD        YM        PR
+         2  1.00e-03       0.0       0.0       0.0       0.0       0.0       0.0
+*EOS_JWL
+$    EOSID        C0        C1        C2        C3        C4        C5        C6
+         1         0         0         0         0         0         0         0
+$       E0        V0
+         0         0
+$
+$
+$钢
+*MAT_JOHNSON_COOK
+$      MID        RO         G         E        PR       DTF        VP    RATEOP
+         2  1.00e-03       0.0       0.0       0.0       0.0       0.0       0.0
+$        A         B         N         C         M        TM        TR      EPSO
+       0.0       0.0       0.0       0.0       0.0       0.0       0.0       0.0
+$       CP        PC     SPALL        IT
+       0.0       0.0       0.0       0.0
+*EOS_GRUNEISEN
+$    EOSID        C0        C1        C2        C3        C4        C5        C6
+         1         0         0         0         0         0         0         0
+$       E0        V0
+         0         0
+*END

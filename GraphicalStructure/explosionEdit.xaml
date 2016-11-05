@@ -1,0 +1,55 @@
+﻿<Window x:Class="GraphicalStructure.explosionEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="explosionEdit" Height="268" Width="433">
+    <Grid>
+        <GroupBox Header="起爆点序号" HorizontalAlignment="Left" Margin="10,24,0,0" VerticalAlignment="Top" Height="60" Width="85" RenderTransformOrigin="0.5,0.5">
+            <GroupBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.578"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </GroupBox.RenderTransform>
+        </GroupBox>
+        <ComboBox Name="explosionNum" HorizontalAlignment="Left" Margin="19,46,0,0" VerticalAlignment="Top" Width="67" SelectionChanged="explosionNum_SelectionChanged"/>
+        <GroupBox Header="尺寸" HorizontalAlignment="Left" Margin="224,23,0,0" VerticalAlignment="Top" Height="139" Width="176"/>
+        <GroupBox Header="类型" HorizontalAlignment="Left" Margin="113,23,0,0" VerticalAlignment="Top" Height="140" Width="92" RenderTransformOrigin="0.5,0.5">
+            <GroupBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.578"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </GroupBox.RenderTransform>
+        </GroupBox>
+        <TextBox x:Name="startPosition" HorizontalAlignment="Left" Height="23" Margin="295,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68"/>
+        <TextBox x:Name="radius" HorizontalAlignment="Left" Height="23" Margin="295,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68"/>
+        <TextBox x:Name="pointNum" HorizontalAlignment="Left" Height="23" Margin="295,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68"/>
+        <Label Content="半径：" HorizontalAlignment="Left" Margin="253,75,0,0" VerticalAlignment="Top"/>
+        <Label Content="起始位置：" HorizontalAlignment="Left" Margin="230,47,0,0" VerticalAlignment="Top"/>
+        <Label Content="点数：" HorizontalAlignment="Left" Margin="253,103,0,0" VerticalAlignment="Top"/>
+        <Label Content="mm" HorizontalAlignment="Left" Margin="365,48,0,0" VerticalAlignment="Top"/>
+        <Label Content="mm" HorizontalAlignment="Left" Margin="365,74,0,0" VerticalAlignment="Top"/>
+        <Label Content="mm" HorizontalAlignment="Left" Margin="365,104,0,0" VerticalAlignment="Top"/>
+        <RadioButton Name="spot" Content="点" HorizontalAlignment="Left" Margin="126,58,0,0" VerticalAlignment="Top" IsChecked="True" Checked="radioButton_Checked"/>
+        <RadioButton Name="ring" Content="环" HorizontalAlignment="Left" Margin="126,81,0,0" VerticalAlignment="Top" Checked="radioButton_Checked"/>
+        <RadioButton Name="multiSpot" Content="多点" HorizontalAlignment="Left" Margin="126,103,0,0" VerticalAlignment="Top" Checked="radioButton_Checked"/>
+        <Button Content="确定" HorizontalAlignment="Left" Margin="240,191,0,0" VerticalAlignment="Top" Width="75" Click="OKButton_Click"/>
+        <Button Content="取消" HorizontalAlignment="Left" Margin="325,191,0,0" VerticalAlignment="Top" Width="75" Click="CancelButton_Click"/>
+        <GroupBox Header="起爆时间" HorizontalAlignment="Left" Margin="11,98,0,0" VerticalAlignment="Top" Height="60" Width="85" RenderTransformOrigin="0.5,0.5">
+            <GroupBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.578"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </GroupBox.RenderTransform>
+            <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="48" RenderTransformOrigin="0.292,0.043" Margin="8,9,0,0"/>
+        </GroupBox>
+
+    </Grid>
+</Window>

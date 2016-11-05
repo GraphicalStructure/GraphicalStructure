@@ -1,0 +1,109 @@
+﻿<Window x:Class="GraphicalStructure.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="结构件图形化设计软件" Height="650" Width="925"
+        SizeChanged="Window_SizeChanged">
+    <Grid Name="mygrid" Margin="0,10,0,0">
+        <Menu Margin="0,-9,0,0">
+            <MenuItem Header="文件(_F)">
+                <MenuItem Header="新建(_N)">
+                    <MenuItem Header="项目" Click="NewProgramButton_Click"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="打开(_O)" Click="Open_Click"></MenuItem>
+                
+                <Separator></Separator>
+                <MenuItem Header="保存(_S)" Click="Store_Click">
+                </MenuItem>
+                <MenuItem Header="另存为(_P)" Click="Store_OtherPlace_Click">
+                </MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="截图(_T)" Click="addCopy_Click">
+                </MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="关闭(_C)">
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="材料库(_E)">
+                <MenuItem Header="打开数据库" Click="userDataBase"></MenuItem>
+            </MenuItem> 
+            <MenuItem Header="质量(_V)"></MenuItem>
+            <MenuItem Header="网格(_H)">
+                <MenuItem Header="查看帮助"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="求解(_Q)"></MenuItem>
+            <MenuItem Header="后处理(_L)"></MenuItem>
+        </Menu>
+        <!--<ToolBarTray Margin="8,322,799,239" IsLocked="True">
+            <ToolBar Width="120" Height="60">
+                <RadioButton ToolTip="圆台-3" MouseRightButtonDown="RadioButton_MouseRightButtonDown">
+                    <Image Name="yuantai3" Source="Resources/圆台-3.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆台-2">
+                    <Image Name="yuantai2" Source="Resources/圆台-2.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆台-1">
+                    <Image Name="yuantai1" Source="Resources/圆台-1.png" Width="25" Height="40"></Image>
+                </RadioButton>
+            </ToolBar>
+        </ToolBarTray>
+        <ToolBarTray Margin="9,387,798,174" IsLocked="True">
+            <ToolBar Name="yuanzhu" Width="120" Height="60">
+                <RadioButton ToolTip="圆柱-1">
+                    <Image Name="yuanzhu1" Source="Resources/圆柱-1.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆柱-2">
+                    <Image Name="yuanzhu2" Source="Resources/圆柱-2.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆柱-3">
+                    <Image Name="yuanzhu3" Source="Resources/圆柱-3.png" Width="25" Height="40"></Image>
+                </RadioButton>
+            </ToolBar>
+        </ToolBarTray>
+        <ToolBarTray Margin="8,452,799,109" IsLocked="True">
+            <ToolBar Name="yuanzhui" Width="120" Height="60">
+                <RadioButton ToolTip="圆锥-1">
+                    <Image Name="yuanzhui1" Source="Resources/圆锥-1.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆锥-2">
+                    <Image Name="yuanzhui2" Source="Resources/圆锥-2.png" Width="25" Height="40"></Image>
+                </RadioButton>
+                <RadioButton ToolTip="圆锥-3">
+                    <Image Name="yuanzhui3" Source="Resources/圆锥-3.png" Width="25" Height="40"></Image>
+                </RadioButton>
+            </ToolBar>
+        </ToolBarTray>-->
+
+        <Canvas Name="front_canvas" Margin="10,14,10,14" Background="White" MouseRightButtonDown="canvas_MouseRightButtonDown" RenderTransformOrigin="0.5,0.5" MouseWheel="UIElement_OnMouseWheel">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.206"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+            
+        </Canvas>
+
+
+        <!--<Grid.Resources>
+            <TransformGroup x:Key="Imageview">
+                <ScaleTransform/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.Resources>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" Background="Wheat"   Cursor="SizeAll"
+                  Margin="5" Focusable="False" x:Name="BackFrame">
+            <ContentControl  MouseLeftButtonDown="IMG1_MouseLeftButtonDown"   
+                             MouseLeftButtonUp="IMG1_MouseLeftButtonUp"
+                             MouseMove="IMG1_MouseMove"
+                             MouseWheel="IMG1_MouseWheel" >
+                <Image Name="IMG" Source="Resources/iconfont-baocun.png" RenderTransform="{StaticResource Imageview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" ></Image>
+            </ContentControl>
+        </ScrollViewer>-->
+
+        <!--<sharpGL:OpenGLControl OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized" MouseRightButtonDown="OpenGLControl_MouseRightButtonDown" MouseDoubleClick="OnMouseClick" Margin="532,25,21,396"></sharpGL:OpenGLControl>-->
+        
+    </Grid>
+    
+</Window>

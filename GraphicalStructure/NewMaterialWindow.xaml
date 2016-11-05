@@ -1,0 +1,66 @@
+﻿<Window x:Class="GraphicalStructure.NewMaterialWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="输入材料属性" Height="500" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="144*"/>
+            <ColumnDefinition Width="25*"/>
+            <ColumnDefinition Width="291*"/>
+            <ColumnDefinition Width="32*"/>
+        </Grid.ColumnDefinitions>
+        <Label x:Name="label_materialName" Content="材料名称" Height="25" Margin="25,30,15,0" VerticalAlignment="Top" />
+        <Label x:Name="label_matName" Content="强度模型" Height="25" Margin="25,80,15,0" VerticalAlignment="Top" />
+        <Label x:Name="label_soeName" Content="状态方程" Margin="25,130,15,0" Height="25" VerticalAlignment="Top" />
+        <Label x:Name="label_reference" Content="引用文献" Margin="25,181,15,160" />
+        <TextBox x:Name="textBox_materialName" Grid.Column="2" Height="20" Margin="14.561,35,49,0" TextWrapping="Wrap" VerticalAlignment="Top" Padding="0,0,0,-2" UseLayoutRounding="True" FontSize="13.333" />
+        <ComboBox x:Name="MatComboBox" Grid.Column="2" Height="20" Margin="15,82,50,0" VerticalAlignment="Top" IsReadOnly="True" 
+                  SelectionChanged="updateTextBoxSoe"
+                  >
+            <ComboBoxItem Content="NULL"/>
+            <ComboBoxItem Content="HIGH_EXPLOSIVE_BURN"/>
+            <ComboBoxItem Content="JOHNSON_COOK"/>
+            <ComboBoxItem Content="PLASTIC_KINEMATIC"/>
+        </ComboBox>
+        <TextBox x:Name="textBox_soe" Grid.Column="2" Height="20" Margin="15,135,50,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" IsUndoEnabled="False" />
+        <TextBox x:Name="textBox_refer" Grid.Column="2" Margin="15,181,50,160" TextWrapping="Wrap" />
+        <Button x:Name="button" Content="edit" Grid.Column="2" HorizontalAlignment="Right" Margin="0,87,5,0" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="40" Height="18" RenderTransformOrigin="0.5,0.444" Foreground="#FF878787" BorderThickness="0"
+                Click="editMatClick"
+                >
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFEEEEEE" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFCCCCCC" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+        </Button>
+        <Button x:Name="button_Copy" Content="edit" Grid.Column="2" HorizontalAlignment="Right" Margin="0,141.433,5,0" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="40" Height="18" RenderTransformOrigin="0.5,0.444" Foreground="#FF878787" BorderThickness="0" 
+                Click="editSoeClick"
+                >
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFEEEEEE" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFCCCCCC" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+        </Button>
+        <Button x:Name="button1" Content="确定" Grid.Column="2" HorizontalAlignment="Left" Height="40" Margin="15,0,0,79" Style="{DynamicResource SimpleButton}" VerticalAlignment="Bottom" Width="101"
+                Click="confirmButtonClick"
+                />
+        <Button x:Name="button1_Copy" Content="取消" Grid.Column="2" Height="40" Margin="140,0,50,79" Style="{DynamicResource SimpleButton}" VerticalAlignment="Bottom"
+                Click="cancelButtonClick"
+                />
+    </Grid>
+</Window>
