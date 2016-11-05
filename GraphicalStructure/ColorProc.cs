@@ -8,14 +8,16 @@ using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Collections;
 using System.Windows;
+using System.Windows.Input;
 
 namespace GraphicalStructure
 {
     class ColorProc
     {
         // 保存 层与cover的映射关系
-        public static KeyValuePair<PathFigure, Shape> PfToCoverMap;
-        public static KeyValuePair<Shape, PathFigure> CoverToPfMap;
+        public static Dictionary<PathFigure, Shape> PfToCoverMap = new Dictionary<PathFigure, Shape>();
+        public static Dictionary<Shape, PathFigure> CoverToPfMap = new Dictionary<Shape, PathFigure>();
+        public static Dictionary<Shape, Path> CoverToPathMap = new Dictionary<Shape, Path>();
 
         // 添加层时，在canvas上对应位置（绝对坐标）添加cover，并作相应处理
         public static void processWhenAddLayer(Canvas canvas, StackPanel curSp,Path curPath, PathFigure pf, int isTop)
@@ -106,7 +108,11 @@ namespace GraphicalStructure
 
                 geometryGroup.Children.Add(pg);
                 newPath.Data = geometryGroup;
+                newPath.MouseDown += doubleClickOnCover;
                 canvas.Children.Add(newPath);
+                PfToCoverMap.Add(pf, newPath);
+                CoverToPfMap.Add(newPath, pf);
+                CoverToPathMap.Add(newPath, curPath);
             }
             else {
                 Path newPath = new Path();
@@ -194,7 +200,11 @@ namespace GraphicalStructure
 
                 geometryGroup.Children.Add(pg);
                 newPath.Data = geometryGroup;
+                newPath.MouseDown += doubleClickOnCover;
                 canvas.Children.Add(newPath);
+                PfToCoverMap.Add(pf, newPath);
+                CoverToPfMap.Add(newPath, pf);
+                CoverToPathMap.Add(newPath, curPath);
             }
            
         }
@@ -365,8 +375,12 @@ namespace GraphicalStructure
         }
 
         // 删除层时，删除cover， 并作相应处理
-        public static void processWhenDelLayer()
+        public static void processWhenDelLayer(Canvas canvas, PathFigure pf)
         {
+            Shape _shape = PfToCoverMap[pf];
+            CoverToPfMap.Remove(_shape);
+            canvas.Children.Remove(_shape);
+            PfToCoverMap.Remove(pf);
 
         }
 
@@ -383,9 +397,13 @@ namespace GraphicalStructure
         }
 
         // cover 的双击事件回调,传递到真正的层上，手动触发真正的层的双击事件
-        public static void doubleClickOnCover()
+        public static void doubleClickOnCover(object sender, RoutedEventArgs e)
         {
-
+            if (sender is System.Windows.Shapes.Path) {
+                Path curPath = CoverToPathMap[sender as Path];
+                // 触发事件 Img1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+                curPath.RaiseEvent(e);
+            }
         }
     }
 }

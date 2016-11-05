@@ -1333,6 +1333,7 @@ namespace GraphicalStructure
 
                 for (int i = count - 1; i > count - 3; i--)
                 {
+                    ColorProc.processWhenDelLayer(front_canvas, ((PathGeometry)geometryGroup.Children[i]).Figures[0]);
                     geometryGroup.Children.RemoveAt(i);
                 }
 
