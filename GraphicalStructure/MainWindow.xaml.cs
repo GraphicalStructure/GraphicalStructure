@@ -774,7 +774,7 @@ namespace GraphicalStructure
             Clipboard.SetImage(bmpCopied);
         }
 
-        //添加柱形点击事件
+        //添加段点击事件
         private void addCylindrical_Click(object sender, RoutedEventArgs e)
         {
             Components cps;
@@ -2058,7 +2058,8 @@ namespace GraphicalStructure
 
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
-
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf);
+                
 
                 //绘制下层路径
                 bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
