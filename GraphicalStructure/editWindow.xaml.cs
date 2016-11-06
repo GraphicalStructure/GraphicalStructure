@@ -118,19 +118,21 @@ namespace GraphicalStructure
             //        rightLength = leftLength;
             //    }
             //}
-            update_LayerCoordinate();
-            ChangeColor();
+            
 
             if (Double.Parse(segmentWidth.Text) != pathWidth)
             {
                 ChangePathWidth();
             }
 
+            update_LayerCoordinate();
+            ChangeColor();
+
             accessDb.closeDB();
 
             //changeLineToCurve();
 
-            SaveCubeXValue();
+            //SaveCubeXValue();
 
             ////改变形状
 
@@ -305,7 +307,20 @@ namespace GraphicalStructure
                     PathFigure curPf = pg.Figures.ElementAt(0);
 
                     double leftHeight = Math.Abs(((LineSegment)(curPf.Segments[0])).Point.Y - curPf.StartPoint.Y);
-                    double rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    double rightHeight = 0;
+                    if (curPf.Segments[1] is LineSegment)
+                    {
+                        rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
+                    else if (curPf.Segments[1] is ArcSegment)
+                    {
+                        rightHeight = Math.Abs(((ArcSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
+                    else
+                    {
+                        rightHeight = Math.Abs(((PolyLineSegment)(curPf.Segments[1])).Points[((PolyLineSegment)(curPf.Segments[1])).Points.Count - 1].Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
+                    
                     double maxHeight = leftHeight > rightHeight ? leftHeight : rightHeight;
                     layerHeight += maxHeight;
                 }
@@ -390,37 +405,122 @@ namespace GraphicalStructure
                 {
                     PathGeometry topPg = (PathGeometry)currentCom.geometryGroup.Children[1];
                     PathFigure topPf = topPg.Figures.ElementAt(0);
-                    double leftlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
-                    double rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
+                    double leftlayerHeight = 0;
+                    double rightlayerHeight = 0;
+                    if (topPf.Segments[0] is LineSegment)
+                    {
+                        leftlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
+                    }
+                    else if (topPf.Segments[0] is ArcSegment)
+                    {
+                        leftlayerHeight = Math.Abs(((ArcSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((ArcSegment)(topPf.Segments[0])).Point.Y);
+                    }
+                    else
+                    {
+                        leftlayerHeight = Math.Abs(((PolyLineSegment)(topPf.Segments[2])).Points[((PolyLineSegment)(topPf.Segments[2])).Points.Count - 1].Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((PolyLineSegment)(topPf.Segments[0])).Points[((PolyLineSegment)(topPf.Segments[0])).Points.Count - 1].Y);
+                    }
+                    
+                    //rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
 
                     topPf.StartPoint = basePf.StartPoint;
-                    ((LineSegment)(topPf.Segments[2])).Point = new Point(basePf.StartPoint.X, basePf.StartPoint.Y - leftlayerHeight);
-                    ((LineSegment)(topPf.Segments[0])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y);
-                    ((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y - rightlayerHeight);
-                    //((LineSegment)(topPf.Segments[3])).Point = basePf.StartPoint;
+                    if (topPf.Segments[0] is LineSegment)
+                    {
+                        ((LineSegment)(topPf.Segments[2])).Point = new Point(basePf.StartPoint.X, basePf.StartPoint.Y - leftlayerHeight);
+                        ((LineSegment)(topPf.Segments[0])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y);
+                        ((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y - rightlayerHeight);
+                    }
+                    else if (topPf.Segments[0] is ArcSegment)
+                    {
+                        ((ArcSegment)(topPf.Segments[2])).Point = new Point(basePf.StartPoint.X, basePf.StartPoint.Y - leftlayerHeight);
+                        ((ArcSegment)(topPf.Segments[0])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y);
+                        ((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y - rightlayerHeight);
+                    }
+                    else
+                    {
+                        
+                    }
+                    //((LineSegment)(topPf.Segments[2])).Point = new Point(basePf.StartPoint.X, basePf.StartPoint.Y - leftlayerHeight);
+                    //((LineSegment)(topPf.Segments[0])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y);
+                    //((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[2]).Point.X, ((LineSegment)basePf.Segments[2]).Point.Y - rightlayerHeight);
+                    ////((LineSegment)(topPf.Segments[3])).Point = basePf.StartPoint;
 
                     PathGeometry bottomPg = (PathGeometry)currentCom.geometryGroup.Children[2];
                     PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
 
                     bottomPf.StartPoint = ((LineSegment)basePf.Segments[0]).Point;
-                    ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
-                    ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y);
-                    ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
+                    if (bottomPf.Segments[1] is LineSegment)
+                    {
+                        ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y);
+                        ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
+                    }
+                    else if (bottomPf.Segments[1] is ArcSegment)
+                    {
+                        ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((ArcSegment)basePf.Segments[1]).Point.X, ((ArcSegment)basePf.Segments[1]).Point.Y);
+                        ((ArcSegment)(bottomPf.Segments[1])).Point = new Point(((ArcSegment)basePf.Segments[1]).Point.X, ((ArcSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
+                        ((ArcSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
+                    }
+                    else
+                    {
+
+                    }
+                    //((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                    //((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y);
+                    //((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
                 }
                 else
                 {
                     PathGeometry topPg = (PathGeometry)currentCom.geometryGroup.Children[i];
                     PathFigure topPf = topPg.Figures.ElementAt(0);
-                    double leftlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
-                    double rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
+                    double leftlayerHeight = 0;// Math.Abs(((LineSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
+                    double rightlayerHeight = 0;// Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
+
+                    if (topPf.Segments[0] is LineSegment)
+                    {
+                        leftlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((LineSegment)(topPf.Segments[0])).Point.Y);
+                    }
+                    else if (topPf.Segments[0] is ArcSegment)
+                    {
+                        leftlayerHeight = Math.Abs(((ArcSegment)(topPf.Segments[2])).Point.Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((ArcSegment)(topPf.Segments[0])).Point.Y);
+                    }
+                    else
+                    {
+                        leftlayerHeight = Math.Abs(((PolyLineSegment)(topPf.Segments[2])).Points[((PolyLineSegment)(topPf.Segments[2])).Points.Count - 1].Y - topPf.StartPoint.Y);
+                        rightlayerHeight = Math.Abs(((LineSegment)(topPf.Segments[1])).Point.Y - ((PolyLineSegment)(topPf.Segments[0])).Points[((PolyLineSegment)(topPf.Segments[0])).Points.Count - 1].Y);
+                    }
 
                     PathGeometry last_topPg = (PathGeometry)currentCom.geometryGroup.Children[i-2];
                     PathFigure last_topPf = last_topPg.Figures.ElementAt(0);
 
-                    topPf.StartPoint = ((LineSegment)(last_topPf.Segments[2])).Point;
-                    ((LineSegment)(topPf.Segments[2])).Point = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftlayerHeight);
-                    ((LineSegment)(topPf.Segments[0])).Point = ((LineSegment)(last_topPf.Segments[1])).Point;
-                    ((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)(topPf.Segments[0])).Point.X, ((LineSegment)(topPf.Segments[0])).Point.Y - rightlayerHeight);
+
+                    //((LineSegment)(topPf.Segments[2])).Point = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftlayerHeight);
+                    //((LineSegment)(topPf.Segments[0])).Point = ((LineSegment)(last_topPf.Segments[1])).Point;
+                    //((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)(topPf.Segments[0])).Point.X, ((LineSegment)(topPf.Segments[0])).Point.Y - rightlayerHeight);
+                    if (topPf.Segments[0] is LineSegment)
+                    {
+                        topPf.StartPoint = ((LineSegment)(last_topPf.Segments[2])).Point;
+                        ((LineSegment)(topPf.Segments[2])).Point = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftlayerHeight);
+                        ((LineSegment)(topPf.Segments[0])).Point = ((LineSegment)(last_topPf.Segments[1])).Point;
+                        ((LineSegment)(topPf.Segments[1])).Point = new Point(((LineSegment)(topPf.Segments[0])).Point.X, ((LineSegment)(topPf.Segments[0])).Point.Y - rightlayerHeight);
+                    }
+                    else if (topPf.Segments[0] is ArcSegment)
+                    {
+                        topPf.StartPoint = ((ArcSegment)(last_topPf.Segments[2])).Point;
+                        ((ArcSegment)(topPf.Segments[2])).Point = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftlayerHeight);
+                        ((ArcSegment)(topPf.Segments[0])).Point = ((LineSegment)(last_topPf.Segments[1])).Point;
+                        ((LineSegment)(topPf.Segments[1])).Point = new Point(((ArcSegment)(topPf.Segments[0])).Point.X, ((ArcSegment)(topPf.Segments[0])).Point.Y - rightlayerHeight);
+                    }
+                    else
+                    {
+
+                    }
+
 
                     PathGeometry bottomPg = (PathGeometry)currentCom.geometryGroup.Children[i + 1];
                     PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
@@ -429,9 +529,26 @@ namespace GraphicalStructure
                     PathFigure last_bottomPf = last_bottomPg.Figures.ElementAt(0);
 
                     bottomPf.StartPoint = ((LineSegment)last_bottomPf.Segments[0]).Point;
-                    ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
-                    ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y);
-                    ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y + rightlayerHeight);
+                    //((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                    //((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y);
+                    //((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y + rightlayerHeight);
+                    if (bottomPf.Segments[1] is LineSegment)
+                    {
+                        ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y);
+                        ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y + rightlayerHeight);
+                    }
+                    else if (bottomPf.Segments[1] is ArcSegment)
+                    {
+                        ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((ArcSegment)last_bottomPf.Segments[1]).Point.X, ((ArcSegment)last_bottomPf.Segments[1]).Point.Y);
+                        ((ArcSegment)(bottomPf.Segments[1])).Point = new Point(((ArcSegment)last_bottomPf.Segments[1]).Point.X, ((ArcSegment)last_bottomPf.Segments[1]).Point.Y + rightlayerHeight);
+                        ((ArcSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
+                    }
+                    else
+                    {
+
+                    }
                 }
             } 
         }
@@ -564,7 +681,19 @@ namespace GraphicalStructure
                     PathFigure curPf = pg.Figures.ElementAt(0);
 
                     double leftHeight = Math.Abs(((LineSegment)(curPf.Segments[0])).Point.Y - curPf.StartPoint.Y);
-                    double rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    double rightHeight = 0;// = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    if (curPf.Segments[1] is LineSegment)
+                    {
+                        rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
+                    else if (curPf.Segments[1] is ArcSegment)
+                    {
+                        rightHeight = Math.Abs(((ArcSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
+                    else
+                    {
+                        rightHeight = Math.Abs(((PolyLineSegment)(curPf.Segments[1])).Points[((PolyLineSegment)(curPf.Segments[1])).Points.Count - 1].Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    }
                     double maxHeight = leftHeight > rightHeight ? leftHeight : rightHeight;
                     layerHeight += maxHeight;
                 }
@@ -695,12 +824,16 @@ namespace GraphicalStructure
                 currentCom.point2 = new Point(curPf.StartPoint.X, ((LineSegment)curPf.Segments[1]).Point.Y);
                 currentCom.startPoint = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
             }
+            else if (curPf.Segments[1] is ArcSegment)
+            {
+                ((ArcSegment)curPf.Segments[1]).Point = new Point(((ArcSegment)curPf.Segments[1]).Point.X + tempNum, ((ArcSegment)curPf.Segments[1]).Point.Y);
+                currentCom.point3 = ((ArcSegment)curPf.Segments[1]).Point;
+                currentCom.point2 = new Point(curPf.StartPoint.X, ((ArcSegment)curPf.Segments[1]).Point.Y);
+                currentCom.startPoint = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
+            }
             else
             {
-                //((ArcSegment)curPf.Segments[1]).Point = new Point(((ArcSegment)curPf.Segments[1]).Point.X + tempNum, ((ArcSegment)curPf.Segments[1]).Point.Y);
-                //currentCom.point3 = ((ArcSegment)curPf.Segments[1]).Point;
-                MessageBox.Show("不能修改宽度！", "警告");
-                return;
+                MessageBox.Show("不能修改宽度！","警告");
             }
             ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X + tempNum, ((LineSegment)curPf.Segments[2]).Point.Y);
             currentCom.point4 = ((LineSegment)curPf.Segments[2]).Point;
@@ -796,14 +929,14 @@ namespace GraphicalStructure
                     ChangeShapeEvent3(120, 0);
                 }
             }
-            else if (shape == "Ogive")
+            else if (shape == "Ogive" && currentCom.isChangeOgive == false)
             {
                 if (ChangeShapeEvent != null)
                 {
                     ChangeShapeEvent(radius, 0);
                 }
             }
-            else if (shape == "Inverst Ogive")
+            else if (shape == "Inverst Ogive" && currentCom.isChangeIOgive == false)
             {
                 if (ChangeShapeEvent2 != null)
                 {

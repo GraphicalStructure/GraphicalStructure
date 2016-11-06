@@ -932,9 +932,13 @@ namespace GraphicalStructure
             MenuItem copyCompMenu = new MenuItem();
             copyCompMenu.Header = "复制段";
             copyCompMenu.Click += copyCompMenu_Click;
+            MenuItem editCompMenu = new MenuItem();
+            editCompMenu.Header = "编辑段";
+            editCompMenu.Click += btEdit_Click;
             compMenu.Items.Add(addMenu);
             compMenu.Items.Add(deleteMenu);
             compMenu.Items.Add(copyCompMenu);
+            compMenu.Items.Add(editCompMenu);
             MenuItem layerMenu = new MenuItem();
             layerMenu.Header = "层";
             aMenu.Items.Add(layerMenu);
@@ -1683,7 +1687,7 @@ namespace GraphicalStructure
 
             if (curLayerNum != 0)
             {
-                return;
+                //return;
                 //有层时，根据层数绘制弧形
                 //每层默认height 20
                 if (p1.Y == p2.Y)
@@ -2065,7 +2069,7 @@ namespace GraphicalStructure
 
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 
 
                 //绘制下层路径
@@ -2166,7 +2170,7 @@ namespace GraphicalStructure
                 //将上下层路径添加到组中
                 geometryGroup.Children.Add(topPg);
                 geometryGroup.Children.Add(bottomPg);
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                 insertShape.Height += 40;
                 ((Components)components[index]).height = insertShape.Height;
@@ -2387,7 +2391,7 @@ namespace GraphicalStructure
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(topPg);
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                    //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 }
                 if (i == ((Components)components[index]).layerNum)
                 {
@@ -2488,7 +2492,7 @@ namespace GraphicalStructure
 
                     bottomPg.Figures.Add(bottomPf);
 
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                    //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(bottomPg);
