@@ -1796,7 +1796,7 @@ namespace GraphicalStructure
             Console.WriteLine("curLayerNum: " + curLayerNum);
             if (curLayerNum != 0)
             {
-                return;
+                //return;
                 //有层时，根据层数绘制弧形
                 if (p1.Y == p2.Y)
                 {
@@ -1862,7 +1862,7 @@ namespace GraphicalStructure
                 }
             }
             //有层且层为polysegment处理
-
+            ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
         private void changeArcSegmentToLineSegment(double a, int b)
