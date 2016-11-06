@@ -385,9 +385,108 @@ namespace GraphicalStructure
         }
 
         // 移动层时，同时移动cover， 并作相应处理
-        public static void processWhenMoveLayer()
+        public static void processWhenMoveLayer(Canvas canvas, StackPanel curSp)
         {
+            int temp = 0;
+            foreach (Shape shape in CoverToPathMap.Keys)
+            {
+                Path path = CoverToPathMap[shape];
+                int index = curSp.Children.IndexOf(path);
+                double leftPanel = 0;
+                double leftCanvas = 0;
+                double left;
+                if (index > 0)
+                {
+                    for (int i = 0; i < index; i++)
+                    {
+                        leftPanel += ((Path)curSp.Children[i]).Width;
+                    }
+                }
+                leftCanvas = Canvas.GetLeft(curSp);
+                left = leftCanvas + leftPanel;
 
+                GeometryGroup geometryGroup = (GeometryGroup)((Path)shape).Data;
+                PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
+                PathFigure curPf = curPg.Figures.ElementAt(0);
+
+                curPf.StartPoint = new Point(left, curPf.StartPoint.Y);
+                if (temp % 2 == 0)
+                {
+                    if (curPf.Segments[0] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[0]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[0]).Point.Y);
+                    }
+                    else if (curPf.Segments[0] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[0]).Point = new Point(left + path.Width, ((ArcSegment)curPf.Segments[0]).Point.Y);
+                    }
+                    else
+                    {
+                        double offset = left - Canvas.GetLeft(shape);
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[0]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[0]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[0]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[0]).Points[i].Y);
+                        }
+                    }
+                    ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
+                    if (curPf.Segments[2] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[2]).Point = new Point(left, ((LineSegment)curPf.Segments[2]).Point.Y);
+                    }
+                    else if (curPf.Segments[2] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[2]).Point = new Point(left, ((ArcSegment)curPf.Segments[2]).Point.Y);
+                    }
+                    else
+                    {
+                        double offset = left - Canvas.GetLeft(shape);
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[2]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[2]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[2]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[2]).Points[i].Y);
+                        }
+                    }
+                }
+                else
+                {
+                    ((LineSegment)curPf.Segments[0]).Point = new Point(left, ((LineSegment)curPf.Segments[0]).Point.Y);
+                    
+                    if (curPf.Segments[1] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
+                    }
+                    else if (curPf.Segments[1] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((ArcSegment)curPf.Segments[1]).Point.Y);
+                    }
+                    else
+                    {
+                        double offset = left - Canvas.GetLeft(shape);
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[1]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[1]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[1]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[1]).Points[i].Y);
+                        }
+                    } 
+                    ((LineSegment)curPf.Segments[2]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[2]).Point.Y);
+                    if (curPf.Segments[3] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[3]).Point = new Point(left, ((LineSegment)curPf.Segments[3]).Point.Y);
+                    }
+                    else if (curPf.Segments[3] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[3]).Point = new Point(left, ((ArcSegment)curPf.Segments[3]).Point.Y);
+                    }
+                    else
+                    {
+                        double offset = left - Canvas.GetLeft(shape);
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[3]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[3]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[3]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[3]).Points[i].Y);
+                        }
+                    } 
+                }
+
+                temp++;
+            }
         }
 
         // 真正的层点击更改颜色后，改变cover的颜色，并作相应处理

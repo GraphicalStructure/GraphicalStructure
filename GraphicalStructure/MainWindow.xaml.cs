@@ -168,9 +168,9 @@ namespace GraphicalStructure
             //
             aMenu = new ContextMenu();
             //MenuItem addCompMenu = new MenuItem();
-           // addCompMenu.Header = "添加段";
-           // addCompMenu.Click += addCylindrical_Click;
-           // aMenu.Items.Add(addCompMenu);
+            //addCompMenu.Header = "添加段";
+            //addCompMenu.Click += addCylindrical_Click;
+            //aMenu.Items.Add(addCompMenu);
             //MenuItem CoverMenu = new MenuItem();
             //CoverMenu.Header = "端盖";
            // aMenu.Items.Add(CoverMenu);
@@ -419,6 +419,8 @@ namespace GraphicalStructure
             autoResize();
 
             allWidth = 0;
+
+            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
         }
 
         private void del_Cover(object sender, RoutedEventArgs e)
@@ -456,6 +458,8 @@ namespace GraphicalStructure
             }
 
             autoResize();
+
+            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
         }
 
         private void RadioButton_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -822,6 +826,8 @@ namespace GraphicalStructure
                 {
                     isHaveRightEndCap = false;
                 }
+
+                ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
             }
             else
             {
@@ -2553,7 +2559,10 @@ namespace GraphicalStructure
             }
 
             ew.Owner = this;
+            ew.canvas = this.canvas;
+            ew.sp = this.stackpanel;
             ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
+            ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
             ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
             ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
             ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
@@ -2636,6 +2645,8 @@ namespace GraphicalStructure
 
             autoResize();
 
+            //移动浮层
+            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
             //Console.WriteLine(stackpanel.Children.Capacity);
             //if (stackpanel.Children.Count == 0)
             //{

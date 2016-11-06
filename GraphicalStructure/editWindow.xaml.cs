@@ -22,6 +22,7 @@ namespace GraphicalStructure
     /// 
     public delegate void ChangeTextHandler();
     public delegate void ChangeShapeHandler(double radius,int a);
+    public delegate void ChangeCoverLocation(Canvas c, StackPanel sp);
 
     public partial class editWindow : Window
     {
@@ -38,10 +39,14 @@ namespace GraphicalStructure
         private string originShape;
         bool isFirstIn = true;
 
+        public Canvas canvas;
+        public StackPanel sp;
+
         public event ChangeTextHandler ChangeTextEvent;
         public event ChangeShapeHandler ChangeShapeEvent;
         public event ChangeShapeHandler ChangeShapeEvent2;
         public event ChangeShapeHandler ChangeShapeEvent3;
+        public event ChangeCoverLocation ChangeCoverEvent;
 
         public string isLeftEndCap = "";
         public string isRightEndCap = "";
@@ -77,6 +82,10 @@ namespace GraphicalStructure
             if (ChangeTextEvent != null)
             {
                 ChangeTextEvent();
+            }
+            if (ChangeCoverEvent != null)
+            {
+                ChangeCoverEvent(canvas,sp);
             }
 
             leftCom = null;
@@ -750,6 +759,7 @@ namespace GraphicalStructure
             }
 
             currentCom.newPath.Width += tempNum;
+
         }
 
         private void CheckBox_Cube(object sender, RoutedEventArgs e)
