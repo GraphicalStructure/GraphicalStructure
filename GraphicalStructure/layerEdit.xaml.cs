@@ -283,6 +283,11 @@ namespace GraphicalStructure
 
                         }
                     }
+                    if (changeValue != 0) {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                    }
+                    
                 }
                 else
                 {
@@ -380,6 +385,11 @@ namespace GraphicalStructure
                             currentCom.newPath.Height += temp * 2;
                             currentCom.height = currentCom.newPath.Height;
                         }
+                    }
+                    if (changeValue != 0)
+                    {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
                     }
                 }
 
@@ -500,6 +510,11 @@ namespace GraphicalStructure
 
                         }
                     }
+                    if (changeValue != 0)
+                    {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
+                    }
                 }
                 else
                 {
@@ -597,6 +612,12 @@ namespace GraphicalStructure
                             currentCom.newPath.Height += temp * 2;
                             currentCom.height = currentCom.newPath.Height;
                         }
+                    }
+
+                    if (changeValue != 0)
+                    {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
                     }
                 }
 

@@ -3014,6 +3014,7 @@ namespace GraphicalStructure
         {
             //获取图形当前位置
             //stackpanel中有多少element
+            ColorProc.mainCanvas = front_canvas;
             for (int i = 0; i < stackpanel.Children.Count; i++)
             {
                 if (stackpanel.Children[i] is Image)
