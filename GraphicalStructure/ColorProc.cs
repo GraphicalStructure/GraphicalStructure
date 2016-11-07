@@ -603,7 +603,6 @@ namespace GraphicalStructure
                     }
                     else
                     {
-                        //double offset = left - curPf.StartPoint.X;
                         for (int i = 0; i < ((PolyLineSegment)curPf.Segments[0]).Points.Count; i++)
                         {
                             ((PolyLineSegment)curPf.Segments[0]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[0]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[0]).Points[i].Y);
@@ -620,7 +619,6 @@ namespace GraphicalStructure
                     }
                     else
                     {
-                        //double offset = left - curPf.StartPoint.X;
                         for (int i = 0; i < ((PolyLineSegment)curPf.Segments[2]).Points.Count; i++)
                         {
                             ((PolyLineSegment)curPf.Segments[2]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[2]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[2]).Points[i].Y);
@@ -641,7 +639,6 @@ namespace GraphicalStructure
                     }
                     else
                     {
-                        //double offset = left - curPf.StartPoint.X;
                         for (int i = 0; i < ((PolyLineSegment)curPf.Segments[1]).Points.Count; i++)
                         {
                             ((PolyLineSegment)curPf.Segments[1]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[1]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[1]).Points[i].Y);
@@ -660,7 +657,6 @@ namespace GraphicalStructure
                         }
                         else
                         {
-                            //double offset = left - curPf.StartPoint.X;
                             for (int i = 0; i < ((PolyLineSegment)curPf.Segments[3]).Points.Count; i++)
                             {
                                 ((PolyLineSegment)curPf.Segments[3]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[3]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[3]).Points[i].Y);
