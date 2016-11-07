@@ -932,9 +932,13 @@ namespace GraphicalStructure
             MenuItem copyCompMenu = new MenuItem();
             copyCompMenu.Header = "复制段";
             copyCompMenu.Click += copyCompMenu_Click;
+            MenuItem editCompMenu = new MenuItem();
+            editCompMenu.Header = "编辑段";
+            editCompMenu.Click += btEdit_Click;
             compMenu.Items.Add(addMenu);
             compMenu.Items.Add(deleteMenu);
             compMenu.Items.Add(copyCompMenu);
+            compMenu.Items.Add(editCompMenu);
             MenuItem layerMenu = new MenuItem();
             layerMenu.Header = "层";
             aMenu.Items.Add(layerMenu);
