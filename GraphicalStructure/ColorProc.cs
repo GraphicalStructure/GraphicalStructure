@@ -885,14 +885,103 @@ namespace GraphicalStructure
         //修改段左右厚度，改变cover的高度
         public static void processWhenChangeCylindricalHeight(Path path, int isLeft, double offset)
         {
-            if (isLeft == 0)
+            int isTop = 0;
+            if (isLeft == 1)
             {
-                foreach(Path pa in CoverToPathMap.Keys)
+                foreach (Path pa in CoverToPathMap.Keys)
                 {
                     if (CoverToPathMap[pa] == path)
                     {
+                        if (isTop % 2 == 0)
+                        {
+                            //处理上层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure topPf = topPg.Figures.ElementAt(0);
 
+                            topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
+                            if (topPf.Segments[2] is LineSegment)
+                            {
+                                ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                        }
+                        else
+                        {
+                            //处理下层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                            bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
+                            if (bottomPf.Segments[1] is LineSegment)
+                            {
+                                ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
+                                if (bottomPf.Segments.Count > 3)
+                                {
+                                    ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                }
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                        }
                     }
+
+                    isTop++;
+                }
+            }
+            else
+            {
+                foreach (Path pa in CoverToPathMap.Keys)
+                {
+                    if (CoverToPathMap[pa] == path)
+                    {
+                        if (isTop % 2 == 0)
+                        {
+                            //处理上层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure topPf = topPg.Figures.ElementAt(0);
+
+                            if (topPf.Segments[2] is LineSegment)
+                            {
+                                ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                            ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
+                        }
+                        else
+                        {
+                            //处理下层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                            if (bottomPf.Segments[1] is LineSegment)
+                            {
+                                ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                            ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
+                        }
+                    }
+
+                    isTop++;
                 }
             }
         }
@@ -958,14 +1047,13 @@ namespace GraphicalStructure
                     else
                     {
                         PolyLineSegment ls = new PolyLineSegment();
-                        ls.Points.Add(new Point(((LineSegment)coverPf.Segments[0]).Point.X, ((LineSegment)coverPf.Segments[0]).Point.Y));
-                        //for (int i = 0; i < ((PolyLineSegment)pf.Segments[0]).Points.Count - 1; i++)
-                        //{
-                        //    double delta_x, delta_y;
-                        //    delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
-                        //    delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
-                        //    ls.Points.Add(new Point(((PolyLineSegment)pf.Segments[0]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[0]).Points[i].Y + delta_y));
-                        //}
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[0]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            ls.Points.Add(new Point(((PolyLineSegment)pf.Segments[0]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[0]).Points[i].Y + delta_y));
+                        }
                         coverPf.Segments[0] = ls;
                     }
                     if (pf.Segments[2] is LineSegment)

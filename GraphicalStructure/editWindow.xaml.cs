@@ -145,7 +145,7 @@ namespace GraphicalStructure
             changeShape(radius);
             currentCom.radius = radius;
             
-            this.Close();
+            Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -392,15 +392,12 @@ namespace GraphicalStructure
             }
 
             double offset = Double.Parse(leftD.Text) - leftLength;
-            if (offset > 0)
+            if (offset != 0)
             {
                 ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, offset / 2);
             }
-            else
-            {
-                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, -offset / 2);
-            }
-
+            
+            
             leftLength = Double.Parse(leftD.Text.ToString());
         }
 
@@ -772,6 +769,13 @@ namespace GraphicalStructure
                     }
                 }
             }
+
+            double offset = Double.Parse(rightD.Text) - rightLength;
+            if (offset != 0)
+            {
+                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 2, offset / 2);
+            }
+
             rightLength = Double.Parse(rightD.Text.ToString());
         }
 
