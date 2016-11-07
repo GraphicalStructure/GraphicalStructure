@@ -1857,11 +1857,20 @@ namespace GraphicalStructure
 
 
                         _curPf.Segments[1] = arcSegment1;
-                        _curPf.Segments.Add(arcSegment2);
+                        if (_curPf.Segments.Count > 3)
+                        {
+                            _curPf.Segments[3] = arcSegment2;
+                        }
+                        else
+                        {
+                            _curPf.Segments.Add(arcSegment2);
+                        }
+                        
                     }
                 }
             }
             //有层且层为polysegment处理
+            
             ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
@@ -1875,38 +1884,91 @@ namespace GraphicalStructure
                 GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
                 PathFigure curPf = curPg.Figures.ElementAt(0);
-                if (curLayerNum != 0)
+
+                //无层的时候  变换
+                Point p1, p2, p3, p4;
+                p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
+                p2 = ((LineSegment)curPf.Segments[0]).Point;
+                if (curPf.Segments[1] is LineSegment)
                 {
-                    return;
+                    p3 = ((LineSegment)curPf.Segments[1]).Point;
+                }
+                else if (curPf.Segments[1] is ArcSegment)
+                {
+                    p3 = ((ArcSegment)curPf.Segments[1]).Point;
                 }
                 else
                 {
-                    Point p1, p2, p3, p4;
-                    p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
-                    p2 = ((LineSegment)curPf.Segments[0]).Point;
-                    if (curPf.Segments[1] is LineSegment)
+                    PointCollection pointCollection = ((PolyLineSegment)curPf.Segments[1]).Points;
+                    Point point = ((PolyLineSegment)curPf.Segments[1]).Points[pointCollection.Count - 1];
+                    p3 = new Point(point.X, point.Y);
+                }
+                p4 = ((LineSegment)curPf.Segments[2]).Point;
+                LineSegment lineSegment1 = new LineSegment();
+                lineSegment1.Point = p3;
+                curPf.Segments[1] = lineSegment1;
+                LineSegment lineSegment2 = new LineSegment();
+                lineSegment2.Point = p1;
+                curPf.Segments[3] = lineSegment2;
+
+                //有层
+                if (curLayerNum > 0)
+                {
+                    for (int i = 1; i < curLayerNum; i+=2)
                     {
-                        p3 = ((LineSegment)curPf.Segments[1]).Point;
-                    }
-                    else if (curPf.Segments[1] is ArcSegment)
-                    {
-                        p3 = ((ArcSegment)curPf.Segments[1]).Point;
-                    }
-                    else
-                    {
-                        PointCollection pointCollection = ((PolyLineSegment)curPf.Segments[1]).Points;
-                        Point point = ((PolyLineSegment)curPf.Segments[1]).Points[pointCollection.Count - 1];
-                        p3 = new Point(point.X, point.Y);
-                    }
-                    p4 = ((LineSegment)curPf.Segments[2]).Point;
-                    LineSegment lineSegment1 = new LineSegment();
-                    lineSegment1.Point = p3;
-                    curPf.Segments[1] = lineSegment1;
-                    LineSegment lineSegment2 = new LineSegment();
-                    lineSegment2.Point = p1;
-                    curPf.Segments[3] = lineSegment2;
+                        PathGeometry topPg = (PathGeometry)geometryGroup.Children[i];
+                        PathFigure topPf = topPg.Figures.ElementAt(0);
+                        if (topPf.Segments[0] is ArcSegment)
+                        {
+                            LineSegment ls_top = new LineSegment();
+                            ls_top.Point = ((ArcSegment)topPf.Segments[0]).Point;
+                            topPf.Segments[0] = ls_top;
+
+                            LineSegment ls_top2 = new LineSegment();
+                            ls_top2.Point = ((ArcSegment)topPf.Segments[2]).Point;
+                            topPf.Segments[2] = ls_top2;
+                        }
+                        else if (topPf.Segments[0] is PolyLineSegment)
+                        {
+                            LineSegment ls_top = new LineSegment();
+                            ls_top.Point = ((PolyLineSegment)topPf.Segments[0]).Points[((PolyLineSegment)topPf.Segments[0]).Points.Count - 1];
+                            topPf.Segments[0] = ls_top;
+
+                            LineSegment ls_top2 = new LineSegment();
+                            ls_top2.Point = ((PolyLineSegment)topPf.Segments[0]).Points[((PolyLineSegment)topPf.Segments[2]).Points.Count - 1];
+                            topPf.Segments[2] = ls_top2;
+                        }
+                        
+                        
+
+                        PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[i + 1];
+                        PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                        if (bottomPf.Segments[1] is ArcSegment)
+                        {
+                            LineSegment ls_bottom = new LineSegment();
+                            ls_bottom.Point = ((ArcSegment)bottomPf.Segments[1]).Point;
+                            bottomPf.Segments[1] = ls_bottom;
+
+                            LineSegment ls_bottom2 = new LineSegment();
+                            ls_bottom2.Point = ((ArcSegment)bottomPf.Segments[3]).Point;
+                            bottomPf.Segments[3] = ls_bottom2;
+                        }   
+                        else if (bottomPf.Segments[1] is PolyLineSegment)
+                        {
+                            LineSegment ls_bottom = new LineSegment();
+                            ls_bottom.Point = ((PolyLineSegment)bottomPf.Segments[1]).Points[((PolyLineSegment)bottomPf.Segments[1]).Points.Count - 1];
+                            bottomPf.Segments[1] = ls_bottom;
+
+                            LineSegment ls_bottom2 = new LineSegment();
+                            ls_bottom2.Point = ((PolyLineSegment)bottomPf.Segments[3]).Points[((PolyLineSegment)bottomPf.Segments[3]).Points.Count - 1];
+                            bottomPf.Segments[3] = ls_bottom2;
+                        }
+                    }    
                 }
             }
+
+            ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
 
@@ -2069,7 +2131,8 @@ namespace GraphicalStructure
 
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
-                //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 
 
                 //绘制下层路径
@@ -2170,7 +2233,7 @@ namespace GraphicalStructure
                 //将上下层路径添加到组中
                 geometryGroup.Children.Add(topPg);
                 geometryGroup.Children.Add(bottomPg);
-                //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                 insertShape.Height += 40;
                 ((Components)components[index]).height = insertShape.Height;
@@ -2391,7 +2454,7 @@ namespace GraphicalStructure
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(topPg);
-                    //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 }
                 if (i == ((Components)components[index]).layerNum)
                 {
@@ -2492,7 +2555,7 @@ namespace GraphicalStructure
 
                     bottomPg.Figures.Add(bottomPf);
 
-                    //ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(bottomPg);
@@ -2645,6 +2708,9 @@ namespace GraphicalStructure
             }
 
             components.RemoveAt(index);
+            //删除浮层
+            ColorProc.processWhenDelCylindrical(this.canvas, insertShape);
+
             stackpanel.Children.Remove(insertShape);
 
             autoResize();

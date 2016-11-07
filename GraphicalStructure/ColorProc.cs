@@ -389,6 +389,24 @@ namespace GraphicalStructure
 
         }
 
+        // 删除段时，删除cover， 并作相应处理
+        public static void processWhenDelCylindrical(Canvas canvas, Path path)
+        {
+            for (int i = 0; i < CoverToPathMap.Keys.Count; i++ )
+            {
+                Shape shape = CoverToPathMap.Keys.ElementAt(i);
+                if (CoverToPathMap[shape] == path)
+                {
+                    PathFigure pf = CoverToPfMap[shape];
+                    CoverToPathMap.Remove(shape);
+                    PfToCoverMap.Remove(pf);
+                    CoverToPfMap.Remove(shape);
+                    canvas.Children.Remove(shape);
+                    i--;
+                }
+            }
+        }
+
         // 移动层时，同时移动cover， 并作相应处理
         public static void processWhenMoveLayer(Canvas canvas, StackPanel curSp)
         {
