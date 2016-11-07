@@ -111,6 +111,8 @@ namespace GraphicalStructure
 
             //初始化默认添加一个段
             addCylindrical_Click(null, null);
+
+            ColorProc.clearMap();
         }
 
         private void initWindow()
@@ -420,7 +422,7 @@ namespace GraphicalStructure
 
             allWidth = 0;
 
-            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
+            //ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
         }
 
         private void del_Cover(object sender, RoutedEventArgs e)
@@ -459,7 +461,7 @@ namespace GraphicalStructure
 
             autoResize();
 
-            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
+            //ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
         }
 
         private void RadioButton_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -827,7 +829,7 @@ namespace GraphicalStructure
                     isHaveRightEndCap = false;
                 }
 
-                ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
+                //ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
             }
             else
             {
@@ -1748,6 +1750,7 @@ namespace GraphicalStructure
 
                         _curPf.Segments[0] = arcSegment1;
                         _curPf.Segments[2] = arcSegment2;
+
                     }
                 }
                 else
@@ -1785,7 +1788,7 @@ namespace GraphicalStructure
                         if (isConvex == 0)
                         {
                             Point[] _circle_centers = calcuCentralPoints(_p1, _p2, radius);
-                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p1, _p2, 100, isConvex);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p1, _p2, 1000, isConvex);
                             _points = reversePointCollection(_points);
                             pls1.Points = _points;
 
@@ -1803,7 +1806,7 @@ namespace GraphicalStructure
                         else
                         {
                             Point[] _circle_centers = calcuCentralPoints(_p1, _p2, radius);
-                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p1, _p2, 100, isConvex);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p1, _p2, 1000, isConvex);
                             _points = reversePointCollection(_points);
                             pls1.Points = _points;
 
@@ -1822,7 +1825,7 @@ namespace GraphicalStructure
                         if (isConvex == 0)
                         {
                             Point[] _circle_centers = calcuCentralPoints(_p4, _p3, radius);
-                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p4, _p3, 100, isConvex);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p4, _p3, 1000, isConvex);
                             pls2.Points = _points;
 
                             PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
@@ -1834,7 +1837,7 @@ namespace GraphicalStructure
                         else
                         {
                             Point[] _circle_centers = calcuCentralPoints(_p4, _p3, radius);
-                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p4, _p3, 100, isConvex);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p4, _p3, 1000, isConvex);
                             pls2.Points = _points;
 
                             PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
@@ -1846,9 +1849,11 @@ namespace GraphicalStructure
 
                         _curPf.Segments[0] = pls1;
                         _curPf.Segments[2] = pls2;
+
                     }
                 }
             }
+            
 
                 //绘制下段
 
@@ -1951,8 +1956,16 @@ namespace GraphicalStructure
                                 arcSegment2.Point = p1;
                                 arcSegment2.SweepDirection = SweepDirection.Counterclockwise;
                             }
+
                             _curPf.Segments[1] = arcSegment1;
-                            _curPf.Segments.Add(arcSegment2);
+                            if (_curPf.Segments.Count > 3)
+                            {
+                                _curPf.Segments[3] = arcSegment2;
+                            }
+                            else
+                            {
+                                _curPf.Segments.Add(arcSegment2);
+                            }
                         }
                     }
                 }
@@ -1969,38 +1982,91 @@ namespace GraphicalStructure
                 GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
                 PathFigure curPf = curPg.Figures.ElementAt(0);
-                if (curLayerNum != 0)
+
+                //无层的时候  变换
+                Point p1, p2, p3, p4;
+                p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
+                p2 = ((LineSegment)curPf.Segments[0]).Point;
+                if (curPf.Segments[1] is LineSegment)
                 {
-                    return;
+                    p3 = ((LineSegment)curPf.Segments[1]).Point;
+                }
+                else if (curPf.Segments[1] is ArcSegment)
+                {
+                    p3 = ((ArcSegment)curPf.Segments[1]).Point;
                 }
                 else
                 {
-                    Point p1, p2, p3, p4;
-                    p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
-                    p2 = ((LineSegment)curPf.Segments[0]).Point;
-                    if (curPf.Segments[1] is LineSegment)
+                    PointCollection pointCollection = ((PolyLineSegment)curPf.Segments[1]).Points;
+                    Point point = ((PolyLineSegment)curPf.Segments[1]).Points[pointCollection.Count - 1];
+                    p3 = new Point(point.X, point.Y);
+                }
+                p4 = ((LineSegment)curPf.Segments[2]).Point;
+                LineSegment lineSegment1 = new LineSegment();
+                lineSegment1.Point = p3;
+                curPf.Segments[1] = lineSegment1;
+                LineSegment lineSegment2 = new LineSegment();
+                lineSegment2.Point = p1;
+                curPf.Segments[3] = lineSegment2;
+
+                //有层
+                if (curLayerNum > 0)
+                {
+                    for (int i = 1; i < curLayerNum; i+=2)
                     {
-                        p3 = ((LineSegment)curPf.Segments[1]).Point;
-                    }
-                    else if (curPf.Segments[1] is ArcSegment)
-                    {
-                        p3 = ((ArcSegment)curPf.Segments[1]).Point;
-                    }
-                    else
-                    {
-                        PointCollection pointCollection = ((PolyLineSegment)curPf.Segments[1]).Points;
-                        Point point = ((PolyLineSegment)curPf.Segments[1]).Points[pointCollection.Count - 1];
-                        p3 = new Point(point.X, point.Y);
-                    }
-                    p4 = ((LineSegment)curPf.Segments[2]).Point;
-                    LineSegment lineSegment1 = new LineSegment();
-                    lineSegment1.Point = p3;
-                    curPf.Segments[1] = lineSegment1;
-                    LineSegment lineSegment2 = new LineSegment();
-                    lineSegment2.Point = p1;
-                    curPf.Segments[3] = lineSegment2;
+                        PathGeometry topPg = (PathGeometry)geometryGroup.Children[i];
+                        PathFigure topPf = topPg.Figures.ElementAt(0);
+                        if (topPf.Segments[0] is ArcSegment)
+                        {
+                            LineSegment ls_top = new LineSegment();
+                            ls_top.Point = ((ArcSegment)topPf.Segments[0]).Point;
+                            topPf.Segments[0] = ls_top;
+
+                            LineSegment ls_top2 = new LineSegment();
+                            ls_top2.Point = ((ArcSegment)topPf.Segments[2]).Point;
+                            topPf.Segments[2] = ls_top2;
+                        }
+                        else if (topPf.Segments[0] is PolyLineSegment)
+                        {
+                            LineSegment ls_top = new LineSegment();
+                            ls_top.Point = ((PolyLineSegment)topPf.Segments[0]).Points[((PolyLineSegment)topPf.Segments[0]).Points.Count - 1];
+                            topPf.Segments[0] = ls_top;
+
+                            LineSegment ls_top2 = new LineSegment();
+                            ls_top2.Point = ((PolyLineSegment)topPf.Segments[2]).Points[((PolyLineSegment)topPf.Segments[2]).Points.Count - 1];
+                            topPf.Segments[2] = ls_top2;
+                        }
+                        
+                        
+
+                        PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[i + 1];
+                        PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                        if (bottomPf.Segments[1] is ArcSegment)
+                        {
+                            LineSegment ls_bottom = new LineSegment();
+                            ls_bottom.Point = ((ArcSegment)bottomPf.Segments[1]).Point;
+                            bottomPf.Segments[1] = ls_bottom;
+
+                            LineSegment ls_bottom2 = new LineSegment();
+                            ls_bottom2.Point = ((ArcSegment)bottomPf.Segments[3]).Point;
+                            bottomPf.Segments[3] = ls_bottom2;
+                        }   
+                        else if (bottomPf.Segments[1] is PolyLineSegment)
+                        {
+                            LineSegment ls_bottom = new LineSegment();
+                            ls_bottom.Point = ((PolyLineSegment)bottomPf.Segments[1]).Points[((PolyLineSegment)bottomPf.Segments[1]).Points.Count - 1];
+                            bottomPf.Segments[1] = ls_bottom;
+
+                            LineSegment ls_bottom2 = new LineSegment();
+                            ls_bottom2.Point = ((PolyLineSegment)bottomPf.Segments[3]).Points[((PolyLineSegment)bottomPf.Segments[3]).Points.Count - 1];
+                            bottomPf.Segments[3] = ls_bottom2;
+                        }
+                    }    
                 }
             }
+
+            ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
 
@@ -2163,6 +2229,7 @@ namespace GraphicalStructure
 
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
+
                 ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
                 
 
@@ -2708,7 +2775,7 @@ namespace GraphicalStructure
                 {
                     //获取left的右侧高度
                     double topR = ((ArcSegment)curPf.Segments[1]).Point.Y;
-                    double bottomR = ((ArcSegment)curPf.Segments[2]).Point.Y;
+                    double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
 
                     double height = Math.Abs(topR - bottomR);
 
@@ -2739,12 +2806,15 @@ namespace GraphicalStructure
             }
 
             components.RemoveAt(index);
+            //删除浮层
+            ColorProc.processWhenDelCylindrical(this.canvas, insertShape);
+
             stackpanel.Children.Remove(insertShape);
 
             autoResize();
 
             //移动浮层
-            ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
+            //ColorProc.processWhenMoveLayer(this.canvas, this.stackpanel);
             //Console.WriteLine(stackpanel.Children.Capacity);
             //if (stackpanel.Children.Count == 0)
             //{
@@ -3161,6 +3231,9 @@ namespace GraphicalStructure
             //更新起爆点位置
             updateExplosionPosition();
             updateCubePosition();
+
+            //移动浮层
+            ColorProc.processWhenMoveLayer(canvas, stackpanel);
         }
 
         private void Store_Click(object sender, RoutedEventArgs e)

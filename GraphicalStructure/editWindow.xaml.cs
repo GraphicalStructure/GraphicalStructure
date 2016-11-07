@@ -390,6 +390,17 @@ namespace GraphicalStructure
                     }
                 }
             }
+
+            double offset = Double.Parse(leftD.Text) - leftLength;
+            if (offset > 0)
+            {
+                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, offset / 2);
+            }
+            else
+            {
+                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, -offset / 2);
+            }
+
             leftLength = Double.Parse(leftD.Text.ToString());
         }
 
@@ -936,7 +947,7 @@ namespace GraphicalStructure
                     ChangeShapeEvent(radius, 0);
                 }
             }
-            else if (shape == "Inverst Ogive" && currentCom.isChangeIOgive == false)
+            else if (shape == "Inverse Ogive" && currentCom.isChangeIOgive == false)
             {
                 if (ChangeShapeEvent2 != null)
                 {
