@@ -140,9 +140,10 @@ namespace GraphicalStructure
             if (radiusText.Text != null && radiusText.Text != "")
             {
                 radius = Double.Parse(radiusText.Text);
+                changeShape(radius);
             }
             
-            changeShape(radius);
+            
             currentCom.radius = radius;
             
             Close();
@@ -689,7 +690,10 @@ namespace GraphicalStructure
                     PathFigure curPf = pg.Figures.ElementAt(0);
 
                     double leftHeight = Math.Abs(((LineSegment)(curPf.Segments[0])).Point.Y - curPf.StartPoint.Y);
-                    double rightHeight = 0;// = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+
+
+                    //////TODO:
+                    double rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
                     if (curPf.Segments[1] is LineSegment)
                     {
                         rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
@@ -724,6 +728,11 @@ namespace GraphicalStructure
                             currentCom.point2.Y += (temp / 2.0 - currentCom.point4.Y + layerHeight);
                             currentCom.point3.Y += (temp - currentCom.point4.Y + layerHeight);
                             currentCom.point4.Y = 0 + layerHeight;
+
+                            currentCom.startPoint.Y += 100;
+                            currentCom.point2.Y += 100;
+                            currentCom.point3.Y += 100;
+                            currentCom.point4.Y += 100;
                         }
                     }
                     else
@@ -743,12 +752,14 @@ namespace GraphicalStructure
                             currentCom.point3.Y -= (temp / 2.0 + currentCom.startPoint.Y - layerHeight);
                             currentCom.point4.Y += (temp / 2.0 - currentCom.startPoint.Y + layerHeight);
                             currentCom.startPoint.Y = 0 + layerHeight;
+
+                            currentCom.startPoint.Y += 100;
+                            currentCom.point2.Y += 100;
+                            currentCom.point3.Y += 100;
+                            currentCom.point4.Y += 100;
                         }
                     }
-                    currentCom.startPoint.Y += 100;
-                    currentCom.point2.Y += 100;
-                    currentCom.point3.Y += 100;
-                    currentCom.point4.Y += 100;
+                    
                     currentCom.pf.StartPoint = currentCom.startPoint;
                     currentCom.ls.Point = currentCom.point2;
                     currentCom.ls2.Point = currentCom.point3;
