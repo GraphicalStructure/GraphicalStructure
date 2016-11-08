@@ -1000,6 +1000,20 @@ namespace GraphicalStructure
                 {
                     currentCom.layerMaterial[layerNumber - 1 - 1] = content;
                 }
+
+                string comValue = materialBox.SelectedItem.ToString();
+
+                //遍历数据表，得到对应的颜色值
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row[dt.Columns[1]].ToString() == comValue)
+                    {
+                        Console.WriteLine((row[dt.Columns[3]]));
+                        Color color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
+                        //
+                        ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber, color);
+                    }
+                }
             }
         }
 
