@@ -950,23 +950,64 @@ namespace GraphicalStructure
         {
             if (shape == "Cylinder" && (currentCom.isChangeOgive || currentCom.isChangeIOgive))
             {
+                // 变直线
                 if (ChangeShapeEvent3 != null)
                 {
                     ChangeShapeEvent3(120, 0);
                 }
             }
-            else if (shape == "Ogive" && currentCom.isChangeOgive == false)
+            else if (shape == "Ogive")
             {
-                if (ChangeShapeEvent != null)
+                // 变凸
+                if (currentCom.isChangeIOgive)
                 {
+                    // 凹变凸
+                    ChangeShapeEvent3(120, 0);
                     ChangeShapeEvent(radius, 0);
                 }
-            }
-            else if (shape == "Inverse Ogive" && currentCom.isChangeIOgive == false)
-            {
-                if (ChangeShapeEvent2 != null)
+                else if (currentCom.isChangeOgive)
                 {
-                    ChangeShapeEvent2(radius, 1);
+                    // 凸变凸，改变半径
+                    if (ChangeShapeEvent != null)
+                    {
+                        ChangeShapeEvent3(120, 0);
+                        ChangeShapeEvent(radius, 0);
+                    }
+                }
+                else {
+                    // 直线变凸
+                    if (ChangeShapeEvent != null)
+                    {
+                        ChangeShapeEvent(radius, 0);
+                    }
+                }
+            }
+            else if (shape == "Inverse Ogive")
+            {
+                // 变凹
+                if (currentCom.isChangeOgive)
+                {
+                    // 凸变凹
+                    if (ChangeShapeEvent2 != null)
+                    {
+                        ChangeShapeEvent3(120, 0);
+                        ChangeShapeEvent2(radius, 1);
+                    }
+
+                } else if (currentCom.isChangeIOgive) {
+                    // 凹变凹，改变半径
+                    if (ChangeShapeEvent2 != null)
+                    {
+                        ChangeShapeEvent3(120, 0);
+                        ChangeShapeEvent2(radius, 1);
+                    }
+                }
+                else {
+                    // 直线变凹
+                    if (ChangeShapeEvent2 != null)
+                    {
+                        ChangeShapeEvent2(radius, 1);
+                    }
                 }
             }
         }
