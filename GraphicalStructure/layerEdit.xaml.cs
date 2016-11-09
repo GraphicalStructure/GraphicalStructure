@@ -1011,7 +1011,11 @@ namespace GraphicalStructure
                         Console.WriteLine((row[dt.Columns[3]]));
                         Color color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
                         //
-                        ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber, color);
+                        if (layerNumber % 2 == 0)
+                            ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber - 1, color);
+                        else
+                            ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber, color);
+
                     }
                 }
             }

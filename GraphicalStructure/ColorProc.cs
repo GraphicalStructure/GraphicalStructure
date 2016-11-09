@@ -22,7 +22,7 @@ namespace GraphicalStructure
         public static Canvas mainCanvas;
 
         // 添加层时，在canvas上对应位置（绝对坐标）添加cover，并作相应处理
-        public static void processWhenAddLayer(Canvas canvas, StackPanel curSp,Path curPath, PathFigure pf, int isTop)
+        public static void processWhenAddLayer(Canvas canvas, StackPanel curSp,Path curPath, PathFigure pf, int isTop, Color color)
         {
             //获取当前添加层的坐标
             ArrayList arr = new ArrayList(getPathFigureCoordinate(canvas, curSp, curPath, pf, isTop));
@@ -33,7 +33,10 @@ namespace GraphicalStructure
                 // Create a blue and a black Brush
                 Random random = new Random();
                 SolidColorBrush brush = new SolidColorBrush();
-                brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                if (color == null)
+                    brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                else
+                    brush.Color = color;
                 SolidColorBrush blackBrush = new SolidColorBrush();
                 blackBrush.Color = Colors.Blue;
 
@@ -122,7 +125,10 @@ namespace GraphicalStructure
                 // Create a blue and a black Brush
                 Random random = new Random();
                 SolidColorBrush brush = new SolidColorBrush();
-                brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                if (color == null)
+                    brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                else
+                    brush.Color = color;
                 SolidColorBrush blackBrush = new SolidColorBrush();
                 blackBrush.Color = Colors.Blue;
 
@@ -217,8 +223,8 @@ namespace GraphicalStructure
         {
             double getSpLeftDisToCan = Canvas.GetLeft(curSp);
             double getSpTopDisToCan = Canvas.GetTop(curSp);
-            double __p = curSp.ActualHeight;
-            double __q = curPath.ActualHeight;
+            double __p = curSp.Height;
+            double __q = curPath.Height;
             getSpTopDisToCan += (__p - __q) / 2;
             double y1, y2, y3, y4;
             if (isTop == 0)
