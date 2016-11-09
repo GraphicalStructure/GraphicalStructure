@@ -693,7 +693,7 @@ namespace GraphicalStructure
 
 
                     //////TODO:
-                    double rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
+                    double rightHeight = 0;// Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);
                     if (curPf.Segments[1] is LineSegment)
                     {
                         rightHeight = Math.Abs(((LineSegment)(curPf.Segments[1])).Point.Y - ((LineSegment)(curPf.Segments[2])).Point.Y);

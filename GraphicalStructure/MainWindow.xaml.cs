@@ -2442,7 +2442,7 @@ namespace GraphicalStructure
                     {
                         if (curPf2.Segments[3] is LineSegment)
                         {
-                            //((LineSegment)curPf2.Segments[3]).Point = new Point(((LineSegment)curPf2.Segments[3]).Point.X, ((LineSegment)curPf2.Segments[3]).Point.Y + 20);
+                            ((LineSegment)curPf2.Segments[3]).Point = new Point(((LineSegment)curPf2.Segments[3]).Point.X, ((LineSegment)curPf2.Segments[3]).Point.Y + 20);
                         }
                         else if (curPf2.Segments[3] is ArcSegment)
                         {
@@ -2619,7 +2619,12 @@ namespace GraphicalStructure
                     {
                         if (curPf2.Segments[3] is LineSegment)
                         {
+                            LineSegment ls4_bottom = new LineSegment();
+                            Point forthPoint_bottom2 = bottomPf.StartPoint;
+                            ls4_bottom.Point = forthPoint_bottom2;
 
+                            // update end
+                            bottomPf.Segments.Add(ls4_bottom);
                         }
                         else if (curPf2.Segments[3] is ArcSegment)
                         {
@@ -2756,6 +2761,11 @@ namespace GraphicalStructure
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
                 PathFigure curPf = curPg.Figures.ElementAt(0);
 
+
+
+
+
+                ///////TODO:
                 if (curPf.Segments[1] is LineSegment)
                 {
                     //获取left的右侧高度

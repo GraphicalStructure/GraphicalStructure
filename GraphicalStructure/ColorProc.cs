@@ -559,7 +559,10 @@ namespace GraphicalStructure
                     CoverToPathMap.Remove(shape);
                     PfToCoverMap.Remove(pf);
                     CoverToPfMap.Remove(shape);
-                    canvas.Children.Remove(shape);
+                    if (canvas.Children.Contains(shape))
+                    {
+                        canvas.Children.Remove(shape);
+                    }
                     i--;
                 }
             }
@@ -568,7 +571,6 @@ namespace GraphicalStructure
         // 移动层时，同时移动cover， 并作相应处理
         public static void processWhenMoveLayer(Canvas canvas, StackPanel curSp)
         {
-            int temp = 0;
             foreach (Shape shape in CoverToPathMap.Keys)
             {
                 Path path = CoverToPathMap[shape];
@@ -590,8 +592,9 @@ namespace GraphicalStructure
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
                 PathFigure curPf = curPg.Figures.ElementAt(0);
                 double offset = left - curPf.StartPoint.X;
+                bool isBottom = (curPf.Segments[0] is LineSegment && curPf.StartPoint.X == ((LineSegment)curPf.Segments[0]).Point.X);
                 curPf.StartPoint = new Point(left, curPf.StartPoint.Y);
-                if (temp % 2 == 0)
+                if (!isBottom)
                 {
                     if (curPf.Segments[0] is LineSegment)
                     {
@@ -664,8 +667,6 @@ namespace GraphicalStructure
                         } 
                     }
                 }
-
-                temp++;
             }
         }
 
@@ -1392,9 +1393,29 @@ namespace GraphicalStructure
         }
 
         // 真正的层点击更改颜色后，改变cover的颜色，并作相应处理
-        public static void processWhenChangeLayerColor()
+        public static void processWhenChangeLayerColor(Path path ,int layerNumber, Color color)
         {
+            int coverNum = 0;
+            int curPathCoverNum = 0;
+            foreach (Path cover in CoverToPathMap.Keys)
+            {
+                if (CoverToPathMap[cover] == path)
+                {
+                    if (curPathCoverNum == layerNumber - 1)
+                    {
+                        SolidColorBrush brush = new SolidColorBrush(color);
+                        cover.Fill = brush;
+                        Path coverBottom = (Path)CoverToPathMap.Keys.ElementAt(coverNum + 1);
+                        coverBottom.Fill = brush;
 
+                        break;
+                    }
+
+                    curPathCoverNum++;
+                }
+
+                coverNum++;
+            }   
         }
 
         // cover 的双击事件回调,传递到真正的层上，手动触发真正的层的双击事件
