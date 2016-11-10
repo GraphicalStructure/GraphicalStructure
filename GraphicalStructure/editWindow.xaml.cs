@@ -136,13 +136,12 @@ namespace GraphicalStructure
 
             ////改变形状
 
-            double radius = 120;
-            if (radiusText.Text != null && radiusText.Text != "")
+            double radius = 0;
+            if (radiusText.Text != null)
             {
                 radius = Double.Parse(radiusText.Text);
-                changeShape(radius);
             }
-            
+            changeShape(radius);
             
             currentCom.radius = radius;
             
@@ -948,6 +947,12 @@ namespace GraphicalStructure
 
         private void changeShape(double radius)
         {
+            GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
+            PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
+            PathFigure curPf = curPg.Figures.ElementAt(0);
+            Point p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
+            Point p2 = ((LineSegment)curPf.Segments[2]).Point;
+
             if (shape == "Cylinder" && (currentCom.isChangeOgive || currentCom.isChangeIOgive))
             {
                 // 变直线
@@ -962,23 +967,74 @@ namespace GraphicalStructure
                 if (currentCom.isChangeIOgive)
                 {
                     // 凹变凸
-                    ChangeShapeEvent3(120, 0);
-                    ChangeShapeEvent(radius, 0);
+                    if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                    {
+                        if (p2.X - p1.X > radius * 2)
+                        {
+                            MessageBox.Show("请输入正确的radius值！", "警告");
+                            return;
+                        }
+                        else
+                        {
+                            ChangeShapeEvent3(120, 0);
+                            ChangeShapeEvent(radius, 0);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("radius为0或空，请填写！", "警告");
+                        return;
+                    }
+                    
                 }
                 else if (currentCom.isChangeOgive)
                 {
                     // 凸变凸，改变半径
                     if (ChangeShapeEvent != null)
                     {
-                        ChangeShapeEvent3(120, 0);
-                        ChangeShapeEvent(radius, 0);
+                        if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                        {
+                            if (p2.X - p1.X > radius * 2)
+                            {
+                                MessageBox.Show("请输入正确的radius值！", "警告");
+                                return;
+                            }
+                            else
+                            {
+                                ChangeShapeEvent3(120, 0);
+                                ChangeShapeEvent(radius, 0);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("radius为0或空，请填写！", "警告");
+                            return;
+                        }
+
                     }
                 }
-                else {
+                else
+                {
                     // 直线变凸
                     if (ChangeShapeEvent != null)
                     {
-                        ChangeShapeEvent(radius, 0);
+                        if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                        {
+                            if (p2.X - p1.X > radius * 2)
+                            {
+                                MessageBox.Show("请输入正确的radius值！", "警告");
+                                return;
+                            }
+                            else
+                            {
+                                ChangeShapeEvent(radius, 0);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("radius为0或空，请填写！", "警告");
+                            return;
+                        } 
                     }
                 }
             }
@@ -990,26 +1046,78 @@ namespace GraphicalStructure
                     // 凸变凹
                     if (ChangeShapeEvent2 != null)
                     {
-                        ChangeShapeEvent3(120, 0);
-                        ChangeShapeEvent2(radius, 1);
+                        if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                        {
+                            if (p2.X - p1.X > radius * 2)
+                            {
+                                MessageBox.Show("请输入正确的radius值！", "警告");
+                                return;
+                            }
+                            else
+                            {
+                                ChangeShapeEvent3(120, 0);
+                                ChangeShapeEvent2(radius, 1);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("radius为0或空，请填写！", "警告");
+                            return;
+                        }
                     }
 
-                } else if (currentCom.isChangeIOgive) {
+                }
+                else if (currentCom.isChangeIOgive)
+                {
                     // 凹变凹，改变半径
                     if (ChangeShapeEvent2 != null)
                     {
-                        ChangeShapeEvent3(120, 0);
-                        ChangeShapeEvent2(radius, 1);
+                        if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                        {
+                            if (p2.X - p1.X > radius * 2)
+                            {
+                                MessageBox.Show("请输入正确的radius值！", "警告");
+                                return;
+                            }
+                            else
+                            {
+                                ChangeShapeEvent3(120, 0);
+                                ChangeShapeEvent2(radius, 1);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("radius为0或空，请填写！", "警告");
+                            return;
+                        }
                     }
                 }
-                else {
+                else
+                {
                     // 直线变凹
                     if (ChangeShapeEvent2 != null)
                     {
-                        ChangeShapeEvent2(radius, 1);
+                        if (radius != 0 && radiusText.Text != null && radiusText.Text != "")
+                        {
+                            if (p2.X - p1.X > radius * 2)
+                            {
+                                MessageBox.Show("请输入正确的radius值！", "警告");
+                                return;
+                            }
+                            else
+                            {
+                                ChangeShapeEvent2(radius, 1);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("radius为0或空，请填写！", "警告");
+                            return;
+                        }   
                     }
                 }
             }
+
         }
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)

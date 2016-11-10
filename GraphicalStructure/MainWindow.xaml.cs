@@ -1647,6 +1647,7 @@ namespace GraphicalStructure
             PathFigure curPf = curPg.Figures.ElementAt(0);
             p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
             p2 = ((LineSegment)curPf.Segments[2]).Point;
+
             ArcSegment arcSegment = new ArcSegment();
             PolyLineSegment polyLineSegment = new PolyLineSegment();
             PointCollection points = new PointCollection();
@@ -2228,7 +2229,7 @@ namespace GraphicalStructure
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
 
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, new Color());
                 
 
                 //绘制下层路径
@@ -2329,7 +2330,7 @@ namespace GraphicalStructure
                 //将上下层路径添加到组中
                 geometryGroup.Children.Add(topPg);
                 geometryGroup.Children.Add(bottomPg);
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, new Color());
 
                 insertShape.Height += 40;
                 ((Components)components[index]).height = insertShape.Height;
@@ -2550,7 +2551,7 @@ namespace GraphicalStructure
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(topPg);
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0);
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, new Color());
                 }
                 if (i == ((Components)components[index]).layerNum)
                 {
@@ -2656,7 +2657,7 @@ namespace GraphicalStructure
 
                     bottomPg.Figures.Add(bottomPf);
 
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1);
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, new Color());
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(bottomPg);
@@ -3888,11 +3889,9 @@ namespace GraphicalStructure
                                 cps.newPath.MouseDown += Img1_MouseLeftButtonDown;
                                 cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
                                 stackpanel.Children.Add(cps.newPath);
-
+                                insertShape = cps.newPath;
                                 if (compNum[8] == 1 || compNum[8] == 2)
                                 {
-                                    insertShape = cps.newPath;
-                                    //changeOgive();
                                     changeLineSegmentToArcSegment((double)compNum[10],(int)compNum[11]);
                                     cps.radius = (double)compNum[10];
                                 }
@@ -4060,6 +4059,22 @@ namespace GraphicalStructure
                                     topPg.Figures.Add(topPf);
                                     topPf.IsClosed = true;
 
+                                    Color color = new Color();
+                                    UseAccessDB accessDb = new UseAccessDB();
+                                    accessDb.getConnection();
+                                    DataSet ds = accessDb.SelectToDataSet("select * from material", "material");
+                                    DataTable dt = ds.Tables[0];
+                                    foreach (DataRow row in dt.Rows)
+                                    {
+                                        if (row[dt.Columns[1]].ToString() == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                        {
+                                            Console.WriteLine((row[dt.Columns[3]]));
+                                            color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
+                                        }
+                                    }
+                                    
+                                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, color);
+
                                     //绘制下层路径
                                     bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
                                     LineSegment ls_bottom = new LineSegment();
@@ -4148,6 +4163,16 @@ namespace GraphicalStructure
                                     }
 
                                     bottomPg.Figures.Add(bottomPf);
+
+                                    foreach (DataRow row in dt.Rows)
+                                    {
+                                        if (row[dt.Columns[1]].ToString() == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                        {
+                                            Console.WriteLine((row[dt.Columns[3]]));
+                                            color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
+                                        }
+                                    }
+                                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, color);
                                     //将上下层路径添加到组中
                                     geometryGroup.Children.Add(topPg);
                                     geometryGroup.Children.Add(bottomPg);
@@ -4371,6 +4396,22 @@ namespace GraphicalStructure
                                         topPg.Figures.Add(topPf);
                                         topPf.IsClosed = true;
 
+                                        Color color = new Color();
+                                        UseAccessDB accessDb = new UseAccessDB();
+                                        accessDb.getConnection();
+                                        DataSet ds = accessDb.SelectToDataSet("select * from material", "material");
+                                        DataTable dt = ds.Tables[0];
+                                        foreach (DataRow row in dt.Rows)
+                                        {
+                                            if (row[dt.Columns[1]].ToString() == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                            {
+                                                Console.WriteLine((row[dt.Columns[3]]));
+                                                color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
+                                            }
+                                        }
+
+                                        ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, color);
+
                                         //将上下层路径添加到组中
                                         geometryGroup.Children.Add(topPg);
                                     }
@@ -4463,6 +4504,21 @@ namespace GraphicalStructure
                                         }
 
                                         bottomPg.Figures.Add(bottomPf);
+
+                                        Color color = new Color();
+                                        UseAccessDB accessDb = new UseAccessDB();
+                                        accessDb.getConnection();
+                                        DataSet ds = accessDb.SelectToDataSet("select * from material", "material");
+                                        DataTable dt = ds.Tables[0];
+                                        foreach (DataRow row in dt.Rows)
+                                        {
+                                            if (row[dt.Columns[1]].ToString() == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                            {
+                                                Console.WriteLine((row[dt.Columns[3]]));
+                                                color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
+                                            }
+                                        }
+                                        ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, color);
 
                                         //将上下层路径添加到组中
                                         geometryGroup.Children.Add(bottomPg);
