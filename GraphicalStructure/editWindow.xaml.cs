@@ -53,28 +53,20 @@ namespace GraphicalStructure
 
         public bool isComboxChanged = false;
 
+        public List<Dictionary<string, Dictionary<string, string>>> list = new List<Dictionary<string, Dictionary<string, string>>>();
+
+        /*
         private static UseAccessDB accessDb;
 
         public DataSet ds;
         public DataTable dt;
+         * */
 
         private Color color = new Color();
 
         public editWindow()
         {
             InitializeComponent();
-
-            accessDb = new UseAccessDB();
-            accessDb.getConnection();
-            ds = accessDb.SelectToDataSet("select * from material","material");
-            dt = ds.Tables[0];
-            ArrayList col = new ArrayList();
-            foreach(DataRow row in dt.Rows)
-            {
-                Console.WriteLine(row[dt.Columns[1]]);
-                col.Add(row[dt.Columns[1]]);
-            }
-            materialBox.ItemsSource = col;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -128,7 +120,9 @@ namespace GraphicalStructure
             update_LayerCoordinate();
             ChangeColor();
 
-            accessDb.closeDB();
+            /*
+            //accessDb.closeDB();
+            */
 
             //changeLineToCurve();
 
@@ -173,6 +167,15 @@ namespace GraphicalStructure
         //显示当前信息
         public void showComponentInfo()
         {
+            ArrayList material = new ArrayList();
+            for (int i = 0; i < list.Count; i++)
+            {
+                Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
+                string materialName = dic["content"];
+                material.Add(materialName);
+            }
+            materialBox.ItemsSource = material;
+
             leftX.Text = left_X.ToString();
 
             leftLength = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y);
@@ -188,17 +191,32 @@ namespace GraphicalStructure
 
             Console.WriteLine(currentCom.newPath.Fill);
 
-            foreach (DataRow row in dt.Rows)
+
+            for (int j = 0; j < list.Count; j++)
             {
-                if (row[dt.Columns[3]].ToString() == currentCom.newPath.Fill.ToString())
+                Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["color"];
+                Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["materialName"];
+                string mColor = cdic["content"];
+                string materialName = mdic["content"];
+                if (mColor == currentCom.newPath.Fill.ToString())
                 {
-                    Console.WriteLine((row[dt.Columns[1]]));
-                    materialBox.SelectedItem = row[dt.Columns[1]];
-                    Console.WriteLine(Brushes.DarkSeaGreen);
+                    materialBox.SelectedItem = materialName;
                 }
             }
+                /*
+                /////////////////////
+                //foreach (DataRow row in dt.Rows)
+                //{
+                //    if (row[dt.Columns[3]].ToString() == currentCom.newPath.Fill.ToString())
+                //    {
+                //        Console.WriteLine((row[dt.Columns[1]]));
+                //        materialBox.SelectedItem = row[dt.Columns[1]];
+                //        Console.WriteLine(Brushes.DarkSeaGreen);
+                //    }
+                //}
+                */
 
-            CubeXValue.Text = currentCom.cubeOffset.ToString();
+                CubeXValue.Text = currentCom.cubeOffset.ToString();
 
 
             if (currentCom.isChangeOgive)
@@ -561,49 +579,6 @@ namespace GraphicalStructure
             } 
         }
 
-        //public void changeLineToCurve()
-        //{
-        //    GeometryGroup geometryGroup = currentCom.geometryGroup;
-        //    PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
-        //    PathFigure curPf = curPg.Figures.ElementAt(0);
-
-        //    if (RaidusY.Text != "0" || RadiusX.Text != "0")
-        //    {
-        //        //初始化曲线
-        //        ArcSegment as_bottom = new ArcSegment();
-        //        if (curPf.Segments[1] is LineSegment)
-        //        {
-        //            as_bottom.Point = ((LineSegment)curPf.Segments[1]).Point;
-        //        }
-        //        else
-        //        {
-        //            as_bottom.Point = ((ArcSegment)curPf.Segments[1]).Point;
-        //        }
-
-        //        as_bottom.Size = new Size(Int32.Parse(RadiusX.Text), Int32.Parse(RaidusY.Text));
-                
-        //        ArcSegment as_top = new ArcSegment();
-        //        as_top.Point = curPf.StartPoint;
-        //        as_top.Size = new Size(Int32.Parse(RadiusX.Text), Int32.Parse(RaidusY.Text));
-
-        //        //判断是顺时针还是逆时针
-        //        if (clockWise.IsChecked == true)
-        //        {
-        //            as_bottom.SweepDirection = SweepDirection.Clockwise;
-        //            as_top.SweepDirection = SweepDirection.Clockwise;
-        //        }
-        //        else
-        //        {
-        //            as_bottom.SweepDirection = SweepDirection.Counterclockwise;
-        //            as_top.SweepDirection = SweepDirection.Counterclockwise;
-        //        }
-                
-        //        //删除直线 添加曲线
-        //        curPf.Segments[1] = as_bottom;
-        //        curPf.Segments.Add(as_top);
-        //    }
-        //}
-
         public void rightD_Changed()
         {
             if (currentCom.geometryGroup.Children.Count <= 1)
@@ -796,6 +771,19 @@ namespace GraphicalStructure
                 string comValue = materialBox.SelectedItem.ToString();
                 isComboxChanged = true;
 
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[i])["color"];
+                    Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
+                    string mColor = cdic["content"];
+                    string materialName = mdic["content"];
+                    if (materialName == comValue)
+                    {
+                        color = (Color)ColorConverter.ConvertFromString(mColor);
+                    }
+                }
+
+                /*
                 //遍历数据表，得到对应的颜色值
                 foreach (DataRow row in dt.Rows)
                 {
@@ -805,6 +793,7 @@ namespace GraphicalStructure
                         color = (Color)ColorConverter.ConvertFromString(row[dt.Columns[3]].ToString());
                     }
                 }
+                 * */
             }
             catch
             {

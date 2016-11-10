@@ -31,7 +31,7 @@ namespace GraphicalStructure
 
         public UseAccessDB()
         {
-            strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=GraphicalStructure.accdb";
+            strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=material.accdb";
             if (oleDbConn == null)
             {
                 OpenDb();
@@ -79,7 +79,8 @@ namespace GraphicalStructure
             return al;
         }
 
-        public ArrayList query(string sql)
+
+        public ArrayList queryALLMaterialFromTable(string sql)
         {
             ArrayList result = new ArrayList();
             OleDbCommand cmd = new OleDbCommand(sql,oleDbConn);
@@ -87,9 +88,37 @@ namespace GraphicalStructure
             OleDbDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                result.Add(dr.GetValue(1));
+                ArrayList data = new ArrayList();
+                for (int i = 0; i < dr.FieldCount; i++)
+                {
+                    data.Add(dr.GetValue(i));
+                }
+                result.Add(data);
             }
             return result;
+        }
+
+        public List<string> GetTableFieldNameList(string TableName)
+        {
+            List<string> list = new List<string>();
+            try
+            {
+                if (oleDbConn.State == ConnectionState.Closed)
+                    oleDbConn.Open();
+                using (OleDbCommand cmd = new OleDbCommand())
+                {
+                    cmd.CommandText = "SELECT TOP 1 * FROM [" + TableName + "]";
+                    cmd.Connection = oleDbConn;
+                    OleDbDataReader dr = cmd.ExecuteReader();
+                    for (int i = 0; i < dr.FieldCount; i++)
+                    {
+                        list.Add(dr.GetName(i));
+                    }
+                }
+                return list;
+            }
+            catch (Exception e)
+            { throw e; }
         }
 
         public DataSet SelectToDataSet(string SQL, string subtableName)

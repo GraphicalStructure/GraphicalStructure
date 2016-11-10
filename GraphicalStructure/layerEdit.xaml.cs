@@ -76,6 +76,7 @@ namespace GraphicalStructure
 
                 int layerN = Int32.Parse(layerNums.SelectedItem.ToString());
 
+                /*
                 //显示当前材料
                 accessDb = new UseAccessDB();
                 accessDb.getConnection();
@@ -93,6 +94,7 @@ namespace GraphicalStructure
                     }
                 }
                 materialBox.ItemsSource = col;
+                */
 
                 if (currentCom.layerType[layerN - 1].ToString() == "球")
                 {
@@ -1003,6 +1005,7 @@ namespace GraphicalStructure
 
                 string comValue = materialBox.SelectedItem.ToString();
 
+                /*
                 //遍历数据表，得到对应的颜色值
                 foreach (DataRow row in dt.Rows)
                 {
@@ -1018,6 +1021,7 @@ namespace GraphicalStructure
 
                     }
                 }
+                 * */
             }
         }
 

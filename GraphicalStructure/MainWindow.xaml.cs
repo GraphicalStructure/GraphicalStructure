@@ -63,46 +63,12 @@ namespace GraphicalStructure
 
         private ContextMenu aMenu;
 
+        private List<Dictionary<string, Dictionary<string, string>>> DataBaseMaterials;
+
         public MainWindow()
         {
             InitializeComponent();
             initWindow();
-
-            List<Dictionary<string, Dictionary<string, string>>> l = new List<Dictionary<string, Dictionary<string, string>>>();
-            l.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { {"MID", "1"}, { "RO", "0" }, { "PC", "0" }, { "MU", "0" }, { "TEROD", "0" }, { "CEROD", "0" }, { "YM", "0" }, { "PR", "0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "xy" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "eos",new Dictionary<string, string>() { {"EOSID", "1"},{ "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "eosName",new Dictionary<string, string>() { {"content", "LINEAR_POLYNOMIAL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "NULL" } }}
-            });
-            l.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { {"MID", "2"}, { "RO", "1.00e-03" }, { "PC", "0.0" }, { "MU", "0.0" }, { "TEROD", "0.0" }, { "CEROD", "0.0" }, { "YM", "0.0" }, { "PR", "0.0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "xy" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "eos",new Dictionary<string, string>() { {"EOSID", "1"},{ "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "eosName",new Dictionary<string, string>() { {"content", "LINEAR_POLYNOMIAL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "NULL" } }}
-            });
-            l.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { {"MID", "2"}, { "RO", "1.00e-03" }, { "PC", "0.0" }, { "MU", "0.0" }, { "TEROD", "0.0" }, { "CEROD", "0.0" }, { "YM", "0.0" }, { "PR", "0.0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "CL-20基" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "eos",new Dictionary<string, string>() { {"EOSID", "1"},{ "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "eosName",new Dictionary<string, string>() { {"content", "JWL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "HIGH_EXPLOSIVE_BURN" } }}
-            });
-            l.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { {"MID", "2"}, { "RO", "1.00e-03" }, { "G", "0.0" }, { "E", "0.0" }, { "PR", "0.0" }, { "DTF", "0.0" }, { "VP", "0.0" }, { "RATEOP", "0.0" },{ "A", "0.0" }, { "B", "0.0" }, { "N", "0.0" }, { "C", "0.0" } ,{ "M", "0.0" }, { "TM", "0.0" }, { "TR", "0.0" }, { "EPSO", "0.0" } ,{ "CP", "0.0" }, { "PC", "0.0" }, { "SPALL", "0.0" }, { "IT", "0.0" }} },
-                { "materialName",new Dictionary<string, string>() { {"content", "钢" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "eos",new Dictionary<string, string>() { {"EOSID", "1"},{ "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "eosName",new Dictionary<string, string>() { {"content", "GRUNEISEN" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "JOHNSON_COOK" } }}
-            });
-
-            saveDataToFile(l);
         }
 
         private void NewProgramButton_Click(object sender, RoutedEventArgs e)
@@ -1258,6 +1224,7 @@ namespace GraphicalStructure
             autoResize();
 
             allWidth = 0;
+ 
         }
 
         private void editLayerMenu_Click(object sender, RoutedEventArgs e)
@@ -2702,6 +2669,7 @@ namespace GraphicalStructure
         private void btEdit_Click(object sender, RoutedEventArgs e)
         {
             editWindow ew = new editWindow();
+            ew.list = DataBaseMaterials;
 
             double leftWidth = 0;
             for (int i = 0; i < stackpanel.Children.IndexOf(insertShape); i++)
@@ -4919,107 +4887,14 @@ namespace GraphicalStructure
             //DataBaseWindow dbw = new DataBaseWindow();
             //dbw.Show();
             MaterialDefinitionWindow mdw = new MaterialDefinitionWindow();
+            mdw.PassValuesEvent += new MaterialDefinitionWindow.PassValuesHandler(ReceiveValues);
             mdw.Show();
         }
 
-        //保存数据库数据到文件中
-        private void saveDataToFile(List<Dictionary<string,Dictionary<string,string>>> data)
+        private void ReceiveValues(List<Dictionary<string, Dictionary<string, string>>> list)
         {
-            //新建文件
-            string filePath = System.Environment.CurrentDirectory + "\\data.txt";
-            FileStream myFs = new FileStream(filePath, FileMode.Create);
-            myFs.Close();
-
-            StreamWriter writer = new StreamWriter(filePath);
-            writer.Write(string.Concat("*KEYWORD", Environment.NewLine));
-
-            //解析list数据
-            for (int i = 0; i < data.Count; i++)
-            {
-                Dictionary<string, Dictionary<string, string>> dic = data[i];
-                string materialName = dic["materialName"]["content"];
-                writer.Write(string.Concat("$" + materialName, Environment.NewLine));
-                string materialMatName = dic["matName"]["content"];
-                writer.Write(string.Concat("*MAT_" + materialMatName, Environment.NewLine));
-
-                string parameterNameCat = "$";
-                string parameterValueCat = "";
-                Dictionary<string, string> matData = dic["mat"];
-                for (int j = 0; j < matData.Keys.Count; j++)
-                {
-                    string key = matData.Keys.ElementAt(j);
-                    string value = matData[key];
-                    if (j % 8 == 0)
-                    {
-                        key = key.PadLeft(9, ' ');
-                    }
-                    else
-                    {
-                        key = key.PadLeft(10, ' ');
-                    }
-                    value = value.PadLeft(10, ' ');
-                    parameterNameCat += key;
-                    parameterValueCat += value;
-
-                    if (j % 8 == 7)
-                    {
-                        writer.Write(string.Concat(parameterNameCat, Environment.NewLine));
-                        writer.Write(string.Concat(parameterValueCat, Environment.NewLine));
-                        parameterNameCat = "$";
-                        parameterValueCat = "";
-                    }
-                    if (j == matData.Keys.Count - 1 && j % 8 != 7)
-                    {
-                        writer.Write(string.Concat(parameterNameCat, Environment.NewLine));
-                        writer.Write(string.Concat(parameterValueCat, Environment.NewLine));
-                    }
-                }
-
-                string materialEOSName = dic["eosName"]["content"];
-                writer.Write(string.Concat("*EOS_" + materialEOSName, Environment.NewLine));
-
-                string parameterNameCat2 = "$";
-                string parameterValueCat2 = "";
-                Dictionary<string, string> eosData = dic["eos"];
-                for (int j = 0; j < eosData.Keys.Count; j++)
-                {
-                    string key = eosData.Keys.ElementAt(j);
-                    string value = eosData[key];
-                    if (j % 8 == 0)
-                    {
-                        key = key.PadLeft(9, ' ');
-                    }
-                    else
-                    {
-                        key = key.PadLeft(10, ' ');
-                    }
-                    value = value.PadLeft(10, ' ');
-                    parameterNameCat2 += key;
-                    parameterValueCat2 += value;
-
-                    if (j % 8 == 7)
-                    {
-                        writer.Write(string.Concat(parameterNameCat2, Environment.NewLine));
-                        writer.Write(string.Concat(parameterValueCat2, Environment.NewLine));
-                        parameterNameCat2 = "$";
-                        parameterValueCat2 = "";
-                    }
-                    if (j == eosData.Keys.Count - 1 && j % 8 != 7)
-                    {
-                        writer.Write(string.Concat(parameterNameCat2, Environment.NewLine));
-                        writer.Write(string.Concat(parameterValueCat2, Environment.NewLine));
-                    }
-                }
-                if (i != data.Count - 1)
-                {
-                    writer.Write(string.Concat("$", Environment.NewLine));
-                    writer.Write(string.Concat("$", Environment.NewLine));
-                }
-            }
-            writer.Write(string.Concat("*END", Environment.NewLine));
-            writer.Close();
+            DataBaseMaterials = list;
         }
-
     }
 }
 
