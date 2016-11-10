@@ -14,6 +14,12 @@ namespace GraphicalStructure
 {
     class ColorProc
     {
+        private static IMainWindow mainWindow;
+
+        public ColorProc(IMainWindow imw) {
+            mainWindow = imw;
+        }
+
         // 保存 层与cover的映射关系
         public static Dictionary<PathFigure, Path> PfToCoverMap = new Dictionary<PathFigure, Path>();
         public static Dictionary<Shape, PathFigure> CoverToPfMap = new Dictionary<Shape, PathFigure>();
@@ -1419,12 +1425,40 @@ namespace GraphicalStructure
         }
 
         // cover 的双击事件回调,传递到真正的层上，手动触发真正的层的双击事件
-        public static void doubleClickOnCover(object sender, RoutedEventArgs e)
+        private static void doubleClickOnCover(object sender, MouseButtonEventArgs e)
         {
-            if (sender is System.Windows.Shapes.Path) {
+            if (sender is Path) {
+
                 Path curPath = CoverToPathMap[sender as Path];
+                PathFigure pf = CoverToPfMap[sender as Path];
                 // 触发事件 Img1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-                curPath.RaiseEvent(e);
+                if (e.ClickCount > 1 && e.LeftButton == MouseButtonState.Pressed)
+                {
+                    layerEdit le = new layerEdit();
+                    GeometryGroup gg = (GeometryGroup)((Path)curPath).Data;
+                    int layerIndex = 0;
+                    foreach (PathGeometry pg in gg.Children)
+                    {
+                        if (layerIndex == 0)
+                        {
+                            layerIndex++;
+                            continue;
+                        }
+                        PathFigure _pf = pg.Figures[0];
+                        if (_pf != pf) {
+                            layerIndex++;
+                        }
+                        else break;
+                    }
+                    le.currentLayerNum = layerIndex;
+                    ColorProc colorProc = new ColorProc((MainWindow)Application.Current.MainWindow);
+                    mainWindow.showEditLayer(layerIndex, pf, curPath);
+                }
+                else if(e.RightButton == MouseButtonState.Pressed)
+                {
+                    e.Handled = true;
+                    curPath.RaiseEvent(e);
+                }
             }
         }
 

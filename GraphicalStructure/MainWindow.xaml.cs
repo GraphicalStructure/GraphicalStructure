@@ -30,7 +30,7 @@ namespace GraphicalStructure
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IMainWindow
     {
         private Canvas canvas;
         private Line centerLine;
@@ -67,7 +67,6 @@ namespace GraphicalStructure
         {
             InitializeComponent();
             initWindow();
-
             List<Dictionary<string, Dictionary<string, string>>> l = new List<Dictionary<string, Dictionary<string, string>>>();
             l.Add(new Dictionary<string, Dictionary<string, string>>() {
                 { "mat", new Dictionary<string, string>() { {"MID", "1"}, { "RO", "0" }, { "PC", "0" }, { "MU", "0" }, { "TEROD", "0" }, { "CEROD", "0" }, { "YM", "0" }, { "PR", "0" } } },
@@ -986,7 +985,6 @@ namespace GraphicalStructure
                 currentShape = sender as Shape;
                 currentShape.ContextMenu = aMenu;
             }
-
         }
 
         void copyCompMenu_Click(object sender, RoutedEventArgs e)
@@ -2866,6 +2864,9 @@ namespace GraphicalStructure
 
             mouseDown = true;
             mouseXY = e.GetPosition(canvas);               //得到当前鼠标在窗口的位置
+            if (e.RightButton == MouseButtonState.Pressed) {
+                return;
+            }
 
             if (e.ClickCount == 2)
             {
@@ -2876,7 +2877,15 @@ namespace GraphicalStructure
                 //是否存在层  调用层的编辑界面
                 GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
                 int index = stackpanel.Children.IndexOf(insertShape);
-                try
+                if (sender is System.Windows.Shapes.Path)
+                {
+                    currentComp = (Components)components[index];
+                    btEdit_Click(sender, e);
+                }
+                else {
+                    
+                }
+                /*try
                 {
                     if (geometryGroup.Children.Count > 1)
                     {
@@ -2896,7 +2905,7 @@ namespace GraphicalStructure
 
                             Point curP = e.GetPosition(insertShape);
                             double pwidth = p0.X - startP.X;
-                            //
+                            // 直线、平衡层
                             if (startP.Y == p0.Y && p1.Y == p2.Y)
                             {
                                 if (curP.Y < startP.Y && curP.Y > p2.Y)
@@ -2905,7 +2914,7 @@ namespace GraphicalStructure
                                     flag = true;
                                 }
                             }
-                            //
+                            // 直线
                             if (startP.Y == p0.Y && p1.Y != p2.Y)
                             {
                                 if (p2.Y < p1.Y)
@@ -3111,7 +3120,7 @@ namespace GraphicalStructure
                 catch
                 {
                     //MessageBox.Show("范围有误！", "警告");
-                }
+                }*/
             }
         }
 
@@ -4964,6 +4973,16 @@ namespace GraphicalStructure
             writer.Close();
         }
 
+        public void showEditLayer(int indexOfLayer, PathFigure pg, System.Windows.Shapes.Path path)
+        {
+            layerEdit le = new layerEdit();
+            le.currentLayerNum = indexOfLayer;
+            int index = stackpanel.Children.IndexOf(path);
+            currentComp = (Components)components[index];
+            le.setComponent(currentComp);
+            le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
+            le.Show();
+        }
     }
 }
 
