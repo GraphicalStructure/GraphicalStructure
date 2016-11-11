@@ -137,7 +137,7 @@ namespace GraphicalStructure
             ////改变形状
 
             double radius = 0;
-            if (radiusText.Text != null)
+            if (radiusText.Text != null && radiusText.Text != "")
             {
                 radius = Double.Parse(radiusText.Text);
             }

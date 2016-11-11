@@ -4,34 +4,32 @@
         Title="结构件图形化设计软件" Height="650" Width="925"
         SizeChanged="Window_SizeChanged">
     <Grid Name="mygrid" Margin="0,10,0,0">
+        <TextBox x:Name="TotalSizeTextBox" TextWrapping="Wrap" Width="274.692" BorderThickness="0" IsEnabled="False" HorizontalAlignment="Left" Margin="25,0,0,10" Panel.ZIndex="99" IsReadOnlyCaretVisible="True" Height="85.988" VerticalAlignment="Bottom"/>
+
         <Menu Margin="0,-9,0,0">
             <MenuItem Header="文件(_F)">
                 <MenuItem Header="新建(_N)">
-                    <MenuItem Header="项目" Click="NewProgramButton_Click"></MenuItem>
+                    <MenuItem Header="项目" Click="NewProgramButton_Click"/>
                 </MenuItem>
-                <MenuItem Header="打开(_O)" Click="Open_Click"></MenuItem>
-                
-                <Separator></Separator>
-                <MenuItem Header="保存(_S)" Click="Store_Click">
-                </MenuItem>
-                <MenuItem Header="另存为(_P)" Click="Store_OtherPlace_Click">
-                </MenuItem>
-                <Separator></Separator>
-                <MenuItem Header="截图(_T)" Click="addCopy_Click">
-                </MenuItem>
-                <Separator></Separator>
-                <MenuItem Header="关闭(_C)">
-                </MenuItem>
+                <MenuItem Header="打开(_O)" Click="Open_Click"/>
+
+                <Separator/>
+                <MenuItem Header="保存(_S)" Click="Store_Click"/>
+                <MenuItem Header="另存为(_P)" Click="Store_OtherPlace_Click"/>
+                <Separator/>
+                <MenuItem Header="截图(_T)" Click="addCopy_Click"/>
+                <Separator/>
+                <MenuItem Header="关闭(_C)"/>
             </MenuItem>
             <MenuItem Header="材料库(_E)">
-                <MenuItem Header="打开数据库" Click="userDataBase"></MenuItem>
-            </MenuItem> 
-            <MenuItem Header="质量(_V)"></MenuItem>
-            <MenuItem Header="网格(_H)">
-                <MenuItem Header="查看帮助"></MenuItem>
+                <MenuItem Header="打开数据库" Click="userDataBase"/>
             </MenuItem>
-            <MenuItem Header="求解(_Q)"></MenuItem>
-            <MenuItem Header="后处理(_L)"></MenuItem>
+            <MenuItem Header="质量(_V)"/>
+            <MenuItem Header="网格(_H)">
+                <MenuItem Header="查看帮助"/>
+            </MenuItem>
+            <MenuItem Header="求解(_Q)"/>
+            <MenuItem Header="后处理(_L)"/>
         </Menu>
         <!--<ToolBarTray Margin="8,322,799,239" IsLocked="True">
             <ToolBar Width="120" Height="60">
@@ -73,7 +71,7 @@
             </ToolBar>
         </ToolBarTray>-->
 
-        <Canvas Name="front_canvas" Margin="10,14,10,14" Background="White" MouseRightButtonDown="canvas_MouseRightButtonDown" RenderTransformOrigin="0.5,0.5" MouseWheel="UIElement_OnMouseWheel">
+        <Canvas x:Name="front_canvas" Margin="10,14,10,14" Background="White" MouseRightButtonDown="canvas_MouseRightButtonDown" RenderTransformOrigin="0.5,0.5" MouseWheel="UIElement_OnMouseWheel">
             <Canvas.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -82,7 +80,7 @@
                     <TranslateTransform/>
                 </TransformGroup>
             </Canvas.RenderTransform>
-            
+
         </Canvas>
 
 
@@ -103,7 +101,7 @@
         </ScrollViewer>-->
 
         <!--<sharpGL:OpenGLControl OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized" MouseRightButtonDown="OpenGLControl_MouseRightButtonDown" MouseDoubleClick="OnMouseClick" Margin="532,25,21,396"></sharpGL:OpenGLControl>-->
-        
+
     </Grid>
-    
+
 </Window>

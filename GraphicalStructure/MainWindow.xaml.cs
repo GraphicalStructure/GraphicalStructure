@@ -107,10 +107,8 @@ namespace GraphicalStructure
         private void NewProgramButton_Click(object sender, RoutedEventArgs e)
         {
             initWindow();
-
             //初始化默认添加一个段
             addCylindrical_Click(null, null);
-
             ColorProc.clearMap();
         }
 
@@ -987,8 +985,10 @@ namespace GraphicalStructure
             }
         }
 
+        // 复制该层处理函数
         void copyCompMenu_Click(object sender, RoutedEventArgs e)
         {
+            
             int index = stackpanel.Children.IndexOf(insertShape);
             Components curComp = (Components)components[index];
           
@@ -1007,7 +1007,9 @@ namespace GraphicalStructure
             {
                 for (int i = 1; i < geometryGroup.Children.Count; i++)
                 {
+                    // layerNum 总层数
                     ((Components)components[index + 1]).layerNum += 1;
+                    // layerNums 
                     ((Components)components[index + 1]).layerNums.Add(curComp.layerNums[i - 1]);
                     ((Components)components[index + 1]).layerType.Add(curComp.layerType[i - 1]);
                     ((Components)components[index + 1]).layerMaterial.Add(curComp.layerMaterial[i - 1]);
@@ -1254,7 +1256,6 @@ namespace GraphicalStructure
 
             //自动调整图形位置
             autoResize();
-
             allWidth = 0;
         }
 
@@ -1968,7 +1969,7 @@ namespace GraphicalStructure
                         }
                     }
                 }
-                ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
+            ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
         private void changeArcSegmentToLineSegment(double a, int b)
@@ -3254,6 +3255,7 @@ namespace GraphicalStructure
 
             //移动浮层
             ColorProc.processWhenMoveLayer(canvas, stackpanel);
+            showTotalSizeOnCanvas();
         }
 
         private void Store_Click(object sender, RoutedEventArgs e)
@@ -5027,6 +5029,28 @@ namespace GraphicalStructure
             }
             writer.Write(string.Concat("*END", Environment.NewLine));
             writer.Close();
+        }
+
+        private double[] calcTotalSize() {
+            double[] size = new double[2] { 0, 0};
+            double height = 0;
+            double width = 0;
+            foreach (Components component in components) {
+                GeometryGroup gg =  component.geometryGroup;
+                if (height < gg.Bounds.Height) {
+                    height = gg.Bounds.Height;
+                }
+                width += gg.Bounds.Width;
+            }
+            size[0] = width;
+            size[1] = height;
+            return size;
+        }
+
+        private void showTotalSizeOnCanvas() {
+            double[] size = calcTotalSize();
+            string text = "当前总宽度: " + size[0].ToString("f2") + "\n当前总高度: " + size[1].ToString("f2");
+            TotalSizeTextBox.Text = text;
         }
 
         public void showEditLayer(int indexOfLayer, PathFigure pg, System.Windows.Shapes.Path path)
