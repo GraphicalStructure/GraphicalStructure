@@ -94,6 +94,7 @@ namespace GraphicalStructure
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
+            
             leftD_Changed();
             rightD_Changed();
             //if (rightLength.ToString() != rightD.Text)
@@ -142,9 +143,7 @@ namespace GraphicalStructure
                 radius = Double.Parse(radiusText.Text);
             }
             changeShape(radius);
-            
             currentCom.radius = radius;
-            
             Close();
         }
 
@@ -612,7 +611,10 @@ namespace GraphicalStructure
 
         public void rightD_Changed()
         {
-           
+            if (currentCom.pg.Figures[0].Segments[1] is ArcSegment || currentCom.pg.Figures[0].Segments[1] is PolyLineSegment)
+            {
+                ChangeShapeEvent3(120, 0);
+            }
             if (currentCom.geometryGroup.Children.Count <= 1)
             {
                 if (Double.Parse(rightD.Text) != rightLength)
