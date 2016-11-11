@@ -252,6 +252,8 @@ namespace GraphicalStructure
         private void saveMaterial(object sender, RoutedEventArgs e)
         {
             saveDataToFile(totalMaterials);
+
+            addMaterialToDataBase(totalMaterials);
         }
 
         // 复制一条
@@ -389,6 +391,125 @@ namespace GraphicalStructure
             PassValuesEvent(this.totalMaterials);
 
             this.Close();
+        }
+
+        private void addMaterialToDataBase(List<Dictionary<string, Dictionary<string, string>>> data)
+        {
+            //只添加新创建的材料，已有的材料就不添加了
+            ArrayList result = adb.queryALLMaterialFromTable("select * from Material");
+            
+            for (int i = 0; i < data.Count; i++)
+            {
+                bool isHaveMaterial = false;
+                string materialName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["materialName"])["content"];
+                
+                for (int j = 0; j < result.Count; j++)
+                {
+                    if (materialName == ((ArrayList)result[i])[1].ToString())
+                    {
+                        isHaveMaterial = true;
+                        break;
+                    }
+                }
+
+                if (isHaveMaterial == false)
+                {
+                    string matName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["matName"])["content"];
+                    string eosName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["soeName"])["content"];
+                    Dictionary<string, string> matData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["mat"];
+                    Dictionary<string, string> eosData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["soe"];
+                    string refer = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["refer"])["content"];
+                    //string density = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["density"])["content"];
+                    //string color = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["color"])["content"];
+
+                    //新增一条材料   需要更新三个表
+                    bool success;
+                    string matTableName = "Mat_" + matName;
+                    string eosTableName = "Eos_" + eosName;
+
+                    //先获取mat表中最后一条数据的id
+                    ArrayList mat_ = adb.queryALLMaterialFromTable("select * from " + matTableName);
+                    int mid = 0;
+                    if(mat_.Count != 0)
+                       mid = Int32.Parse(((ArrayList)mat_[mat_.Count - 1])[1].ToString());
+                    //先获取eos表中最后一条数据的id
+                    ArrayList eos_ = adb.queryALLMaterialFromTable("select * from " + eosTableName);
+                    int eosid = 0;
+                    if(eos_.Count != 0)
+                       eosid = Int32.Parse(((ArrayList)eos_[eos_.Count - 1])[1].ToString());
+                    //组装sql语句
+                    //插入mat表
+                    string matSql1 = "insert into " + matTableName + "(" + "MID,";
+                    string matSql2 = " values(" + (mid+1).ToString() + ",";
+                    for (int k = 0; k < matData.Count; k++)
+                    {
+                        matSql1 += matData.Keys.ElementAt(k);
+                        if (k != matData.Count - 1)
+                            matSql1 += ",";
+                        else
+                            matSql1 += ")";
+
+                        matSql2 += matData[matData.Keys.ElementAt(k)];
+                        if (k != matData.Count - 1)
+                            matSql2 += ",";
+                        else
+                            matSql2 += ")";
+                    }
+                    string matsql = matSql1 + matSql2;
+                    success = adb.insertTableData(matsql);
+                    if (success)
+                        Console.WriteLine("插入mat表成功");
+                    else
+                        Console.WriteLine("插入mat表失败");
+
+                    //插入eos表
+                    string eosSql1 = "insert into " + eosTableName + "(" + "EOSID,";
+                    string eosSql2 = " values(" + (eosid + 1).ToString() + ",";
+                    for (int l = 0; l < eosData.Count; l++)
+                    {
+                        eosSql1 += eosData.Keys.ElementAt(l);
+                        if (l != eosData.Count - 1)
+                            eosSql1 += ",";
+                        else
+                            eosSql1 += ")";
+
+                        eosSql2 += eosData[eosData.Keys.ElementAt(l)];
+                        if (l != eosData.Count - 1)
+                            eosSql2 += ",";
+                        else
+                            eosSql2 += ")";
+                    }
+                    string eosSql = eosSql1 + eosSql2;
+                    success = adb.insertTableData(eosSql);
+                    if (success)
+                        Console.WriteLine("插入eos表成功");
+                    else
+                        Console.WriteLine("插入eos表失败");
+
+                    //插入material表
+                    //得到material表字段名
+                    List<string> matFieldName = adb.GetTableFieldNameList("Material");
+                    string materialSql1 = "insert into Material(";
+                    string materialSql2 = " values(";
+                    for (int m = 1; m < matFieldName.Count; m++)
+                    {
+                        materialSql1 += matFieldName[m];
+                        if (m != matFieldName.Count - 1)
+                            materialSql1 += ",";
+                        else
+                            materialSql1 += ")";
+                    }
+                    ArrayList materialType = adb.queryALLMaterialFromTable("select * from Material_Type where mat_name ='" + matName + "'");
+                    string material_type_name = ((ArrayList)materialType[0])[1].ToString();
+                    materialSql2 += "'"+ materialName + "','" + material_type_name + "','" + (mid + 1).ToString() + "','" + (eosid + 1).ToString() + "','" + refer + "','1','1')";
+                    string materialSql = materialSql1 + materialSql2;
+                    success = adb.insertTableData(materialSql);
+                    if (success)
+                        Console.WriteLine("插入materila表成功");
+                    else
+                        Console.WriteLine("插入materila表失败");
+                }
+            }
         }
     }
 }

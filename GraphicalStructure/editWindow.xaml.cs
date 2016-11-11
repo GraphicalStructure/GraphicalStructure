@@ -53,7 +53,7 @@ namespace GraphicalStructure
 
         public bool isComboxChanged = false;
 
-        public List<Dictionary<string, Dictionary<string, string>>> list = new List<Dictionary<string, Dictionary<string, string>>>();
+        public List<Dictionary<string, Dictionary<string, string>>> list;
 
         /*
         private static UseAccessDB accessDb;
@@ -67,6 +67,8 @@ namespace GraphicalStructure
         public editWindow()
         {
             InitializeComponent();
+
+            list = new List<Dictionary<string, Dictionary<string, string>>>();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -168,13 +170,17 @@ namespace GraphicalStructure
         public void showComponentInfo()
         {
             ArrayList material = new ArrayList();
-            for (int i = 0; i < list.Count; i++)
+            if (list != null)
             {
-                Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
-                string materialName = dic["content"];
-                material.Add(materialName);
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
+                    string materialName = dic["content"];
+                    material.Add(materialName);
+                }
+                materialBox.ItemsSource = material;
             }
-            materialBox.ItemsSource = material;
+           
 
             leftX.Text = left_X.ToString();
 
@@ -191,16 +197,18 @@ namespace GraphicalStructure
 
             Console.WriteLine(currentCom.newPath.Fill);
 
-
-            for (int j = 0; j < list.Count; j++)
+            if (list != null)
             {
-                Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["color"];
-                Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["materialName"];
-                string mColor = cdic["content"];
-                string materialName = mdic["content"];
-                if (mColor == currentCom.newPath.Fill.ToString())
+                for (int j = 0; j < list.Count; j++)
                 {
-                    materialBox.SelectedItem = materialName;
+                    Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["color"];
+                    Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["materialName"];
+                    string mColor = cdic["content"];
+                    string materialName = mdic["content"];
+                    if (mColor == currentCom.newPath.Fill.ToString())
+                    {
+                        materialBox.SelectedItem = materialName;
+                    }
                 }
             }
                 /*
