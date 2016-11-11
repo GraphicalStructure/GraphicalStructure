@@ -1921,13 +1921,16 @@ namespace GraphicalStructure
                             {
                                 p2 = ((ArcSegment)_curPf.Segments[0]).Point;
                             }
-                            if (_curPf.Segments[1] is LineSegment)
+                        if (_curPf.Segments[1] is LineSegment)
+                        {
+                            p3 = ((LineSegment)_curPf.Segments[1]).Point;
+                        }
+                        else if (_curPf.Segments[1] is ArcSegment) {
+                            p3 = ((ArcSegment)_curPf.Segments[1]).Point;
+                        }
+                        else
                             {
-                                p3 = ((LineSegment)_curPf.Segments[1]).Point;
-                            }
-                            else
-                            {
-                                p3 = ((ArcSegment)_curPf.Segments[1]).Point;
+                                p3 = ((PolyLineSegment)_curPf.Segments[1]).Points[((PolyLineSegment)_curPf.Segments[1]).Points.Count - 1];
                             }
                             if (_curPf.Segments[2] is LineSegment)
                             {

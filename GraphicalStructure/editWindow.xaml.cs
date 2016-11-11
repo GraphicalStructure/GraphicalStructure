@@ -230,6 +230,11 @@ namespace GraphicalStructure
 
         public void leftD_Changed()
         {
+            if (currentCom.pg.Figures[0].Segments[1] is ArcSegment || currentCom.pg.Figures[0].Segments[1] is PolyLineSegment) {
+                ChangeShapeEvent3(120, 0);
+            }
+           
+            // 无层时
             if (currentCom.geometryGroup.Children.Count <= 1)
             {
                 if (Double.Parse(leftD.Text) != leftLength)
@@ -298,6 +303,7 @@ namespace GraphicalStructure
             }
             else
             {
+                // 有层时改变左段高
                 int geometryGroupCount = currentCom.geometryGroup.Children.Count;
                 double layerHeight = 0;
 
@@ -606,6 +612,7 @@ namespace GraphicalStructure
 
         public void rightD_Changed()
         {
+           
             if (currentCom.geometryGroup.Children.Count <= 1)
             {
                 if (Double.Parse(rightD.Text) != rightLength)
@@ -834,6 +841,10 @@ namespace GraphicalStructure
 
         public void ChangePathWidth()
         {
+            if (currentCom.pg.Figures[0].Segments[1] is ArcSegment || currentCom.pg.Figures[0].Segments[1] is PolyLineSegment)
+            {
+                ChangeShapeEvent3(120, 0);
+            }
             double tempNum = Double.Parse(segmentWidth.Text) - pathWidth;
 
             GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
