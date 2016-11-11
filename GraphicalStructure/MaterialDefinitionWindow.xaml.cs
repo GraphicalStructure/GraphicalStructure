@@ -42,7 +42,6 @@ namespace GraphicalStructure
 
             adb = new UseAccessDB();
             adb.OpenDb();
-
         }
 
         private void receivedNewMaterialWindowData(object sender, Validity val) {
@@ -405,7 +404,7 @@ namespace GraphicalStructure
                 
                 for (int j = 0; j < result.Count; j++)
                 {
-                    if (materialName == ((ArrayList)result[i])[1].ToString())
+                    if (materialName == ((ArrayList)result[j])[1].ToString())
                     {
                         isHaveMaterial = true;
                         break;

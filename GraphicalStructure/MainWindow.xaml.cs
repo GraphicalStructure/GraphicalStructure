@@ -77,10 +77,8 @@ namespace GraphicalStructure
         private void NewProgramButton_Click(object sender, RoutedEventArgs e)
         {
             initWindow();
-
             //初始化默认添加一个段
             addCylindrical_Click(null, null);
-
             ColorProc.clearMap();
         }
 
@@ -959,8 +957,10 @@ namespace GraphicalStructure
             e.Handled = true;
         }
 
+        // 复制该层处理函数
         void copyCompMenu_Click(object sender, RoutedEventArgs e)
         {
+            
             int index = stackpanel.Children.IndexOf(insertShape);
             Components curComp = (Components)components[index];
 
@@ -999,15 +999,17 @@ namespace GraphicalStructure
             }
             
             comp.radius = curComp.radius;
-
             insertShape = curComp.newPath;
+
             //判断是否存在层
             GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
             if (geometryGroup.Children.Count != 1)
             {
                 for (int i = 1; i < geometryGroup.Children.Count; i++)
                 {
+                    // layerNum 总层数
                     ((Components)components[index + 1]).layerNum += 1;
+                    // layerNums 
                     ((Components)components[index + 1]).layerNums.Add(curComp.layerNums[i - 1]);
                     ((Components)components[index + 1]).layerType.Add(curComp.layerType[i - 1]);
                     ((Components)components[index + 1]).layerMaterial.Add(curComp.layerMaterial[i - 1]);
@@ -1468,9 +1470,9 @@ namespace GraphicalStructure
                                 topPf.Segments.Add(ls2_top);
 
                                 PolyLineSegment ls3_top = new PolyLineSegment();
-                                for (int j = 0; i < ((PolyLineSegment)curPf_.Segments[3]).Points.Count; i++)
+                                for (int m = 0; m < ((PolyLineSegment)curPf_.Segments[3]).Points.Count; m++)
                                 {
-                                    ls3_top.Points.Add(new Point(((PolyLineSegment)curPf_.Segments[3]).Points[i].X, ((PolyLineSegment)curPf_.Segments[3]).Points[i].Y - leftWidth));
+                                    ls3_top.Points.Add(new Point(((PolyLineSegment)curPf_.Segments[3]).Points[m].X, ((PolyLineSegment)curPf_.Segments[3]).Points[m].Y - leftWidth));
                                 }
                                 topPf.Segments.Add(ls3_top);
                             }                  
@@ -1844,7 +1846,6 @@ namespace GraphicalStructure
 
             //自动调整图形位置
             autoResize();
-
             allWidth = 0;
 
         }
@@ -3354,40 +3355,39 @@ namespace GraphicalStructure
                 PathFigure curPf = curPg.Figures.ElementAt(0);
 
 
-
-
-
-                ///////TODO:
+                double topR;
+                double bottomR;
+                double height;
                 if (curPf.Segments[1] is LineSegment)
                 {
                     //获取left的右侧高度
-                    double topR = ((LineSegment)curPf.Segments[1]).Point.Y;
-                    double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                    topR = ((LineSegment)curPf.Segments[1]).Point.Y;
+                    bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
 
-                    double height = Math.Abs(topR - bottomR);
-
-                    editWindow ew = new editWindow();
-                    ew.setComponent((Components)components[index + 1]);
-                    ew.Owner = this;
-                    ew.leftD.Text = height.ToString();
-                    ew.leftD_Changed();
+                    height = Math.Abs(topR - bottomR);
+                    
+                    
                     //if(isha)
                 }
-                else
+                else if (curPf.Segments[1] is ArcSegment)
                 {
                     //获取left的右侧高度
-                    double topR = ((ArcSegment)curPf.Segments[1]).Point.Y;
-                    double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
-
-                    double height = Math.Abs(topR - bottomR);
-
-                    editWindow ew = new editWindow();
-                    ew.setComponent((Components)components[index + 1]);
-                    ew.Owner = this;
-                    ew.leftD.Text = height.ToString();
-                    ew.leftD_Changed();
+                    topR = ((ArcSegment)curPf.Segments[1]).Point.Y;
+                    bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                    height = Math.Abs(topR - bottomR); 
+                }else
+                {
+                    //获取left的右侧高度
+                    topR = ((PolyLineSegment)curPf.Segments[1]).Points[((PolyLineSegment)curPf.Segments[1]).Points.Count - 1].Y;
+                    bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                    height = Math.Abs(topR - bottomR);
                 }
 
+                editWindow ew = new editWindow();
+                ew.setComponent((Components)components[index + 1]);
+                ew.Owner = this;
+                ew.leftD.Text = height.ToString();
+                ew.leftD_Changed();
             }
             if (index == 0 && isHaveLeftEndCap)
             {
@@ -3849,6 +3849,7 @@ namespace GraphicalStructure
 
             //移动浮层
             ColorProc.processWhenMoveLayer(canvas, stackpanel);
+            showTotalSizeOnCanvas();
         }
 
         private void Store_Click(object sender, RoutedEventArgs e)
@@ -5563,14 +5564,38 @@ namespace GraphicalStructure
         {
             //DataBaseWindow dbw = new DataBaseWindow();
             //dbw.Show();
+           
             MaterialDefinitionWindow mdw = new MaterialDefinitionWindow();
             mdw.PassValuesEvent += new MaterialDefinitionWindow.PassValuesHandler(ReceiveValues);
             mdw.Show();
+            
         }
 
         private void ReceiveValues(List<Dictionary<string, Dictionary<string, string>>> list)
         {
             DataBaseMaterials = list;
+        }
+
+        private double[] calcTotalSize() {
+            double[] size = new double[2] { 0, 0};
+            double height = 0;
+            double width = 0;
+            foreach (Components component in components) {
+                GeometryGroup gg =  component.geometryGroup;
+                if (height < gg.Bounds.Height) {
+                    height = gg.Bounds.Height;
+                }
+                width += gg.Bounds.Width;
+            }
+            size[0] = width;
+            size[1] = height;
+            return size;
+        }
+
+        private void showTotalSizeOnCanvas() {
+            double[] size = calcTotalSize();
+            string text = "当前总宽度: " + size[0].ToString("f2") + "\n当前总高度: " + size[1].ToString("f2");
+            TotalSizeTextBox.Text = text;
         }
 
         public void showEditLayer(int indexOfLayer, PathFigure pg, System.Windows.Shapes.Path path)

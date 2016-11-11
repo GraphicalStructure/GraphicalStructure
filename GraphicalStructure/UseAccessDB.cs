@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
 using System.Collections;
+using System.Windows;
+
 
 namespace GraphicalStructure
 {
@@ -32,14 +34,23 @@ namespace GraphicalStructure
         public UseAccessDB()
         {
             strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=material.accdb";
-            if (oleDbConn == null)
+            try
             {
-                OpenDb();
+                if (oleDbConn == null)
+                {
+                    OpenDb();
+                }
+                if (oleDbConn.State != ConnectionState.Open)
+                {
+                    oleDbConn.Open();
+                }
             }
-            if (oleDbConn.State != ConnectionState.Open)
+            catch
             {
-                oleDbConn.Open();
+                MessageBox.Show("打开数据库出现错误。","警告");
+                return;
             }
+            
         }
 
         public OleDbConnection getConnection()
