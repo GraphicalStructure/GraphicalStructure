@@ -1462,7 +1462,7 @@ namespace GraphicalStructure
                 }
                 else if(e.RightButton == MouseButtonState.Pressed)
                 {
-                    e.Handled = true;
+                    //e.Handled = true;
                     curPath.RaiseEvent(e);
                 }
             }

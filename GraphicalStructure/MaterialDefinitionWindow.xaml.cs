@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
+using System.Collections;
 
 namespace GraphicalStructure
 {
@@ -28,6 +29,10 @@ namespace GraphicalStructure
 
         // 从库中查得的数据，未经修改，修改之后放入updatedMaterials， ListBoxItem指某行listBox
         private List<Dictionary<string, Dictionary<string, string>>> DataBaseMaterials;
+
+        public delegate void PassValuesHandler(List<Dictionary<string, Dictionary<string, string>>> DataBaseMaterials);
+
+        public event PassValuesHandler PassValuesEvent;
 
         public MaterialDefinitionWindow()
         {
@@ -94,40 +99,83 @@ namespace GraphicalStructure
 
         private void findAllMaterialFromDb() {
             DataBaseMaterials = new List<Dictionary<string, Dictionary<string, string>>>();
-            // 下边要被实际的库查询结果替代
-            DataBaseMaterials.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { { "RO", "0" }, { "PC", "0" }, { "MU", "0" }, { "TEROD", "0" }, { "CEROD", "0" }, { "YM", "0" }, { "PR", "0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "xy" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "soe",new Dictionary<string, string>() { { "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "soeName",new Dictionary<string, string>() { {"content", "LINEAR_POLYNOMIAL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "NULL" } }}
-            });
-            DataBaseMaterials.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { { "RO", "0" }, { "PC", "0" }, { "MU", "0" }, { "TEROD", "0" }, { "CEROD", "0" }, { "YM", "0" }, { "PR", "0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "bingbingbing" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "soe",new Dictionary<string, string>() { { "C0", "0" }, { "C1", "0" }, { "C2", "0" }, { "C3", "0" }, { "C4", "0" }, { "C5", "0" }, { "C6", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "soeName",new Dictionary<string, string>() { {"content", "LINEAR_POLYNOMIAL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "NULL" } }}
-            });
-            DataBaseMaterials.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { { "RO", "0" }, { "G", "0" }, { "E", "0" }, { "PR", "0" }, { "DTF", "0" }, { "VP", "0" }, { "RATEOP", "0" }, { "A", "0" } , { "B", "0" } , { "N", "0" },
-            {"C", "0"},{"M", "0"},{"TM", "0"},{"TR", ""},{"EPSO", ""},{"CP", ""},{"PC", ""},{"SPALL", ""},{"IT", ""},{"D1", ""},{"D2", ""},{"D3", ""},{"D4", ""},{"D5", ""},{"EROD", ""},{"EFMIN", ""},{"NUMINT", ""},{"C2/P", ""} } },
-                { "materialName",new Dictionary<string, string>() { {"content", "feifeifei" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "soe",new Dictionary<string, string>() { { "C", "0" }, { "S1", "0" }, { "S2", "0" }, { "S3", "0" }, { "GAMAO", "0" }, { "A", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "soeName",new Dictionary<string, string>() { {"content", "GRUNEISEN" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "JOHNSON_ COOK" } }}
-            });
-            DataBaseMaterials.Add(new Dictionary<string, Dictionary<string, string>>() {
-                { "mat", new Dictionary<string, string>() { { "RO", "0" }, { "D", "0" }, { "PCJ", "0" }, { "BETA", "0" }, { "K", "0" }, { "G", "0" }, { "SIGY", "0" } } },
-                { "materialName",new Dictionary<string, string>() { {"content", "jesolem" } } },
-                { "refer",new Dictionary<string, string>() { {"content", "我是引用" } } },
-                { "soe",new Dictionary<string, string>() { { "A", "0" }, { "B", "0" }, { "R1", "0" }, { "R2", "0" }, { "OMEG", "0" }, { "E0", "0" }, { "V0", "0" } } },
-                { "soeName",new Dictionary<string, string>() { {"content", "JWL" } } }
-                , { "matName",new Dictionary<string, string>() { { "content", "HIGH_EXPLOSIVE_BURN" } }}
-            });
+
+            ArrayList result = adb.queryALLMaterialFromTable("select * from Material");
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                Dictionary<string, Dictionary<string, string>> record = new Dictionary<string, Dictionary<string, string>>();
+
+                ArrayList materialType = adb.queryALLMaterialFromTable("select * from Material_Type where material_type_name ='" + ((ArrayList)result[i])[2].ToString() + "'");
+                string matName = ((ArrayList)materialType[0])[2].ToString();
+                string eosName = ((ArrayList)materialType[0])[3].ToString();
+                ArrayList matDataResult = adb.queryALLMaterialFromTable("select * from Mat_" + matName + " where MID ='" + ((ArrayList)result[i])[3] + "'");
+                ArrayList eosDataResult = adb.queryALLMaterialFromTable("select * from Eos_" + eosName + " where EOSID ='" + ((ArrayList)result[i])[4] + "'");
+                
+                //组装数据
+                //mat
+                Dictionary<string, Dictionary<string, string>> mat = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> matData = new Dictionary<string,string>();
+                record.Add("mat", matData);
+                int count = ((ArrayList)matDataResult[0]).Count;
+                int num = 1;
+                //得到字段名
+                List<string> matFieldName = adb.GetTableFieldNameList("Mat_" + matName);
+                while (num < count)
+                {
+                    matData.Add(matFieldName[num], ((ArrayList)matDataResult[0])[num].ToString());
+                    num++;
+                }
+                //eos
+                Dictionary<string, Dictionary<string, string>> eos = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> eosData = new Dictionary<string, string>();
+                record.Add("soe", eosData);
+                count = ((ArrayList)eosDataResult[0]).Count;
+                List<string> eosFieldName = adb.GetTableFieldNameList("Eos_" + eosName);
+                while (num < count)
+                {
+                    eosData.Add(eosFieldName[num], ((ArrayList)eosDataResult[0])[num].ToString());
+                    num++;
+                }
+
+                //materialName
+                Dictionary<string, Dictionary<string, string>> materialName = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> mnData = new Dictionary<string, string>();
+                mnData.Add("content", ((ArrayList)result[i])[1].ToString());
+                record.Add("materialName", mnData);
+
+                //refer
+                Dictionary<string, Dictionary<string, string>> refer = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> referData = new Dictionary<string, string>();
+                referData.Add("content", ((ArrayList)result[i])[5].ToString());
+                record.Add("refer", referData);
+
+                //matName
+                Dictionary<string, Dictionary<string, string>> mat_name = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> m_nData = new Dictionary<string, string>();
+                m_nData.Add("content", matName.ToString());
+                record.Add("matName", m_nData);
+
+                //eosName
+                Dictionary<string, Dictionary<string, string>> eos_name = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> e_nData = new Dictionary<string, string>();
+                e_nData.Add("content", eosName.ToString());
+                record.Add("soeName", e_nData);
+
+                //density
+                Dictionary<string, Dictionary<string, string>> density = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> denData = new Dictionary<string, string>();
+                denData.Add("content", ((ArrayList)result[i])[6].ToString());
+                record.Add("density", denData);
+
+                //color
+                Dictionary<string, Dictionary<string, string>> color = new Dictionary<string, Dictionary<string, string>>();
+                Dictionary<string, string> colorData = new Dictionary<string, string>();
+                colorData.Add("content", ((ArrayList)result[i])[7].ToString());
+                record.Add("color", colorData);
+
+                DataBaseMaterials.Add(record);
+            }
         }
 
         private void newMaterial(object sender, RoutedEventArgs e) {
@@ -203,6 +251,8 @@ namespace GraphicalStructure
         private void saveMaterial(object sender, RoutedEventArgs e)
         {
             saveDataToFile(totalMaterials);
+
+            addMaterialToDataBase(totalMaterials);
         }
 
         // 复制一条
@@ -336,6 +386,129 @@ namespace GraphicalStructure
             }
             writer.Write(string.Concat("*END", Environment.NewLine));
             writer.Close();
+
+            PassValuesEvent(this.totalMaterials);
+
+            this.Close();
+        }
+
+        private void addMaterialToDataBase(List<Dictionary<string, Dictionary<string, string>>> data)
+        {
+            //只添加新创建的材料，已有的材料就不添加了
+            ArrayList result = adb.queryALLMaterialFromTable("select * from Material");
+            
+            for (int i = 0; i < data.Count; i++)
+            {
+                bool isHaveMaterial = false;
+                string materialName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["materialName"])["content"];
+                
+                for (int j = 0; j < result.Count; j++)
+                {
+                    if (materialName == ((ArrayList)result[j])[1].ToString())
+                    {
+                        isHaveMaterial = true;
+                        break;
+                    }
+                }
+
+                if (isHaveMaterial == false)
+                {
+                    string matName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["matName"])["content"];
+                    string eosName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["soeName"])["content"];
+                    Dictionary<string, string> matData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["mat"];
+                    Dictionary<string, string> eosData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["soe"];
+                    string refer = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["refer"])["content"];
+                    //string density = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["density"])["content"];
+                    //string color = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["color"])["content"];
+
+                    //新增一条材料   需要更新三个表
+                    bool success;
+                    string matTableName = "Mat_" + matName;
+                    string eosTableName = "Eos_" + eosName;
+
+                    //先获取mat表中最后一条数据的id
+                    ArrayList mat_ = adb.queryALLMaterialFromTable("select * from " + matTableName);
+                    int mid = 0;
+                    if(mat_.Count != 0)
+                       mid = Int32.Parse(((ArrayList)mat_[mat_.Count - 1])[1].ToString());
+                    //先获取eos表中最后一条数据的id
+                    ArrayList eos_ = adb.queryALLMaterialFromTable("select * from " + eosTableName);
+                    int eosid = 0;
+                    if(eos_.Count != 0)
+                       eosid = Int32.Parse(((ArrayList)eos_[eos_.Count - 1])[1].ToString());
+                    //组装sql语句
+                    //插入mat表
+                    string matSql1 = "insert into " + matTableName + "(" + "MID,";
+                    string matSql2 = " values(" + (mid+1).ToString() + ",";
+                    for (int k = 0; k < matData.Count; k++)
+                    {
+                        matSql1 += matData.Keys.ElementAt(k);
+                        if (k != matData.Count - 1)
+                            matSql1 += ",";
+                        else
+                            matSql1 += ")";
+
+                        matSql2 += matData[matData.Keys.ElementAt(k)];
+                        if (k != matData.Count - 1)
+                            matSql2 += ",";
+                        else
+                            matSql2 += ")";
+                    }
+                    string matsql = matSql1 + matSql2;
+                    success = adb.insertTableData(matsql);
+                    if (success)
+                        Console.WriteLine("插入mat表成功");
+                    else
+                        Console.WriteLine("插入mat表失败");
+
+                    //插入eos表
+                    string eosSql1 = "insert into " + eosTableName + "(" + "EOSID,";
+                    string eosSql2 = " values(" + (eosid + 1).ToString() + ",";
+                    for (int l = 0; l < eosData.Count; l++)
+                    {
+                        eosSql1 += eosData.Keys.ElementAt(l);
+                        if (l != eosData.Count - 1)
+                            eosSql1 += ",";
+                        else
+                            eosSql1 += ")";
+
+                        eosSql2 += eosData[eosData.Keys.ElementAt(l)];
+                        if (l != eosData.Count - 1)
+                            eosSql2 += ",";
+                        else
+                            eosSql2 += ")";
+                    }
+                    string eosSql = eosSql1 + eosSql2;
+                    success = adb.insertTableData(eosSql);
+                    if (success)
+                        Console.WriteLine("插入eos表成功");
+                    else
+                        Console.WriteLine("插入eos表失败");
+
+                    //插入material表
+                    //得到material表字段名
+                    List<string> matFieldName = adb.GetTableFieldNameList("Material");
+                    string materialSql1 = "insert into Material(";
+                    string materialSql2 = " values(";
+                    for (int m = 1; m < matFieldName.Count; m++)
+                    {
+                        materialSql1 += matFieldName[m];
+                        if (m != matFieldName.Count - 1)
+                            materialSql1 += ",";
+                        else
+                            materialSql1 += ")";
+                    }
+                    ArrayList materialType = adb.queryALLMaterialFromTable("select * from Material_Type where mat_name ='" + matName + "'");
+                    string material_type_name = ((ArrayList)materialType[0])[1].ToString();
+                    materialSql2 += "'"+ materialName + "','" + material_type_name + "','" + (mid + 1).ToString() + "','" + (eosid + 1).ToString() + "','" + refer + "','1','1')";
+                    string materialSql = materialSql1 + materialSql2;
+                    success = adb.insertTableData(materialSql);
+                    if (success)
+                        Console.WriteLine("插入materila表成功");
+                    else
+                        Console.WriteLine("插入materila表失败");
+                }
+            }
         }
     }
 }

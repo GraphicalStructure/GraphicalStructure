@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
 using System.Collections;
+using System.Windows;
+
 
 namespace GraphicalStructure
 {
@@ -31,15 +33,24 @@ namespace GraphicalStructure
 
         public UseAccessDB()
         {
-            strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=GraphicalStructure.accdb";
-            if (oleDbConn == null)
+            strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=material.accdb";
+            try
             {
-                OpenDb();
+                if (oleDbConn == null)
+                {
+                    OpenDb();
+                }
+                if (oleDbConn.State != ConnectionState.Open)
+                {
+                    oleDbConn.Open();
+                }
             }
-            if (oleDbConn.State != ConnectionState.Open)
+            catch
             {
-                oleDbConn.Open();
+                MessageBox.Show("打开数据库出现错误。","警告");
+                return;
             }
+            
         }
 
         public OleDbConnection getConnection()
@@ -79,7 +90,8 @@ namespace GraphicalStructure
             return al;
         }
 
-        public ArrayList query(string sql)
+
+        public ArrayList queryALLMaterialFromTable(string sql)
         {
             ArrayList result = new ArrayList();
             OleDbCommand cmd = new OleDbCommand(sql,oleDbConn);
@@ -87,9 +99,37 @@ namespace GraphicalStructure
             OleDbDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                result.Add(dr.GetValue(1));
+                ArrayList data = new ArrayList();
+                for (int i = 0; i < dr.FieldCount; i++)
+                {
+                    data.Add(dr.GetValue(i));
+                }
+                result.Add(data);
             }
             return result;
+        }
+
+        public List<string> GetTableFieldNameList(string TableName)
+        {
+            List<string> list = new List<string>();
+            try
+            {
+                if (oleDbConn.State == ConnectionState.Closed)
+                    oleDbConn.Open();
+                using (OleDbCommand cmd = new OleDbCommand())
+                {
+                    cmd.CommandText = "SELECT TOP 1 * FROM [" + TableName + "]";
+                    cmd.Connection = oleDbConn;
+                    OleDbDataReader dr = cmd.ExecuteReader();
+                    for (int i = 0; i < dr.FieldCount; i++)
+                    {
+                        list.Add(dr.GetName(i));
+                    }
+                }
+                return list;
+            }
+            catch (Exception e)
+            { throw e; }
         }
 
         public DataSet SelectToDataSet(string SQL, string subtableName)

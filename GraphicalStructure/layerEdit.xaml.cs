@@ -51,11 +51,15 @@ namespace GraphicalStructure
         public string lastHeight;
         public string lastObliqueAngle;
 
+        public List<Dictionary<string, Dictionary<string, string>>> list;
+
         public layerEdit()
         {
             InitializeComponent();
 
             flag = false;
+
+            list = new List<Dictionary<string, Dictionary<string, string>>>();
         }
 
         public void setComponent(Components c)
@@ -67,6 +71,18 @@ namespace GraphicalStructure
 
         public void showComponentInfo()
         {
+            ArrayList material = new ArrayList();
+            if (list != null)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
+                    string materialName = dic["content"];
+                    material.Add(materialName);
+                }
+                materialBox.ItemsSource = material;
+            }
+
             //显示当前尺寸大小
             if (this.currentCom.layerNum != 0)
             {
@@ -76,6 +92,7 @@ namespace GraphicalStructure
 
                 int layerN = Int32.Parse(layerNums.SelectedItem.ToString());
 
+                /*
                 //显示当前材料
                 accessDb = new UseAccessDB();
                 accessDb.getConnection();
@@ -93,6 +110,22 @@ namespace GraphicalStructure
                     }
                 }
                 materialBox.ItemsSource = col;
+                */
+
+                if (list != null)
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["color"];
+                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["materialName"];
+                        string mColor = cdic["content"];
+                        string materialName = mdic["content"];
+                        if (materialName == currentCom.layerMaterial[layerN - 1].ToString())
+                        {
+                            materialBox.SelectedItem = materialName;
+                        }
+                    }
+                }
 
                 if (currentCom.layerType[layerN - 1].ToString() == "球")
                 {
@@ -106,7 +139,7 @@ namespace GraphicalStructure
                 {
                     pole.IsChecked = true;
                 }
-                else if (currentCom.layerType[layerN - 1].ToString() == "立方体")
+                else if (currentCom.layerType[layerN - 1].ToString() == "长方体")
                 {
                     cube.IsChecked = true;
                 }
@@ -646,6 +679,7 @@ namespace GraphicalStructure
                 //获取当前选择的层号
                 int layerNumber = Int32.Parse(layerNums.SelectedItem.ToString());
 
+                /*
                 //显示当前材料
                 accessDb = new UseAccessDB();
                 accessDb.getConnection();
@@ -658,6 +692,21 @@ namespace GraphicalStructure
                     {
                         Console.WriteLine((row[dt.Columns[1]]));
                         materialBox.SelectedItem = row[dt.Columns[1]];
+                    }
+                }*/
+
+                if (list != null)
+                {
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["color"];
+                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[j])["materialName"];
+                        string mColor = cdic["content"];
+                        string materialName = mdic["content"];
+                        if (materialName == currentCom.layerMaterial[layerNumber - 1].ToString())
+                        {
+                            materialBox.SelectedItem = materialName;
+                        }
                     }
                 }
 
@@ -673,7 +722,7 @@ namespace GraphicalStructure
                 {
                     pole.IsChecked = true;
                 }
-                else if (currentCom.layerType[layerNumber - 1].ToString() == "立方体")
+                else if (currentCom.layerType[layerNumber - 1].ToString() == "长方体")
                 {
                     cube.IsChecked = true;
                 }
@@ -988,7 +1037,7 @@ namespace GraphicalStructure
         {
             int layerNumber = Int32.Parse(layerNums.SelectedItem.ToString());
 
-            if (currentCom.layerMaterial[layerNumber - 1].ToString() != content)
+            if (content != null && currentCom.layerMaterial[layerNumber - 1].ToString() != content)
             {
                 currentCom.layerMaterial[layerNumber - 1] = content;
 
@@ -1000,9 +1049,28 @@ namespace GraphicalStructure
                 {
                     currentCom.layerMaterial[layerNumber - 1 - 1] = content;
                 }
+                if (materialBox.SelectedItem != null)
+                {
+                    string comValue = materialBox.SelectedItem.ToString();
 
-                string comValue = materialBox.SelectedItem.ToString();
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)list[i])["color"];
+                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
+                        string mColor = cdic["content"];
+                        string materialName = mdic["content"];
+                        if (materialName == comValue)
+                        {
+                            Color color = (Color)ColorConverter.ConvertFromString(mColor);
 
+                            if (layerNumber % 2 == 0)
+                                ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber - 1, color);
+                            else
+                                ColorProc.processWhenChangeLayerColor(currentCom.newPath, layerNumber, color);
+                        }
+                    }
+                }
+                /*
                 //遍历数据表，得到对应的颜色值
                 foreach (DataRow row in dt.Rows)
                 {
@@ -1018,6 +1086,7 @@ namespace GraphicalStructure
 
                     }
                 }
+                 * */
             }
         }
 
