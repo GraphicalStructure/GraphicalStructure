@@ -19,7 +19,7 @@
                 <Separator/>
                 <MenuItem Header="截图(_T)" Click="addCopy_Click"/>
                 <Separator/>
-                <MenuItem Header="关闭(_C)"/>
+                <MenuItem Header="关闭(_C)" Click="ColseProgramButton_Click"/>
             </MenuItem>
             <MenuItem Header="材料库(_E)">
                 <MenuItem Header="打开数据库" Click="userDataBase"/>

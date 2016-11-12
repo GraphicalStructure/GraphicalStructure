@@ -68,6 +68,9 @@ namespace GraphicalStructure
 
         private List<Dictionary<string, Dictionary<string, string>>> DataBaseMaterials = new List<Dictionary<string, Dictionary<string, string>>>();
 
+        //双击进入编辑界面是段还是中心管
+        private int changeTitle = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -79,7 +82,37 @@ namespace GraphicalStructure
             initWindow();
             //初始化默认添加一个段
             addCylindrical_Click(null, null);
-            ColorProc.clearMap();
+            
+        }
+
+        private void ColseProgramButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (components != null && components.Count != 0)
+            {
+                if (saveFileName == null)
+                {
+                    MessageBoxResult result = MessageBox.Show("文件还未保存，是否保存?",
+                    "警告", MessageBoxButton.OKCancel);
+
+                    if (result == MessageBoxResult.OK)
+                    {
+                        //保存文件
+                        Store_Click(sender, e);
+                    }
+                    else
+                    {
+                        initWindow();
+                    }
+                }
+                else
+                {
+                    initWindow();
+                }
+            }
+            else
+            {
+                initWindow();
+            }
         }
 
         private void initWindow()
@@ -133,6 +166,8 @@ namespace GraphicalStructure
 
             insertShape = null;
             curLayerNum = 0;
+
+            ColorProc.clearMap();
 
             //
             aMenu = new ContextMenu();
@@ -191,10 +226,10 @@ namespace GraphicalStructure
             addExplosionMenu.Header = "添加起爆点";
             addExplosionMenu.Click += addExplosionMenu_Click;
             explosionMenu.Items.Add(addExplosionMenu);
-            MenuItem deleteExplosionMenu = new MenuItem();
-            deleteExplosionMenu.Header = "删除起爆点";
-            deleteExplosionMenu.Click += deleteExplosionMenu_Click;
-            explosionMenu.Items.Add(deleteExplosionMenu);
+            //MenuItem deleteExplosionMenu = new MenuItem();
+            //deleteExplosionMenu.Header = "删除起爆点";
+            //deleteExplosionMenu.Click += deleteExplosionMenu_Click;
+            //explosionMenu.Items.Add(deleteExplosionMenu);
             MenuItem editExplosionMenu = new MenuItem();
             editExplosionMenu.Header = "编辑起爆点";
             editExplosionMenu.Click += editExplosionMenu_Click;
@@ -2590,24 +2625,10 @@ namespace GraphicalStructure
                         {
                             p2 = ((ArcSegment)_curPf.Segments[0]).Point;
                         }
-                        arcSegment1 = new ArcSegment();
-                        arcSegment2 = new ArcSegment();
-                        _curPg = (PathGeometry)geometryGroup.Children[i + 1];
-                        _curPf = _curPg.Figures.ElementAt(0);
-                        p1 = _curPf.StartPoint;
-                        if (_curPf.Segments[0] is LineSegment)
-                        {
-                            p2 = ((LineSegment)_curPf.Segments[0]).Point;
-                        }
-                        else
-                        {
-                            p2 = ((ArcSegment)_curPf.Segments[0]).Point;
-                        }
                         if (_curPf.Segments[1] is LineSegment)
                         {
                             p3 = ((LineSegment)_curPf.Segments[1]).Point;
                         }
-
                         else
                         {
                             p3 = ((ArcSegment)_curPf.Segments[1]).Point;
@@ -2620,6 +2641,7 @@ namespace GraphicalStructure
                         {
                             p4 = ((ArcSegment)_curPf.Segments[2]).Point;
                         }
+                        
                         if (isConvex == 0)
                         {   //凸
                             arcSegment1.Size = new Size(radius1, radius2);
@@ -2628,30 +2650,6 @@ namespace GraphicalStructure
                             arcSegment2.Size = new Size(radius1, radius2);
                             arcSegment2.Point = p1;
                             arcSegment2.SweepDirection = SweepDirection.Clockwise;
-                         }
-                        else if (_curPf.Segments[1] is ArcSegment) {
-                            p3 = ((ArcSegment)_curPf.Segments[1]).Point;
-                        }
-                        else
-                            {
-                                p3 = ((PolyLineSegment)_curPf.Segments[1]).Points[((PolyLineSegment)_curPf.Segments[1]).Points.Count - 1];
-                            }
-                            if (_curPf.Segments[2] is LineSegment)
-                            {
-                                p4 = ((LineSegment)_curPf.Segments[2]).Point;
-                            }
-                            else
-                            {
-                                p4 = ((ArcSegment)_curPf.Segments[2]).Point;
-                            }
-                            if (isConvex == 0)
-                            {   //凸
-                                arcSegment1.Size = new Size(radius1, radius2);
-                                arcSegment1.Point = p3;
-                                arcSegment1.SweepDirection = SweepDirection.Counterclockwise;
-                                arcSegment2.Size = new Size(radius1, radius2);
-                                arcSegment2.Point = p1;
-                                arcSegment2.SweepDirection = SweepDirection.Clockwise;
 
 
                         }
@@ -2938,7 +2936,7 @@ namespace GraphicalStructure
                 topPg.Figures.Add(topPf);
                 topPf.IsClosed = true;
 
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, new Color());
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, (Color)ColorConverter.ConvertFromString("#FFFFA500"));
 
 
                 //绘制下层路径
@@ -3039,7 +3037,7 @@ namespace GraphicalStructure
                 //将上下层路径添加到组中
                 geometryGroup.Children.Add(topPg);
                 geometryGroup.Children.Add(bottomPg);
-                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, new Color());
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, (Color)ColorConverter.ConvertFromString("#FFFFA500"));
 
                 insertShape.Height += 40;
                 ((Components)components[index]).height = insertShape.Height;
@@ -3260,7 +3258,7 @@ namespace GraphicalStructure
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(topPg);
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, new Color());
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, topPf, 0, (Color)ColorConverter.ConvertFromString("#FFFFA500"));
                 }
                 if (i == ((Components)components[index]).layerNum)
                 {
@@ -3306,21 +3304,21 @@ namespace GraphicalStructure
                     }
 
                     LineSegment ls3_bottom = new LineSegment();
-                    //if (curPf2.Segments[1] is LineSegment)
-                    //{
-                    Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[2]).Point.X, ((LineSegment)curPf2.Segments[2]).Point.Y + 20);
-                    ls3_bottom.Point = forthPoint_bottom;
-                    //}
-                    //else if (curPf2.Segments[1] is ArcSegment)
-                    //{
-                    //    Point forthPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
-                    //    ls3_bottom.Point = forthPoint_bottom; 
-                    //}
-                    //else
-                    //{
-                    //    Point forthPoint_bottom = new Point(((PolyLineSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
-                    //    ls3_bottom.Point = forthPoint_bottom; 
-                    //}
+                    if (curPf2.Segments[1] is LineSegment)
+                    {
+                        Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y);
+                        ls3_bottom.Point = forthPoint_bottom;
+                    }
+                    else if (curPf2.Segments[1] is ArcSegment)
+                    {
+                        Point forthPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
+                        ls3_bottom.Point = forthPoint_bottom;
+                    }
+                    else
+                    {
+                        Point forthPoint_bottom = new Point(((PolyLineSegment)curPf2.Segments[1]).Points[((PolyLineSegment)curPf2.Segments[1]).Points.Count - 1].X, ((PolyLineSegment)curPf2.Segments[1]).Points[((PolyLineSegment)curPf2.Segments[1]).Points.Count - 1].Y);
+                        ls3_bottom.Point = forthPoint_bottom;
+                    }
                     bottomPf.Segments.Add(ls3_bottom);
 
                     if (curPf2.Segments.Count > 3)
@@ -3366,7 +3364,7 @@ namespace GraphicalStructure
 
                     bottomPg.Figures.Add(bottomPf);
 
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, new Color());
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, (Color)ColorConverter.ConvertFromString("#FFFFA500"));
 
                     //将上下层路径添加到组中
                     geometryGroup.Children.Add(bottomPg);
@@ -3410,6 +3408,7 @@ namespace GraphicalStructure
         {
             editWindow ew = new editWindow();
             ew.list = DataBaseMaterials;
+            //ew.isCylinder = changeTitle;
 
             double leftWidth = 0;
             for (int i = 0; i < stackpanel.Children.IndexOf(insertShape); i++)
@@ -3455,22 +3454,32 @@ namespace GraphicalStructure
             int index = stackpanel.Children.IndexOf(insertShape);
 
             //判断左右两边是否连接
-            if (index == 0 || index == stackpanel.Children.Count - 1)
+            if (index == 1 && index == stackpanel.Children.Count - 1)
             {
                 //删除最左边或最右边的那个，不需要判断
-
+                MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
+                e.Handled = true;
+                return;
             }
-            else if (index != 0 && index != stackpanel.Children.Count - 1)
+            if (index == 0 && stackpanel.Children.Count - 1 == 1 && isHaveRightEndCap) {
+                MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
+                e.Handled = true;
+                return;
+            }
+
+            if(index != 0)
             {
                 //删除中间的，需要判断左右是否连续
                 System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[index - 1];
                 System.Windows.Shapes.Path rightPath = (System.Windows.Shapes.Path)stackpanel.Children[index + 1];
 
-                if (index + 1 == stackpanel.Children.Count - 1 && isHaveRightEndCap && index == 1) {
-                    MessageBox.Show("只剩一个段，不允许删除此段！");
+                if (index == 1 && (isHaveRightEndCap|| isHaveLeftEndCap) && stackpanel.Children.Count <= 3)
+                {
+                    MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
                     e.Handled = true;
                     return;
                 }
+                
 
                 GeometryGroup geometryGroup = (GeometryGroup)leftPath.Data;
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
@@ -3615,6 +3624,12 @@ namespace GraphicalStructure
                 if (sender is System.Windows.Shapes.Path)
                 {
                     currentComp = (Components)components[index];
+                    changeTitle = 0;
+                    if ((isHaveLeftEndCap && index == 0) || (isHaveRightEndCap && index == components.Count - 1))
+                    {
+                        changeTitle = 1;
+                    }
+                    
                     btEdit_Click(sender, e);
                 }
                 else
@@ -3882,6 +3897,7 @@ namespace GraphicalStructure
             if (e.ClickCount == 2)
             {
                 Console.WriteLine("双击，调用编辑界面！");
+                changeTitle = 2;
                 btEdit_Click(sender, e);
             }
         }

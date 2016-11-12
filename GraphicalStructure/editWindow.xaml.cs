@@ -55,6 +55,7 @@ namespace GraphicalStructure
 
         public List<Dictionary<string, Dictionary<string, string>>> list;
 
+        public int changeTitle;
         /*
         private static UseAccessDB accessDb;
 
@@ -62,7 +63,7 @@ namespace GraphicalStructure
         public DataTable dt;
          * */
 
-        private Color color = new Color();
+        private Color color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
 
         private static IMainWindow mainWindow;
 
@@ -139,7 +140,7 @@ namespace GraphicalStructure
 
             //changeLineToCurve();
 
-            //SaveCubeXValue();
+            SaveCubeXValue();
 
             ////改变形状
 
@@ -178,14 +179,27 @@ namespace GraphicalStructure
         //显示当前信息
         public void showComponentInfo()
         {
+            //if (isCylinder)
+            //{
+            //    this.Title = "Define Explosive Section";
+            //}
+            //else
+            //{
+            //    this.Title = "Define CentralCube Section";
+            //}
+
             ArrayList material = new ArrayList();
             if (list != null)
             {
                 for (int i = 0; i < list.Count; i++)
                 {
+                    Dictionary<string, string> dict = ((Dictionary<string, Dictionary<string, string>>)list[i])["matName"];
                     Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
-                    string materialName = dic["content"];
-                    material.Add(materialName);
+                    if (dict["content"] == "HIGH_EXPLOSIVE_BURN")
+                    {
+                        string materialName = dic["content"];
+                        material.Add(materialName);
+                    }
                 }
                 materialBox.ItemsSource = material;
             }
@@ -257,9 +271,17 @@ namespace GraphicalStructure
                 Cylinder.IsChecked = true;
             }
 
-            if(currentCom.cubeOffset > 0)
+            //if ()
+            //{
+                RadioCube.Visibility = Visibility.Visible;
+                if (currentCom.cubeOffset > 0)
+                {
+                    RadioCube.IsChecked = true;
+                }
+            //}
+            else
             {
-                RadioCube.IsChecked = true;
+                RadioCube.Visibility = Visibility.Hidden;
             }
         }
 
@@ -476,7 +498,7 @@ namespace GraphicalStructure
                     ew.radiusText.Text = leftCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
                     ew.sp = sp;
-                    //ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
@@ -898,7 +920,7 @@ namespace GraphicalStructure
                     ew.leftD.Text = Math.Abs(currentCom.point3.Y - currentCom.point4.Y) + "";
                     ew.radiusText.Text = rightCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
-                    //ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);

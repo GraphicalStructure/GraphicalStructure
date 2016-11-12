@@ -76,9 +76,13 @@ namespace GraphicalStructure
             {
                 for (int i = 0; i < list.Count; i++)
                 {
+                    Dictionary<string, string> dict = ((Dictionary<string, Dictionary<string, string>>)list[i])["matName"];
                     Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
-                    string materialName = dic["content"];
-                    material.Add(materialName);
+                    if (dict["content"] == "JOHNSON_COOK" || dict["content"] == "PLASTIC_KINEMATIC")
+                    {
+                        string materialName = dic["content"];
+                        material.Add(materialName);
+                    }
                 }
                 materialBox.ItemsSource = material;
             }

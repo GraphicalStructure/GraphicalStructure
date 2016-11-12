@@ -21,6 +21,8 @@ namespace GraphicalStructure
         public delegate void PassValuesHandler(object sender, Validity data);
         public event PassValuesHandler PassValuesEvent;
 
+        private UseAccessDB adb;
+
         public MaterialLoadWindow()
         {
             // 添加逻辑：初始时查库，得到所有material，及其数据
@@ -31,6 +33,9 @@ namespace GraphicalStructure
             currentClickRowOfListBox = -1;
             isUpdate = false;
             InitializeComponent();
+
+            adb = new UseAccessDB();
+            adb.OpenDb();
         } 
         // curd类型
         private string curdType;
@@ -247,6 +252,43 @@ namespace GraphicalStructure
             }
             // 最终从数据库中删除哪些material从findFromDataBaseMaterials和deleteMaterialIndexInfindFromDataBaseMaterials得出
             // 在关闭本窗口前从数据库中删除！！！
+
+            //从数据库中删除数据
+            for (int i = 0; i < deleteMaterialIndexInfindFromDataBaseMaterials.Count; i++)
+            {
+                //要从三个表中删除相应数据
+                //根据material表获取另外两个表的id
+                int temp = deleteMaterialIndexInfindFromDataBaseMaterials.ElementAt(i);
+                Dictionary<string, string> mat = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)findFromDataBaseMaterials[temp])["mat"]);
+                string matId = mat["MID"];
+                Dictionary<string, string> eos = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)findFromDataBaseMaterials[temp])["soe"]);
+                string eosId = eos["EOSID"];
+                string materialName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)findFromDataBaseMaterials[temp])["materialName"])["content"];
+                string matName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)findFromDataBaseMaterials[temp])["matName"])["content"];
+                string eosName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)findFromDataBaseMaterials[temp])["soeName"])["content"];
+
+                string sql = "delete from Material where material_name = '" + materialName + "'";
+                bool success = adb.deleteFromTableData(sql, 0);
+                if (success)
+                    Console.WriteLine("从material表中删除成功");
+                else
+                    Console.WriteLine("从material表中删除失败");
+
+                string matTableName = "Mat_" + matName;
+                success = adb.deleteFromTableData("delete from "+matTableName+" where MID = '" + matId + "'", 0);
+                if (success)
+                    Console.WriteLine("从mat表中删除成功");
+                else
+                    Console.WriteLine("从mat表中删除失败");
+
+                string eosTableName = "Eos_" + eosName;
+                success = adb.deleteFromTableData("delete from " + eosTableName + " where EOSID = '" + eosId +"'", 0);
+                if (success)
+                    Console.WriteLine("从eos表中删除成功");
+                else
+                    Console.WriteLine("从eos表中删除失败");
+            }
+
             // end
             // 从ListBox中删除
             listBox_materialName.Items.Remove(currentClickMaterialNameItem);
