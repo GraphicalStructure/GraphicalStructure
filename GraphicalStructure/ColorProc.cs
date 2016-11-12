@@ -1344,7 +1344,7 @@ namespace GraphicalStructure
                         coverPf.Segments[1] = ls;
                     }
 
-                    if (pf.Segments[3] is LineSegment)
+                    if (pf.Segments.Count < 4 || pf.Segments[3] is LineSegment)
                     {
                         LineSegment ls = new LineSegment();
                         if (coverPf.Segments[3] is LineSegment)

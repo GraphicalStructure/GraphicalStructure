@@ -2513,10 +2513,24 @@ namespace GraphicalStructure
                         {
                             p2 = ((ArcSegment)_curPf.Segments[0]).Point;
                         }
+                        arcSegment1 = new ArcSegment();
+                        arcSegment2 = new ArcSegment();
+                        _curPg = (PathGeometry)geometryGroup.Children[i + 1];
+                        _curPf = _curPg.Figures.ElementAt(0);
+                        p1 = _curPf.StartPoint;
+                        if (_curPf.Segments[0] is LineSegment)
+                        {
+                            p2 = ((LineSegment)_curPf.Segments[0]).Point;
+                        }
+                        else
+                        {
+                            p2 = ((ArcSegment)_curPf.Segments[0]).Point;
+                        }
                         if (_curPf.Segments[1] is LineSegment)
                         {
                             p3 = ((LineSegment)_curPf.Segments[1]).Point;
                         }
+
                         else
                         {
                             p3 = ((ArcSegment)_curPf.Segments[1]).Point;
@@ -2537,6 +2551,31 @@ namespace GraphicalStructure
                             arcSegment2.Size = new Size(radius1, radius2);
                             arcSegment2.Point = p1;
                             arcSegment2.SweepDirection = SweepDirection.Clockwise;
+    }
+                        else if (_curPf.Segments[1] is ArcSegment) {
+                            p3 = ((ArcSegment)_curPf.Segments[1]).Point;
+                        }
+                        else
+                            {
+                                p3 = ((PolyLineSegment)_curPf.Segments[1]).Points[((PolyLineSegment)_curPf.Segments[1]).Points.Count - 1];
+                            }
+                            if (_curPf.Segments[2] is LineSegment)
+                            {
+                                p4 = ((LineSegment)_curPf.Segments[2]).Point;
+                            }
+                            else
+                            {
+                                p4 = ((ArcSegment)_curPf.Segments[2]).Point;
+                            }
+                            if (isConvex == 0)
+                            {   //凸
+                                arcSegment1.Size = new Size(radius1, radius2);
+                                arcSegment1.Point = p3;
+                                arcSegment1.SweepDirection = SweepDirection.Counterclockwise;
+                                arcSegment2.Size = new Size(radius1, radius2);
+                                arcSegment2.Point = p1;
+                                arcSegment2.SweepDirection = SweepDirection.Clockwise;
+
 
                         }
                         else
