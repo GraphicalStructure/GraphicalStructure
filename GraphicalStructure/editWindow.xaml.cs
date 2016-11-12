@@ -486,9 +486,6 @@ namespace GraphicalStructure
                     mainWindow.setCurLayerNum(leftCom.layerNum);
                     ew.currentCom = leftCom;
                     ew.OKButton_Click(null, null);
-                    //ew.rightD_Changed();
-                    //ew.changeShape(leftCom.radius);
-                    //ew.update_LayerCoordinate();
                     mainWindow.setInsertShape(originalInsertShape);
                     mainWindow.setCurLayerNum(originalCurLayerNum);
                 }

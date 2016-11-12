@@ -875,6 +875,7 @@ namespace GraphicalStructure
             if (sender is System.Windows.Shapes.Path)
             {
                 insertShape = sender as System.Windows.Shapes.Path;
+                
                 insertShape.Stroke = Brushes.Red;
                 insertShape.StrokeThickness = 2;
                 int index = stackpanel.Children.IndexOf(insertShape);
@@ -3449,7 +3450,13 @@ namespace GraphicalStructure
                 ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
                 ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
                 ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
+                System.Windows.Shapes.Path originalInsertShape = getInsertShape();
+                int originalCurLayerNum = getCurLayerNum();
+                setInsertShape(((Components)components[index + 1]).newPath);
+                setCurLayerNum(((Components)components[index + 1]).layerNum);
                 ew.OKButton_Click(null, null);
+                setInsertShape(originalInsertShape);
+                setCurLayerNum(originalCurLayerNum);
             }
             if (index == 0 && isHaveLeftEndCap)
             {
