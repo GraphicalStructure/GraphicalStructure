@@ -3454,22 +3454,32 @@ namespace GraphicalStructure
             int index = stackpanel.Children.IndexOf(insertShape);
 
             //判断左右两边是否连接
-            if (index == 0 || index == stackpanel.Children.Count - 1)
+            if (index == 1 && index == stackpanel.Children.Count - 1)
             {
                 //删除最左边或最右边的那个，不需要判断
-
+                MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
+                e.Handled = true;
+                return;
             }
-            else if (index != 0 && index != stackpanel.Children.Count - 1)
+            if (index == 0 && stackpanel.Children.Count - 1 == 1 && isHaveRightEndCap) {
+                MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
+                e.Handled = true;
+                return;
+            }
+
+            if(index != 0)
             {
                 //删除中间的，需要判断左右是否连续
                 System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[index - 1];
                 System.Windows.Shapes.Path rightPath = (System.Windows.Shapes.Path)stackpanel.Children[index + 1];
 
-                if (index == stackpanel.Children.Count - 1 && isHaveRightEndCap) {
-                    MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！","警告");
+                if (index == 1 && (isHaveRightEndCap|| isHaveLeftEndCap) && stackpanel.Children.Count <= 3)
+                {
+                    MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
                     e.Handled = true;
                     return;
                 }
+                
 
                 GeometryGroup geometryGroup = (GeometryGroup)leftPath.Data;
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
