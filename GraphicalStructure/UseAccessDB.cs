@@ -206,13 +206,13 @@ namespace GraphicalStructure
                 flag = false;
             }
 
-            if (resultNum == 1)
-            {
-                OleDbCommand cmd = new OleDbCommand();
-                cmd.Connection = oleDbConn;
-                cmd.CommandText = "update material set ID=ID-1 where ID>"+id;
-                cmd.ExecuteNonQuery();
-            }
+            //if (resultNum == 1)
+            //{
+            //    OleDbCommand cmd = new OleDbCommand();
+            //    cmd.Connection = oleDbConn;
+            //    cmd.CommandText = "update Material set ID=ID-1 where ID>"+id;
+            //    cmd.ExecuteNonQuery();
+            //}
 
             return flag;
         }
