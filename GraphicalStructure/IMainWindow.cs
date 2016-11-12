@@ -11,5 +11,11 @@ namespace GraphicalStructure
     interface IMainWindow
     {
         void showEditLayer(int indexOfLayer, PathFigure pg, Path path);
+
+        void autoResize();
+
+        void changeLineSegmentToArcSegment(double radius, int isConvex);
+
+        void changeArcSegmentToLineSegment(double a, int b);
     }
 }

@@ -18,6 +18,9 @@ namespace GraphicalStructure
         public double width;
         public double height;
 
+        public bool isLeftCover;
+        public bool isRightCover;
+
         // The first point of component   anti-clockwise 逆时针
         public Point startPoint;
         public Point point2;
