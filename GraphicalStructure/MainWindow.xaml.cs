@@ -3507,6 +3507,11 @@ namespace GraphicalStructure
                 editWindow ew = new editWindow();
                 ew.setComponent((Components)components[index + 1]);
                 ew.Owner = this;
+                if (isHaveRightEndCap && index == stackpanel.Children.Count - 2)
+                {
+                    ew.isLeftEndCap = "#FF0000FF";
+                    ew.isRightEndCap = "#FF008000";
+                }
                 ew.leftD.Text = height.ToString();
                 ew.rightD.Text = rightPath.Data.Bounds.Right.ToString();
                 if (index + 1 == stackpanel.Children.Count - 1 && isHaveRightEndCap) {
