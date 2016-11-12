@@ -55,6 +55,7 @@ namespace GraphicalStructure
 
         public List<Dictionary<string, Dictionary<string, string>>> list;
 
+        public int changeTitle;
         /*
         private static UseAccessDB accessDb;
 
@@ -129,7 +130,7 @@ namespace GraphicalStructure
 
             //changeLineToCurve();
 
-            //SaveCubeXValue();
+            SaveCubeXValue();
 
             ////改变形状
 
@@ -168,14 +169,27 @@ namespace GraphicalStructure
         //显示当前信息
         public void showComponentInfo()
         {
+            //if (isCylinder)
+            //{
+            //    this.Title = "Define Explosive Section";
+            //}
+            //else
+            //{
+            //    this.Title = "Define CentralCube Section";
+            //}
+
             ArrayList material = new ArrayList();
             if (list != null)
             {
                 for (int i = 0; i < list.Count; i++)
                 {
+                    Dictionary<string, string> dict = ((Dictionary<string, Dictionary<string, string>>)list[i])["matName"];
                     Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
-                    string materialName = dic["content"];
-                    material.Add(materialName);
+                    if (dict["content"] == "HIGH_EXPLOSIVE_BURN")
+                    {
+                        string materialName = dic["content"];
+                        material.Add(materialName);
+                    }
                 }
                 materialBox.ItemsSource = material;
             }
@@ -247,9 +261,17 @@ namespace GraphicalStructure
                 Cylinder.IsChecked = true;
             }
 
-            if(currentCom.cubeOffset > 0)
+            //if ()
+            //{
+                RadioCube.Visibility = Visibility.Visible;
+                if (currentCom.cubeOffset > 0)
+                {
+                    RadioCube.IsChecked = true;
+                }
+            //}
+            else
             {
-                RadioCube.IsChecked = true;
+                RadioCube.Visibility = Visibility.Hidden;
             }
         }
 
