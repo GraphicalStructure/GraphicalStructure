@@ -397,8 +397,8 @@ namespace GraphicalStructure
         {
             double getSpLeftDisToCan = Canvas.GetLeft(curSp);
             double getSpTopDisToCan = Canvas.GetTop(curSp);
-            double __p = curSp.ActualHeight;
-            double __q = curPath.ActualHeight;
+            double __p = curSp.Height;
+            double __q = curPath.Height;
             getSpTopDisToCan += (__p - __q) / 2;
             double y1, y2, y3, y4;
             if (isTop == 0)

@@ -308,9 +308,11 @@ namespace GraphicalStructure
                     currentCom.point4.Y += 100;
                     currentCom.pf.StartPoint = currentCom.startPoint;
                     currentCom.ls.Point = currentCom.point2;
-                    currentCom.ls2.Point = currentCom.point3;
+                    //currentCom.ls2.Point = currentCom.point3;
+                    ((LineSegment)currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
                     currentCom.ls3.Point = currentCom.point4;
-                    currentCom.ls4.Point = currentCom.startPoint;
+                    ((LineSegment)currentCom.pf.Segments[3]).Point = new Point(currentCom.startPoint.X, currentCom.startPoint.Y);
+                    //currentCom.ls4.Point = currentCom.startPoint;
 
                     double h1 = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y);
                     double h2 = Math.Abs(currentCom.point3.Y - currentCom.point4.Y);
@@ -403,9 +405,11 @@ namespace GraphicalStructure
                     currentCom.point4.Y += 100;
                     currentCom.pf.StartPoint = currentCom.startPoint;
                     currentCom.ls.Point = currentCom.point2;
-                    currentCom.ls2.Point = currentCom.point3;
+                    //currentCom.ls2.Point = currentCom.point3;
+                    ((LineSegment)currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
                     currentCom.ls3.Point = currentCom.point4;
-                    currentCom.ls4.Point = currentCom.startPoint;
+                    ((LineSegment)currentCom.pf.Segments[3]).Point = new Point(currentCom.startPoint.X, currentCom.startPoint.Y);
+                    //currentCom.ls4.Point = currentCom.startPoint;
 
                     double h1 = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y);
                     double h2 = Math.Abs(currentCom.point3.Y - currentCom.point4.Y);
@@ -654,7 +658,8 @@ namespace GraphicalStructure
                     ((LineSegment)currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
                     //currentCom.ls2.Point = new Point(currentCom.point3.X,currentCom.point3.Y);
                     currentCom.ls3.Point = currentCom.point4;
-                    currentCom.ls4.Point = currentCom.startPoint;
+                    ((LineSegment)currentCom.pf.Segments[3]).Point = new Point(currentCom.startPoint.X, currentCom.startPoint.Y);
+                    //currentCom.ls4.Point = currentCom.startPoint;
 
                     double h1 = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y);
                     double h2 = Math.Abs(currentCom.point3.Y - currentCom.point4.Y);
@@ -731,10 +736,15 @@ namespace GraphicalStructure
                         if (Double.Parse(rightD.Text) > leftLength)
                         {
                             double temp = rightLength - Double.Parse(rightD.Text);
-                            currentCom.point2.Y -= (temp / 2.0 - layerHeight);
-                            currentCom.point3.Y -= (temp -layerHeight);
-                            currentCom.startPoint.Y -= (temp / 2.0 - layerHeight);
-                            currentCom.point4.Y += layerHeight;
+                            currentCom.point2.Y -= (temp / 2.0 + currentCom.point4.Y - layerHeight);
+                            currentCom.point3.Y -= (temp + currentCom.point4.Y - layerHeight);
+                            currentCom.startPoint.Y -= (temp / 2.0 + currentCom.point4.Y - layerHeight);
+                            currentCom.point4.Y += (layerHeight - currentCom.point4.Y);
+
+                            currentCom.startPoint.Y += 100;
+                            currentCom.point2.Y += 100;
+                            currentCom.point3.Y += 100;
+                            currentCom.point4.Y += 100;
                         }
                         else
                         {
@@ -753,9 +763,10 @@ namespace GraphicalStructure
                     
                     currentCom.pf.StartPoint = currentCom.startPoint;
                     currentCom.ls.Point = currentCom.point2;
-                    currentCom.ls2.Point = currentCom.point3;
+                    //currentCom.ls2.Point = currentCom.point3;
+                    ((LineSegment)currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
                     currentCom.ls3.Point = currentCom.point4;
-                    currentCom.ls4.Point = currentCom.startPoint;
+                    ((LineSegment)currentCom.pf.Segments[3]).Point = new Point(currentCom.startPoint.X,currentCom.startPoint.Y);
 
                     double h1 = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y);
                     double h2 = Math.Abs(currentCom.point3.Y - currentCom.point4.Y);
