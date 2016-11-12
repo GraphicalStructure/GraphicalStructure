@@ -336,6 +336,8 @@ namespace GraphicalStructure
                 cps.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
                 cps.newPath.MouseDown += Img1_MouseLeftButtonDown;
                 cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
+                cps.isLeftCover = true;
+                cps.isRightCover = false;
                 stackpanel.Children.Insert(0, cps.newPath);
 
                 isHaveLeftEndCap = true;
@@ -407,6 +409,8 @@ namespace GraphicalStructure
                 cps.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
                 cps.newPath.MouseDown += Img1_MouseLeftButtonDown;
                 cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
+                cps.isLeftCover = false;
+                cps.isRightCover = true;
                 stackpanel.Children.Add(cps.newPath);
 
                 isHaveRightEndCap = true;
@@ -804,7 +808,15 @@ namespace GraphicalStructure
                         //获取left的右侧高度
                         double topR = ((LineSegment)curPf.Segments[1]).Point.Y;
                         double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
-
+                        height = Math.Abs(topR - bottomR);
+                    } else if (curPf.Segments[1] is ArcSegment) {
+                        double topR = ((ArcSegment)curPf.Segments[1]).Point.Y;
+                        double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                        height = Math.Abs(topR - bottomR);
+                    }
+                    else {
+                        double topR = ((PolyLineSegment)curPf.Segments[1]).Points[((PolyLineSegment)curPf.Segments[1]).Points.Count - 1].Y;
+                        double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
                         height = Math.Abs(topR - bottomR);
                     }
 
@@ -920,6 +932,10 @@ namespace GraphicalStructure
             {
                 currentShape = sender as Shape;
                 currentShape.CaptureMouse();
+            }
+            if (insertShape.ContextMenu != null && insertShape.ContextMenu.HasItems) {
+                e.Handled = true;
+                return;
             }
 
             ContextMenu aMenu = new ContextMenu();
@@ -2252,7 +2268,7 @@ namespace GraphicalStructure
          * 把直线的段变为弧形，radius为圆弧的半径，isConvex为凸与凹的标志
          * if isConvex = 0 凸 else 凹
          */
-        private void changeLineSegmentToArcSegment(double radius, int isConvex)
+        public void changeLineSegmentToArcSegment(double radius, int isConvex)
         {
             //绘制上段
             Point p1, p2;
@@ -2601,7 +2617,7 @@ namespace GraphicalStructure
             ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
-        private void changeArcSegmentToLineSegment(double a, int b)
+        public void changeArcSegmentToLineSegment(double a, int b)
         {
             int index = stackpanel.Children.IndexOf(insertShape);
             if (index >= 0)
@@ -3425,7 +3441,14 @@ namespace GraphicalStructure
                 ew.setComponent((Components)components[index + 1]);
                 ew.Owner = this;
                 ew.leftD.Text = height.ToString();
-                ew.leftD_Changed();
+                ew.rightD.Text = rightPath.Data.Bounds.Right.ToString();
+                ew.radiusText.Text = ((Components)components[index + 1]).radius.ToString();
+                ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
+                ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
+                ew.OKButton_Click(null, null);
             }
             if (index == 0 && isHaveLeftEndCap)
             {
@@ -3849,7 +3872,7 @@ namespace GraphicalStructure
             }
         }
 
-        private void autoResize()
+        public void autoResize()
         {
             //获取图形当前位置
             //stackpanel中有多少element
@@ -5653,6 +5676,23 @@ namespace GraphicalStructure
             le.setComponent(currentComp);
             le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
             le.Show();
+        }
+
+        public System.Windows.Shapes.Path getInsertShape() {
+            return insertShape;
+        }
+
+        public void setInsertShape(System.Windows.Shapes.Path p) {
+            insertShape = p;
+        }
+
+        public void setCurLayerNum(int i) {
+            curLayerNum = i;
+        }
+
+        public int getCurLayerNum()
+        {
+            return curLayerNum;
         }
     }
 }

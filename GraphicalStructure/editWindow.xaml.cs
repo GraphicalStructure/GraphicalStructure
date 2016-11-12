@@ -65,6 +65,16 @@ namespace GraphicalStructure
 
         private Color color = new Color();
 
+        private static IMainWindow mainWindow;
+
+        private editWindow(IMainWindow imw)
+        {
+            mainWindow = imw;
+            InitializeComponent();
+
+            list = new List<Dictionary<string, Dictionary<string, string>>>();
+        }
+
         public editWindow()
         {
             InitializeComponent();
@@ -87,7 +97,7 @@ namespace GraphicalStructure
             rightCom = null;
         }
 
-        private void OKButton_Click(object sender, RoutedEventArgs e)
+        public void OKButton_Click(object sender, RoutedEventArgs e)
         {
             
             leftD_Changed();
@@ -280,7 +290,7 @@ namespace GraphicalStructure
             if (currentCom.pg.Figures[0].Segments[1] is ArcSegment || currentCom.pg.Figures[0].Segments[1] is PolyLineSegment) {
                 ChangeShapeEvent3(120, 0);
             }
-           
+            
             // 无层时
             if (currentCom.geometryGroup.Children.Count <= 1)
             {
@@ -449,6 +459,63 @@ namespace GraphicalStructure
             }
 
             double offset = Double.Parse(leftD.Text) - leftLength;
+            if (offset != 0 && leftCom != null)
+            {
+                if (leftCom.isLeftCover)
+                {
+                    // 当前改变左侧段高的段为第一个段，则需改变左端盖
+                    PathFigure leftCoverPf = leftCom.pg.Figures[0];
+                    leftCoverPf.StartPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y - offset/2);
+                    ((LineSegment)leftCoverPf.Segments[0]).Point = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset / 2);
+                    if (leftCoverPf.Segments[1] is LineSegment) {
+                        ((LineSegment)leftCoverPf.Segments[1]).Point = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                    } else if (leftCoverPf.Segments[1] is ArcSegment) {
+                        ((ArcSegment)leftCoverPf.Segments[1]).Point = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                    } else {
+                        // when poly
+                    }
+                    ((LineSegment)leftCoverPf.Segments[2]).Point = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y - offset / 2);
+                    // 最后一条边可能需要处理
+                    if (leftCoverPf.Segments.Count == 4) {
+                        if (leftCoverPf.Segments[3] is LineSegment) {
+                            ((LineSegment)leftCoverPf.Segments[3]).Point = leftCoverPf.StartPoint;
+                        } else if (leftCoverPf.Segments[3] is ArcSegment) {
+                            ((ArcSegment)leftCoverPf.Segments[3]).Point = leftCoverPf.StartPoint;
+                        }
+                        else {
+                            // when poly
+                        }
+                    }
+
+                }
+                else
+                {
+                    // 当前改变左侧段高的段不为第一个段，则需改变前一个段的右侧段高
+                    editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
+                    ew.setComponent(leftCom);
+                    ew.Owner = this;
+                    ew.rightD.Text = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y) + "";
+                    ew.radiusText.Text = leftCom.radius.ToString();
+                    ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
+                    ew.sp = sp;
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
+                    Path originalInsertShape = mainWindow.getInsertShape();
+                    int originalCurLayerNum = mainWindow.getCurLayerNum();
+                    mainWindow.setInsertShape(leftCom.newPath);
+                    mainWindow.setCurLayerNum(leftCom.layerNum);
+                    ew.currentCom = leftCom;
+                    ew.OKButton_Click(null, null);
+                    //ew.rightD_Changed();
+                    //ew.changeShape(leftCom.radius);
+                    //ew.update_LayerCoordinate();
+                    mainWindow.setInsertShape(originalInsertShape);
+                    mainWindow.setCurLayerNum(originalCurLayerNum);
+                }
+            }
+
             if (offset != 0)
             {
                 ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, offset / 2);
@@ -677,8 +744,8 @@ namespace GraphicalStructure
                     currentCom.pf.StartPoint = currentCom.startPoint;
                     currentCom.ls.Point = currentCom.point2;
                     //currentCom.setLs2(currentCom.point3);
-                    ((LineSegment)currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
-                    //currentCom.ls2.Point = new Point(currentCom.point3.X,currentCom.point3.Y);
+                    //(currentCom.pf.Segments[1]).Point = new Point(currentCom.point3.X, currentCom.point3.Y);
+                    currentCom.ls2.Point = new Point(currentCom.point3.X,currentCom.point3.Y);
                     currentCom.ls3.Point = currentCom.point4;
                     ((LineSegment)currentCom.pf.Segments[3]).Point = new Point(currentCom.startPoint.X, currentCom.startPoint.Y);
                     //currentCom.ls4.Point = currentCom.startPoint;
@@ -806,6 +873,71 @@ namespace GraphicalStructure
             }
 
             double offset = Double.Parse(rightD.Text) - rightLength;
+
+            if (offset != 0 && rightCom != null)
+            {
+                if (rightCom.isRightCover)
+                {
+                    // 当前改变右侧段高的段为最后一个段，则需改变右端盖
+                    PathFigure rightCoverPf = rightCom.pg.Figures[0];
+                    rightCoverPf.StartPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y - offset / 2);
+                    ((LineSegment)rightCoverPf.Segments[0]).Point = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset / 2);
+                    if (rightCoverPf.Segments[1] is LineSegment)
+                    {
+                        ((LineSegment)rightCoverPf.Segments[1]).Point = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else if (rightCoverPf.Segments[1] is ArcSegment)
+                    {
+                        ((ArcSegment)rightCoverPf.Segments[1]).Point = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else
+                    {
+                        // when poly
+                    }
+                    ((LineSegment)rightCoverPf.Segments[2]).Point = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y - offset / 2);
+                    // 最后一条边可能需要处理
+                    if (rightCoverPf.Segments.Count == 4)
+                    {
+                        if (rightCoverPf.Segments[3] is LineSegment)
+                        {
+                            ((LineSegment)rightCoverPf.Segments[3]).Point = rightCoverPf.StartPoint;
+                        }
+                        else if (rightCoverPf.Segments[3] is ArcSegment)
+                        {
+                            ((ArcSegment)rightCoverPf.Segments[3]).Point = rightCoverPf.StartPoint;
+                        }
+                        else
+                        {
+                            // when poly
+                        }
+                    }
+
+                }
+                else
+                {
+                    // 当前改变左侧段高的段不为第一个段，则需改变后一个段的左侧段高
+                    editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
+                    ew.setComponent(rightCom);
+                    ew.Owner = this;
+                    ew.sp = sp;
+                    ew.leftD.Text = Math.Abs(currentCom.point3.Y - currentCom.point4.Y) + "";
+                    ew.radiusText.Text = rightCom.radius.ToString();
+                    ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
+                    Path originalInsertShape = mainWindow.getInsertShape();
+                    int originalCurLayerNum = mainWindow.getCurLayerNum();
+                    ew.currentCom = rightCom;
+                    mainWindow.setInsertShape(rightCom.newPath);
+                    mainWindow.setCurLayerNum(rightCom.layerNum);
+                    ew.OKButton_Click(null, null);
+                    mainWindow.setInsertShape(originalInsertShape);
+                    mainWindow.setCurLayerNum(originalCurLayerNum);
+                }
+            }
+
             if (offset != 0)
             {
                 ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 2, offset / 2);
@@ -988,7 +1120,7 @@ namespace GraphicalStructure
             currentCom.cubeOffset = Double.Parse(CubeXValue.Text);
         }
 
-        private void changeShape(double radius)
+        public void changeShape(double radius)
         {
             GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
             PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];

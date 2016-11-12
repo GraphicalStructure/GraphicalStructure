@@ -4,7 +4,7 @@
         Title="结构件图形化设计软件" Height="650" Width="925"
         SizeChanged="Window_SizeChanged">
     <Grid Name="mygrid" Margin="0,10,0,0">
-        <TextBox x:Name="TotalSizeTextBox" TextWrapping="Wrap" Width="274.692" BorderThickness="0" IsEnabled="False" HorizontalAlignment="Left" Margin="25,0,0,10" Panel.ZIndex="99" IsReadOnlyCaretVisible="True" Height="85.988" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="TotalSizeTextBox" TextWrapping="Wrap" Width="175" BorderThickness="0" IsEnabled="False" HorizontalAlignment="Left" Margin="25,0,0,10" Panel.ZIndex="99" IsReadOnlyCaretVisible="True" Height="85.988" VerticalAlignment="Bottom"/>
 
         <Menu Margin="0,-9,0,0">
             <MenuItem Header="文件(_F)">
