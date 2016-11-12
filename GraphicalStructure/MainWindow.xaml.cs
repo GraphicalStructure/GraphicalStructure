@@ -5671,6 +5671,23 @@ namespace GraphicalStructure
             le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
             le.Show();
         }
+
+        public System.Windows.Shapes.Path getInsertShape() {
+            return insertShape;
+        }
+
+        public void setInsertShape(System.Windows.Shapes.Path p) {
+            insertShape = p;
+        }
+
+        public void setCurLayerNum(int i) {
+            curLayerNum = i;
+        }
+
+        public int getCurLayerNum()
+        {
+            return curLayerNum;
+        }
     }
 }
 

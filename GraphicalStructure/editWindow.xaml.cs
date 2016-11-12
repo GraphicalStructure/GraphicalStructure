@@ -480,7 +480,17 @@ namespace GraphicalStructure
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
+                    Path originalInsertShape = mainWindow.getInsertShape();
+                    int originalCurLayerNum = mainWindow.getCurLayerNum();
+                    mainWindow.setInsertShape(leftCom.newPath);
+                    mainWindow.setCurLayerNum(leftCom.layerNum);
+                    ew.currentCom = leftCom;
                     ew.OKButton_Click(null, null);
+                    //ew.rightD_Changed();
+                    //ew.changeShape(leftCom.radius);
+                    //ew.update_LayerCoordinate();
+                    mainWindow.setInsertShape(originalInsertShape);
+                    mainWindow.setCurLayerNum(originalCurLayerNum);
                 }
             }
 
@@ -887,6 +897,7 @@ namespace GraphicalStructure
                     editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
                     ew.setComponent(rightCom);
                     ew.Owner = this;
+                    ew.sp = sp;
                     ew.leftD.Text = Math.Abs(currentCom.point3.Y - currentCom.point4.Y) + "";
                     ew.radiusText.Text = rightCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
@@ -894,7 +905,14 @@ namespace GraphicalStructure
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
+                    Path originalInsertShape = mainWindow.getInsertShape();
+                    int originalCurLayerNum = mainWindow.getCurLayerNum();
+                    ew.currentCom = rightCom;
+                    mainWindow.setInsertShape(rightCom.newPath);
+                    mainWindow.setCurLayerNum(rightCom.layerNum);
                     ew.OKButton_Click(null, null);
+                    mainWindow.setInsertShape(originalInsertShape);
+                    mainWindow.setCurLayerNum(originalCurLayerNum);
                 }
             }
 
