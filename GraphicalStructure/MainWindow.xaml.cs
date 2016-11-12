@@ -2567,7 +2567,7 @@ namespace GraphicalStructure
                             arcSegment2.Size = new Size(radius1, radius2);
                             arcSegment2.Point = p1;
                             arcSegment2.SweepDirection = SweepDirection.Clockwise;
-    }
+                         }
                         else if (_curPf.Segments[1] is ArcSegment) {
                             p3 = ((ArcSegment)_curPf.Segments[1]).Point;
                         }
