@@ -816,7 +816,7 @@ namespace GraphicalStructure
                 if (stackpanel.Children.Count != 0)
                 {
                     //获取前面path的右高度
-                    System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[stackpanel.Children.Count - 1];
+                    System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[stackpanel.Children.Count - 2];
 
                     GeometryGroup geometryGroup = (GeometryGroup)leftPath.Data;
                     PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
@@ -850,7 +850,7 @@ namespace GraphicalStructure
                     cps = new Components(new Point(0, 100), new Point(0, 300), new Point(200, 300), new Point(200, 100));
                 }
                 cps.layerNum = 0;
-                components.Add(cps);
+                components.Insert(components.Count - 1,cps);
                 cps.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
                 cps.newPath.MouseDown += Img1_MouseLeftButtonDown;
                 cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
@@ -3467,10 +3467,7 @@ namespace GraphicalStructure
                 System.Windows.Shapes.Path rightPath = (System.Windows.Shapes.Path)stackpanel.Children[index + 1];
 
                 if (index + 1 == stackpanel.Children.Count - 1 && isHaveRightEndCap && index == 1) {
-                    ContextMenu c = insertShape.ContextMenu;
-                    MenuItem mi = c.Items[0] as MenuItem;
-                    MenuItem deletePath = mi.Items[1] as MenuItem;
-                    deletePath.IsEnabled = false;
+                    MessageBox.Show("只剩一个段，不允许删除此段！");
                     e.Handled = true;
                     return;
                 }
