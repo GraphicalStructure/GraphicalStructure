@@ -39,10 +39,10 @@ namespace GraphicalStructure
                 // Create a blue and a black Brush
                 Random random = new Random();
                 SolidColorBrush brush = new SolidColorBrush();
-                if (color == null)
+                //if (color == null)
                     brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
-                else
-                    brush.Color = color;
+                //else
+                    //brush.Color = color;
                 SolidColorBrush blackBrush = new SolidColorBrush();
                 blackBrush.Color = Colors.Blue;
 

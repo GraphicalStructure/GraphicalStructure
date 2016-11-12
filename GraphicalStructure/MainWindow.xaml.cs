@@ -916,6 +916,10 @@ namespace GraphicalStructure
                 currentShape = sender as Shape;
                 currentShape.CaptureMouse();
             }
+            if (insertShape.ContextMenu != null && insertShape.ContextMenu.HasItems) {
+                e.Handled = true;
+                return;
+            }
 
             ContextMenu aMenu = new ContextMenu();
             MenuItem compMenu = new MenuItem();
