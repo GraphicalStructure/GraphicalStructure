@@ -847,7 +847,53 @@ namespace GraphicalStructure
             }
             else
             {
-                MessageBox.Show("已有右端盖，不能添加段！", "警告");
+                //判断前面是否连接
+                if (stackpanel.Children.Count != 0)
+                {
+                    //获取前面path的右高度
+                    System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[stackpanel.Children.Count - 1];
+
+                    GeometryGroup geometryGroup = (GeometryGroup)leftPath.Data;
+                    PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
+                    PathFigure curPf = curPg.Figures.ElementAt(0);
+
+                    double height = 200;
+                    if (curPf.Segments[1] is LineSegment)
+                    {
+                        //获取left的右侧高度
+                        double topR = ((LineSegment)curPf.Segments[1]).Point.Y;
+                        double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                        height = Math.Abs(topR - bottomR);
+                    }
+                    else if (curPf.Segments[1] is ArcSegment)
+                    {
+                        double topR = ((ArcSegment)curPf.Segments[1]).Point.Y;
+                        double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                        height = Math.Abs(topR - bottomR);
+                    }
+                    else
+                    {
+                        double topR = ((PolyLineSegment)curPf.Segments[1]).Points[((PolyLineSegment)curPf.Segments[1]).Points.Count - 1].Y;
+                        double bottomR = ((LineSegment)curPf.Segments[2]).Point.Y;
+                        height = Math.Abs(topR - bottomR);
+                    }
+
+                    cps = new Components(new Point(0, 100), new Point(0, 100 + height), new Point(200, 100 + height), new Point(200, 100));
+                }
+                else
+                {
+                    cps = new Components(new Point(0, 100), new Point(0, 300), new Point(200, 300), new Point(200, 100));
+                }
+                cps.layerNum = 0;
+                components.Add(cps);
+                cps.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
+                cps.newPath.MouseDown += Img1_MouseLeftButtonDown;
+                cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
+                stackpanel.Children.Insert(stackpanel.Children.Count - 1, cps.newPath);
+
+                //自动调整图形位置
+                autoResize();
+                //MessageBox.Show("已有右端盖，不能添加段！", "警告");
             }
         }
 
@@ -910,10 +956,24 @@ namespace GraphicalStructure
             if (sender is System.Windows.Shapes.Path)
             {
                 insertShape = sender as System.Windows.Shapes.Path;
-                
                 insertShape.Stroke = Brushes.Red;
                 insertShape.StrokeThickness = 2;
                 int index = stackpanel.Children.IndexOf(insertShape);
+                if (isHaveLeftEndCap)
+                {
+                    if (index == 0) {
+                        e.Handled = true;
+                        return;
+                    }
+                }
+                if (isHaveRightEndCap) {
+                    if (index == stackpanel.Children.Count - 1)
+                    {
+                        e.Handled = true;
+                        return;
+                    }
+                }
+
                 Console.WriteLine(index);
                 currentComp = (Components)components[index];
                 curLayerNum = currentComp.layerNum;
@@ -3380,7 +3440,7 @@ namespace GraphicalStructure
             ew.canvas = this.canvas;
             ew.sp = this.stackpanel;
             ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
-            ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+            //ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
             ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
             ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
             ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
@@ -3404,6 +3464,15 @@ namespace GraphicalStructure
                 //删除中间的，需要判断左右是否连续
                 System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[index - 1];
                 System.Windows.Shapes.Path rightPath = (System.Windows.Shapes.Path)stackpanel.Children[index + 1];
+
+                if (index + 1 == stackpanel.Children.Count - 1 && isHaveRightEndCap && index == 1) {
+                    ContextMenu c = insertShape.ContextMenu;
+                    MenuItem mi = c.Items[0] as MenuItem;
+                    MenuItem deletePath = mi.Items[1] as MenuItem;
+                    deletePath.IsEnabled = false;
+                    e.Handled = true;
+                    return;
+                }
 
                 GeometryGroup geometryGroup = (GeometryGroup)leftPath.Data;
                 PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
@@ -3443,9 +3512,14 @@ namespace GraphicalStructure
                 ew.Owner = this;
                 ew.leftD.Text = height.ToString();
                 ew.rightD.Text = rightPath.Data.Bounds.Right.ToString();
+                if (index + 1 == stackpanel.Children.Count - 1 && isHaveRightEndCap) {
+                    ew.rightD.Text = rightPath.Data.Bounds.Height.ToString();
+                }
                 ew.radiusText.Text = ((Components)components[index + 1]).radius.ToString();
                 ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
-                ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                ew.canvas = this.canvas;
+                ew.sp = this.stackpanel;
+                //ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
                 ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
                 ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
                 ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
