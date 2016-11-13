@@ -9,7 +9,8 @@ using System.Collections;
 using System.Windows;
 
 
-namespace GraphicalStructure
+
+using System.IO;namespace GraphicalStructure
 {
     class UseAccessDB
     {
@@ -25,9 +26,11 @@ namespace GraphicalStructure
                 oleDbConn.Open();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("打开数据库出现错误。", "警告");
+                StreamWriter log = new StreamWriter("dataBaseErrorLog.txt", true); 
+                log.WriteLine("time:" + System.DateTime.Now.ToLongTimeString() + ":" + ex.ToString()); 
+                log.Close(); 
                 return false;
             }
         }
@@ -35,23 +38,6 @@ namespace GraphicalStructure
         public UseAccessDB()
         {
             strConnect = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=material.accdb";
-            try
-            {
-                if (oleDbConn == null)
-                {
-                    OpenDb();
-                }
-                if (oleDbConn.State != ConnectionState.Open)
-                {
-                    oleDbConn.Open();
-                }
-            }
-            catch
-            {
-                MessageBox.Show("打开数据库出现错误。","警告");
-                return;
-            }
-            
         }
 
         public OleDbConnection getConnection()
