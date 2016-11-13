@@ -156,6 +156,8 @@ namespace GraphicalStructure
             explosionData = new Hashtable();
             centralCubes = new ArrayList();
             centralCubePanel = new StackPanel();
+            centralCubePanel.Width = 0;
+            centralCubePanel.Height = 270;
             centralCubePanel.Orientation = Orientation.Horizontal;
             canvas.Children.Add(centralCubePanel);
 
@@ -238,6 +240,8 @@ namespace GraphicalStructure
             //addCopyMenu.Header = "截图";
             //addCopyMenu.Click += addCopy_Click;
             //aMenu.Items.Add(addCopyMenu);
+
+            this.canvas.ContextMenu = aMenu;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -497,6 +501,7 @@ namespace GraphicalStructure
             {
                 int index = centralCubePanel.Children.IndexOf(insertShape);
                 centralCubePanel.Children.RemoveAt(index);
+                centralCubes.RemoveAt(index);
             }
         }
 
@@ -507,13 +512,19 @@ namespace GraphicalStructure
             {
                 double leftX = Canvas.GetLeft(stackpanel);
                 double topY = Canvas.GetTop(stackpanel);
-
+                double allWidth = 0;
+                double maxHeight = 0;
                 for (int i = 0; i < centralCubes.Count; i++)
                 {
                     if (centralCubes[i] is Components)
                     {
                         Components cps = (Components)centralCubes[i];
                         cps.newPath.Fill = Brushes.White;
+                        allWidth += cps.newPath.Width;
+                        if (cps.newPath.Height > maxHeight)
+                        {
+                            maxHeight = cps.newPath.Height;
+                        }
                         double duangai = 0;
                         if (isHaveLeftEndCap)
                         {
@@ -521,9 +532,12 @@ namespace GraphicalStructure
                         }
                         double xLeft = cps.cubeOffset;
                         Canvas.SetLeft(centralCubePanel, leftX + xLeft + duangai);
-                        Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - cps.newPath.Height) / 2);
+                        Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - maxHeight) / 2);
                     }
                 }
+
+                centralCubePanel.Width = allWidth;
+                centralCubePanel.Height = maxHeight;
             }
         }
 
@@ -566,6 +580,8 @@ namespace GraphicalStructure
             topPg.Figures.Add(topPf);
             topPf.IsClosed = true;
 
+            //ColorProc.processWhenAddLayer(this.canvas, this.centralCubePanel, (System.Windows.Shapes.Path)centralCubePanel.Children[centralCubeIndex], topPf, 0, (Color)ColorConverter.ConvertFromString("#FF787878"));
+
             //绘制下层路径
             bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
             LineSegment ls_bottom = new LineSegment();
@@ -583,6 +599,10 @@ namespace GraphicalStructure
             ls3_bottom.Point = forthPoint_bottom;
             bottomPf.Segments.Add(ls3_bottom);
             bottomPg.Figures.Add(bottomPf);
+
+           // ColorProc.processWhenAddLayer(this.canvas, this.centralCubePanel, (System.Windows.Shapes.Path)centralCubePanel.Children[centralCubeIndex], bottomPf, 1, (Color)ColorConverter.ConvertFromString("#FF787878"));
+
+
             //将上下层路径添加到组中
             geometryGroup.Children.Add(topPg);
             geometryGroup.Children.Add(bottomPg);
@@ -591,34 +611,308 @@ namespace GraphicalStructure
             //((Components)components[index]).height = insertShape.Height;
 
 
-            ((Components)centralCubes[0]).layerNum += 2;
-            ((Components)centralCubes[0]).layerNums.Add(((Components)centralCubes[0]).layerNum - 1);
-            ((Components)centralCubes[0]).layerNums.Add(((Components)centralCubes[0]).layerNum);
-            ((Components)centralCubes[0]).layerType.Add("球");
-            ((Components)centralCubes[0]).layerType.Add("球");
-            ((Components)centralCubes[0]).layerMaterial.Add("铝");
-            ((Components)centralCubes[0]).layerMaterial.Add("铝");
-            ((Components)centralCubes[0]).layerSize.Add(((Components)centralCubes[0]).layerNum - 1, new Hashtable());
-            ((Components)centralCubes[0]).layerSize.Add(((Components)centralCubes[0]).layerNum, new Hashtable());
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum - 1])).Add("diameter", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum - 1])).Add("longLength", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum - 1])).Add("width", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum - 1])).Add("height", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum - 1])).Add("ObliqueAngle", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum])).Add("diameter", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum])).Add("longLength", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum])).Add("width", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum])).Add("height", 0);
-            ((Hashtable)(((Components)centralCubes[0]).layerSize[((Components)centralCubes[0]).layerNum])).Add("ObliqueAngle", 0);
-            ((Components)centralCubes[0]).layerLeftThickness.Add(10);
-            ((Components)centralCubes[0]).layerLeftThickness.Add(10);
-            ((Components)centralCubes[0]).layerRightThickness.Add(10);
-            ((Components)centralCubes[0]).layerRightThickness.Add(10);
+            ((Components)centralCubes[centralCubeIndex]).layerNum += 2;
+            ((Components)centralCubes[centralCubeIndex]).layerNums.Add(((Components)centralCubes[centralCubeIndex]).layerNum - 1);
+            ((Components)centralCubes[centralCubeIndex]).layerNums.Add(((Components)centralCubes[centralCubeIndex]).layerNum);
+            ((Components)centralCubes[centralCubeIndex]).layerType.Add("球");
+            ((Components)centralCubes[centralCubeIndex]).layerType.Add("球");
+            ((Components)centralCubes[centralCubeIndex]).layerMaterial.Add("铝");
+            ((Components)centralCubes[centralCubeIndex]).layerMaterial.Add("铝");
+            ((Components)centralCubes[centralCubeIndex]).layerSize.Add(((Components)centralCubes[centralCubeIndex]).layerNum - 1, new Hashtable());
+            ((Components)centralCubes[centralCubeIndex]).layerSize.Add(((Components)centralCubes[centralCubeIndex]).layerNum, new Hashtable());
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum - 1])).Add("diameter", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum - 1])).Add("longLength", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum - 1])).Add("width", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum - 1])).Add("height", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum - 1])).Add("ObliqueAngle", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum])).Add("diameter", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum])).Add("longLength", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum])).Add("width", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum])).Add("height", 0);
+            ((Hashtable)(((Components)centralCubes[centralCubeIndex]).layerSize[((Components)centralCubes[centralCubeIndex]).layerNum])).Add("ObliqueAngle", 0);
+            ((Components)centralCubes[centralCubeIndex]).layerLeftThickness.Add(10);
+            ((Components)centralCubes[centralCubeIndex]).layerLeftThickness.Add(10);
+            ((Components)centralCubes[centralCubeIndex]).layerRightThickness.Add(10);
+            ((Components)centralCubes[centralCubeIndex]).layerRightThickness.Add(10);
         }
 
-        void editCentralTubeMenu_Click(object sender, RoutedEventArgs e)
+        void copyCentralTubeMenu_Click(object sender, RoutedEventArgs e)
         {
+            int index = centralCubePanel.Children.IndexOf(insertShape);
+            Components curComp = (Components)centralCubes[index];
 
+            Components comp = new Components(curComp.startPoint, curComp.point2, curComp.point3, curComp.point4);
+            comp.newPath.Height += (curComp.startPoint.Y > curComp.point4.Y ? curComp.point4.Y : curComp.startPoint.Y) - 100;
+            comp.newPath.MouseRightButtonDown += cube_MouseRightButtonDown;
+            comp.newPath.MouseDown += CentralCube_MouseLeftButtonDown;
+            comp.newPath.MouseUp += Img1_MouseLeftButtonUp;
+            centralCubes.Insert(index + 1, comp);
+            comp.newPath.Fill = curComp.newPath.Fill;
+            centralCubePanel.Children.Insert(index + 1, comp.newPath);
+
+            //判断是否存在层
+            GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
+            if (geometryGroup.Children.Count != 1)
+            {
+                GeometryGroup geometryGroup_ = (GeometryGroup)(comp).newPath.Data;
+                if (comp.layerNum <= 2)
+                {
+                    double leftWidth = Double.Parse(curComp.layerLeftThickness[curComp.layerNum - 2].ToString());
+                    double rightWidth = Double.Parse(curComp.layerRightThickness[curComp.layerNum - 2].ToString());
+                    double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
+                    PathGeometry curPg = (PathGeometry)geometryGroup_.Children[0];
+                    PathFigure curPf = curPg.Figures.ElementAt(0);
+                    Point startP = new Point(curPf.StartPoint.X, curPf.StartPoint.Y + maxCh_Width);
+                    curPf.StartPoint = startP;
+                    ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
+                    ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
+                    ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
+                    ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + maxCh_Width);
+
+                    //创建上下层路径
+                    PathGeometry topPg = new PathGeometry();
+                    PathGeometry bottomPg = new PathGeometry();
+
+                    PathFigure topPf = new PathFigure();
+                    PathFigure bottomPf = new PathFigure();
+
+                    //绘制上层路径
+                    topPf.StartPoint = curPf.StartPoint;
+                    LineSegment ls_top = new LineSegment();
+                    ls_top.Point = ((LineSegment)curPf.Segments[2]).Point;
+                    topPf.Segments.Add(ls_top);
+
+                    LineSegment ls2_top = new LineSegment();
+                    Point thirdPoint_top = new Point(ls_top.Point.X, ls_top.Point.Y - rightWidth);
+                    ls2_top.Point = thirdPoint_top;
+                    topPf.Segments.Add(ls2_top);
+
+                    LineSegment ls3_top = new LineSegment();
+                    Point forthPoint_top = new Point(curPf.StartPoint.X, curPf.StartPoint.Y - leftWidth);
+                    ls3_top.Point = forthPoint_top;
+                    topPf.Segments.Add(ls3_top);
+                    topPg.Figures.Add(topPf);
+                    topPf.IsClosed = true;
+
+                    //绘制下层路径
+                    bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
+                    LineSegment ls_bottom = new LineSegment();
+                    Point secondPoint_bottom = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftWidth);
+                    ls_bottom.Point = secondPoint_bottom;
+                    bottomPf.Segments.Add(ls_bottom);
+
+                    LineSegment ls2_bottom = new LineSegment();
+                    Point thirdPoint_bottom = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + rightWidth);
+                    ls2_bottom.Point = thirdPoint_bottom;
+                    bottomPf.Segments.Add(ls2_bottom);
+
+                    LineSegment ls3_bottom = new LineSegment();
+                    Point forthPoint_bottom = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y);
+                    ls3_bottom.Point = forthPoint_bottom;
+                    bottomPf.Segments.Add(ls3_bottom);
+                    bottomPg.Figures.Add(bottomPf);
+                    //将上下层路径添加到组中
+                    geometryGroup_.Children.Add(topPg);
+                    geometryGroup_.Children.Add(bottomPg);
+
+                    comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
+                    comp.height = comp.newPath.Height;
+
+
+                    //自动调整图形位置
+                    autoResize();
+                }
+                else
+                {
+                    for (int k = 1; k < geometryGroup.Children.Count; k += 2)
+                    {
+                        double leftWidth = Double.Parse(comp.layerLeftThickness[geometryGroup_.Children.Count - 1].ToString());
+                        double rightWidth = Double.Parse(comp.layerRightThickness[geometryGroup_.Children.Count - 1].ToString());
+                        double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
+                        int i;
+                        PathGeometry curPg_ = (PathGeometry)geometryGroup_.Children[0];
+                        PathFigure curPf_ = curPg_.Figures.ElementAt(0);
+                        Point startP_ = new Point(curPf_.StartPoint.X, curPf_.StartPoint.Y + maxCh_Width);
+                        curPf_.StartPoint = startP_;
+                        ((LineSegment)curPf_.Segments[0]).Point = new Point(((LineSegment)curPf_.Segments[0]).Point.X, ((LineSegment)curPf_.Segments[0]).Point.Y + maxCh_Width);
+                        ((LineSegment)curPf_.Segments[1]).Point = new Point(((LineSegment)curPf_.Segments[1]).Point.X, ((LineSegment)curPf_.Segments[1]).Point.Y + maxCh_Width);
+                        ((LineSegment)curPf_.Segments[2]).Point = new Point(((LineSegment)curPf_.Segments[2]).Point.X, ((LineSegment)curPf_.Segments[2]).Point.Y + maxCh_Width);
+                        ((LineSegment)curPf_.Segments[3]).Point = new Point(((LineSegment)curPf_.Segments[3]).Point.X, ((LineSegment)curPf_.Segments[3]).Point.Y + maxCh_Width);
+
+                        for (i = 2; i < geometryGroup_.Children.Count; i += 2)
+                        {
+                            PathGeometry curPg = (PathGeometry)geometryGroup_.Children[i - 1];
+                            PathFigure curPf = curPg.Figures.ElementAt(0);
+                            Point startP = new Point(curPf.StartPoint.X, curPf.StartPoint.Y + maxCh_Width);
+                            curPf.StartPoint = startP;
+                            ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
+                            ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
+                            ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
+
+                            PathGeometry curPg2 = (PathGeometry)geometryGroup_.Children[i];
+                            PathFigure curPf2 = curPg2.Figures.ElementAt(0);
+                            Point startP2 = new Point(curPf2.StartPoint.X, curPf2.StartPoint.Y + maxCh_Width);
+                            curPf2.StartPoint = startP2;
+                            ((LineSegment)curPf2.Segments[0]).Point = new Point(((LineSegment)curPf2.Segments[0]).Point.X, ((LineSegment)curPf2.Segments[0]).Point.Y + maxCh_Width);
+                            ((LineSegment)curPf2.Segments[1]).Point = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y + maxCh_Width);
+                            ((LineSegment)curPf2.Segments[2]).Point = new Point(((LineSegment)curPf2.Segments[2]).Point.X, ((LineSegment)curPf2.Segments[2]).Point.Y + maxCh_Width);
+                        }
+
+                        i -= 2;
+
+                        if (i == 0)
+                        {
+                            //创建上下层路径
+                            PathGeometry topPg = new PathGeometry();
+                            PathGeometry bottomPg = new PathGeometry();
+
+                            PathFigure topPf = new PathFigure();
+                            PathFigure bottomPf = new PathFigure();
+
+                            //绘制上层路径
+                            topPf.StartPoint = curPf_.StartPoint;
+                            LineSegment ls_top = new LineSegment();
+                            ls_top.Point = ((LineSegment)curPf_.Segments[2]).Point;
+                            topPf.Segments.Add(ls_top);
+
+                            LineSegment ls2_top = new LineSegment();
+                            Point thirdPoint_top = new Point(ls_top.Point.X, ls_top.Point.Y - rightWidth);
+                            ls2_top.Point = thirdPoint_top;
+                            topPf.Segments.Add(ls2_top);
+
+                            LineSegment ls3_top = new LineSegment();
+                            Point forthPoint_top = new Point(curPf_.StartPoint.X, curPf_.StartPoint.Y - leftWidth);
+                            ls3_top.Point = forthPoint_top;
+                            topPf.Segments.Add(ls3_top);
+                            topPg.Figures.Add(topPf);
+                            topPf.IsClosed = true;
+
+                            //绘制下层路径
+                            bottomPf.StartPoint = ((LineSegment)curPf_.Segments[0]).Point;
+                            LineSegment ls_bottom = new LineSegment();
+                            Point secondPoint_bottom = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftWidth);
+                            ls_bottom.Point = secondPoint_bottom;
+                            bottomPf.Segments.Add(ls_bottom);
+
+                            LineSegment ls2_bottom = new LineSegment();
+                            Point thirdPoint_bottom = new Point(((LineSegment)curPf_.Segments[1]).Point.X, ((LineSegment)curPf_.Segments[1]).Point.Y + rightWidth);
+                            ls2_bottom.Point = thirdPoint_bottom;
+                            bottomPf.Segments.Add(ls2_bottom);
+
+                            LineSegment ls3_bottom = new LineSegment();
+                            Point forthPoint_bottom = new Point(((LineSegment)curPf_.Segments[1]).Point.X, ((LineSegment)curPf_.Segments[1]).Point.Y);
+                            ls3_bottom.Point = forthPoint_bottom;
+                            bottomPf.Segments.Add(ls3_bottom);
+                            bottomPg.Figures.Add(bottomPf);
+                            //将上下层路径添加到组中
+                            geometryGroup_.Children.Add(topPg);
+                            geometryGroup_.Children.Add(bottomPg);
+
+                            comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
+                            comp.height = comp.newPath.Height;
+
+
+                            //自动调整图形位置
+                            autoResize();
+                        }
+                        else
+                        {
+                            if (i < comp.layerNum)
+                            {
+                                PathGeometry curPg = (PathGeometry)geometryGroup_.Children[i - 1];
+                                PathFigure curPf = curPg.Figures.ElementAt(0);
+                                //创建上下层路径
+                                PathGeometry topPg = new PathGeometry();
+                                PathFigure topPf = new PathFigure();
+
+                                //绘制上层路径
+                                topPf.StartPoint = ((LineSegment)curPf.Segments[2]).Point;
+                                LineSegment ls_top = new LineSegment();
+                                ls_top.Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y);
+                                topPf.Segments.Add(ls_top);
+
+                                LineSegment ls2_top = new LineSegment();
+                                Point thirdPoint_top = new Point(ls_top.Point.X, ls_top.Point.Y - rightWidth);
+                                ls2_top.Point = thirdPoint_top;
+                                topPf.Segments.Add(ls2_top);
+
+                                LineSegment ls3_top = new LineSegment();
+                                Point forthPoint_top = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftWidth);
+                                ls3_top.Point = forthPoint_top;
+                                topPf.Segments.Add(ls3_top);
+                                topPg.Figures.Add(topPf);
+                                topPf.IsClosed = true;
+
+                                //将上下层路径添加到组中
+                                geometryGroup_.Children.Add(topPg);
+                            }
+                            if (i < comp.layerNum)
+                            {
+                                PathGeometry curPg2 = (PathGeometry)geometryGroup_.Children[i];
+                                PathFigure curPf2 = curPg2.Figures.ElementAt(0);
+                                PathGeometry bottomPg = new PathGeometry();
+                                PathFigure bottomPf = new PathFigure();
+
+                                //绘制下层路径
+                                bottomPf.StartPoint = ((LineSegment)curPf2.Segments[0]).Point;
+                                LineSegment ls_bottom = new LineSegment();
+                                Point secondPoint_bottom = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftWidth);
+                                ls_bottom.Point = secondPoint_bottom;
+                                bottomPf.Segments.Add(ls_bottom);
+
+                                LineSegment ls2_bottom = new LineSegment();
+                                Point thirdPoint_bottom = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y + rightWidth);
+                                ls2_bottom.Point = thirdPoint_bottom;
+                                bottomPf.Segments.Add(ls2_bottom);
+
+                                LineSegment ls3_bottom = new LineSegment();
+                                Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y);
+                                ls3_bottom.Point = forthPoint_bottom;
+                                bottomPf.Segments.Add(ls3_bottom);
+                                bottomPg.Figures.Add(bottomPf);
+
+                                //将上下层路径添加到组中
+                                geometryGroup_.Children.Add(bottomPg);
+
+                            }
+                            comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
+                            comp.height = comp.newPath.Height;
+
+                            //
+                            autoResize();
+                        }
+                    }
+                }
+            }
+
+            ((Components)centralCubes[index + 1]).layerNum += 2;
+            ((Components)centralCubes[index + 1]).layerNums.Add(((Components)centralCubes[index + 1]).layerNum - 1);
+            ((Components)centralCubes[index + 1]).layerNums.Add(((Components)centralCubes[index + 1]).layerNum);
+            ((Components)centralCubes[index + 1]).layerType.Add(curComp.layerType[0]);
+            ((Components)centralCubes[index + 1]).layerType.Add(curComp.layerType[1]);
+            ((Components)centralCubes[index + 1]).layerMaterial.Add(curComp.layerType[0]);
+            ((Components)centralCubes[index + 1]).layerMaterial.Add(curComp.layerType[1]);
+            ((Components)centralCubes[index + 1]).layerSize.Add(((Components)centralCubes[index]).layerNum - 1, new Hashtable());
+            ((Components)centralCubes[index + 1]).layerSize.Add(((Components)centralCubes[index]).layerNum, new Hashtable());
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum - 1])).Add("diameter", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum - 1]))["diameter"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum - 1])).Add("longLength", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum - 1]))["longLength"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum - 1])).Add("width", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum - 1]))["width"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum - 1])).Add("height", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum - 1]))["height"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum - 1])).Add("ObliqueAngle", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum - 1]))["ObliqueAngle"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum])).Add("diameter", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum]))["diameter"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum])).Add("longLength", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum]))["longLength"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum])).Add("width", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum]))["width"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum])).Add("height", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum]))["height"]);
+            ((Hashtable)(((Components)centralCubes[index + 1]).layerSize[((Components)centralCubes[index + 1]).layerNum])).Add("ObliqueAngle", ((Hashtable)(((Components)centralCubes[index]).layerSize[((Components)centralCubes[index]).layerNum]))["ObliqueAngle"]);
+            ((Components)centralCubes[index + 1]).layerLeftThickness.Add(((Components)centralCubes[index]).layerLeftThickness[0]);
+            ((Components)centralCubes[index + 1]).layerLeftThickness.Add(((Components)centralCubes[index]).layerLeftThickness[1]);
+            ((Components)centralCubes[index + 1]).layerRightThickness.Add(((Components)centralCubes[index]).layerRightThickness[0]);
+            ((Components)centralCubes[index + 1]).layerRightThickness.Add(((Components)centralCubes[index]).layerRightThickness[1]);
+
+            //自动调整图形位置
+            autoResize();
+
+            allWidth = 0;
         }
 
         //增加空心管
@@ -636,21 +930,21 @@ namespace GraphicalStructure
             cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
             centralCubePanel.Children.Add(cps.newPath);
             centralCubeIndex = centralCubePanel.Children.IndexOf(cps.newPath);
+            
+            
+            double offset = 0;
+            if (isHaveLeftEndCap)
+            {
+                System.Windows.Shapes.Path leftEndCap = (System.Windows.Shapes.Path)stackpanel.Children[0];
+                offset = leftEndCap.Width;
+            }
+
+            Canvas.SetLeft(centralCubePanel, leftX + offset);
+            Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - centralCubePanel.Height) / 2);
+            
+
             //添加层
             addCubeLayer_Click(sender, e);
-
-            if (centralCubePanel.Children.Count == 1)
-            {
-                double offset = 0;
-                if (isHaveLeftEndCap)
-                {
-                    System.Windows.Shapes.Path leftEndCap = (System.Windows.Shapes.Path)stackpanel.Children[0];
-                    offset = leftEndCap.Width;
-                }
-
-                Canvas.SetLeft(centralCubePanel, leftX + offset);
-                Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - cps.newPath.Height) / 2);
-            }
 
             isHaveCentralTube = true;
 
@@ -668,7 +962,7 @@ namespace GraphicalStructure
             deleteCentralTubeMenu.Click += deleteCentralTubeMenu_Click;
             MenuItem copyCentralTubeMenu = new MenuItem();
             copyCentralTubeMenu.Header = "复制中心管";
-            copyCentralTubeMenu.Click += copyCentralCubeMenu_Click;
+            copyCentralTubeMenu.Click += copyCentralTubeMenu_Click;
             aMenu.Items.Add(editCubeMenu);
             aMenu.Items.Add(copyCentralTubeMenu);
             aMenu.Items.Add(deleteCentralTubeMenu);
@@ -679,10 +973,6 @@ namespace GraphicalStructure
             ((System.Windows.Shapes.Path)centralCubePanel.Children[index]).ContextMenu = aMenu;
         }
 
-        private void copyCentralCubeMenu_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         void editCubeMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -1004,7 +1294,6 @@ namespace GraphicalStructure
                 currentShape = sender as Shape;
                 currentShape.CaptureMouse();
             }
-            
 
             ContextMenu aMenu = new ContextMenu();
             MenuItem compMenu = new MenuItem();
@@ -1079,16 +1368,19 @@ namespace GraphicalStructure
         // 复制该层处理函数
         void copyCompMenu_Click(object sender, RoutedEventArgs e)
         {
-            
+
             int index = stackpanel.Children.IndexOf(insertShape);
             Components curComp = (Components)components[index];
-
+            
             Components comp = new Components(curComp.startPoint, curComp.point2, curComp.point3, curComp.point4);
             comp.newPath.Height += (curComp.startPoint.Y > curComp.point4.Y ? curComp.point4.Y : curComp.startPoint.Y) - 100;
             comp.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
             comp.newPath.MouseDown += Img1_MouseLeftButtonDown;
             comp.newPath.MouseUp += Img1_MouseLeftButtonUp;
-            components.Insert(index + 1, comp);
+            if (stackpanel.Children.Contains(insertShape))
+                components.Insert(index + 1, comp);
+            else
+                centralCubes.Insert(index +1, comp);
             comp.newPath.Fill = curComp.newPath.Fill;
 
             //切换insertshape
@@ -1278,8 +1570,9 @@ namespace GraphicalStructure
                         }
                     }
 
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel,comp.newPath, topPf, 0, color);
-
+                    
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
+                    
                     //绘制下层路径
                     bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
                     LineSegment ls_bottom = new LineSegment();
@@ -1376,6 +1669,7 @@ namespace GraphicalStructure
                             Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                             string mColor = cdic["content"];
                             string materialName = mdic["content"];
+                            
                             if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
@@ -1383,7 +1677,9 @@ namespace GraphicalStructure
                         }
                     }
 
+                    
                     ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                    
 
                     //将上下层路径添加到组中
                     geometryGroup_.Children.Add(topPg);
@@ -1607,12 +1903,15 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
+                                    
                                     if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
                                 }
                             }
+
+                            
                             ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
                             
                             
@@ -1712,14 +2011,18 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
+                                    
                                     if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
+                                   
                                 }
                             }
 
+                            
                             ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                           
                             
                             //将上下层路径添加到组中
                             geometryGroup_.Children.Add(topPg);
@@ -1828,15 +2131,18 @@ namespace GraphicalStructure
                                         Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                         string mColor = cdic["content"];
                                         string materialName = mdic["content"];
+                                        
                                         if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                         {
                                             color = (Color)ColorConverter.ConvertFromString(mColor);
                                         }
+                                        
                                     }
                                 }
 
+                               
                                 ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
-
+                                
                                 //将上下层路径添加到组中
                                 geometryGroup_.Children.Add(topPg);
                             }
@@ -1928,26 +2234,29 @@ namespace GraphicalStructure
                                     }
                                 }
 
-                                    bottomPg.Figures.Add(bottomPf);
-                                    bottomPf.IsClosed = true;
+                                bottomPg.Figures.Add(bottomPf);
+                                bottomPf.IsClosed = true;
 
-                                    Color color = new Color();
-                                    if (DataBaseMaterials != null)
+                                Color color = new Color();
+                                if (DataBaseMaterials != null)
+                                {
+                                    for (int j = 0; j < DataBaseMaterials.Count; j++)
                                     {
-                                        for (int j = 0; j < DataBaseMaterials.Count; j++)
+                                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
+                                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
+                                        string mColor = cdic["content"];
+                                        string materialName = mdic["content"];
+                                        
+                                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                         {
-                                            Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                            Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                            string mColor = cdic["content"];
-                                            string materialName = mdic["content"];
-                                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
-                                            {
-                                                color = (Color)ColorConverter.ConvertFromString(mColor);
-                                            }
+                                            color = (Color)ColorConverter.ConvertFromString(mColor);
                                         }
                                     }
+                                }
+                                
+                                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                               
 
-                                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
                                 //将上下层路径添加到组中
                                 geometryGroup_.Children.Add(bottomPg);
 
@@ -3463,7 +3772,7 @@ namespace GraphicalStructure
             int index = stackpanel.Children.IndexOf(insertShape);
 
             //判断左右两边是否连接
-            if (index == 1 && index == stackpanel.Children.Count - 1)
+            if (index == 1 && index == stackpanel.Children.Count - 1 && isHaveLeftEndCap)
             {
                 //删除最左边或最右边的那个，不需要判断
                 MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");

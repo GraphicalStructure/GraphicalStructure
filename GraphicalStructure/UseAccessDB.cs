@@ -27,6 +27,7 @@ namespace GraphicalStructure
             }
             catch
             {
+                MessageBox.Show("打开数据库出现错误。", "警告");
                 return false;
             }
         }

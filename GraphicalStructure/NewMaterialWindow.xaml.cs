@@ -184,8 +184,6 @@ namespace GraphicalStructure
                 }
                 data.Add("color", new Dictionary<string, string>() { { "content", color } });
                 data.Add("refer", new Dictionary<string, string>() { { "content", textBox_refer.Text } });
-                data.Add("density", new Dictionary<string, string>() { { "content", "1314" } });
-                data.Add("color", new Dictionary<string, string>() { { "content", "#FFFFA500" } });
                 val.isConfirm = true;
                 val.type = "all";
                 val.data = data;
