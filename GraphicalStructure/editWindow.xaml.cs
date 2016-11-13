@@ -491,6 +491,22 @@ namespace GraphicalStructure
                         }
                     }
 
+                    leftCom.startPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y + offset / 2);
+                    leftCom.point2 = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset / 2);
+                    if (leftCoverPf.Segments[1] is LineSegment)
+                    {
+                        leftCom.point3 = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else if (leftCoverPf.Segments[1] is ArcSegment)
+                    {
+                        leftCom.point3 = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else
+                    {
+                        // when poly
+                    }
+                    leftCom.point4 = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y + offset / 2);
+
                 }
                 else
                 {
@@ -1138,6 +1154,9 @@ namespace GraphicalStructure
 
         public void changeShape(double radius)
         {
+            if (changeTitle == 2)
+                return;
+
             GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
             PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
             PathFigure curPf = curPg.Figures.ElementAt(0);
