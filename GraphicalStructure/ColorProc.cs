@@ -725,9 +725,9 @@ namespace GraphicalStructure
                     {
                         //y2 = ((PolyLineSegment)pf.Segments[2]).Points[((PolyLineSegment)pf.Segments[2]).Points.Count - 1].Y;
 
-                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[2]).Points.Count - 1; i++)
                         {
-                            ((PolyLineSegment)pf.Segments[3]).Points[i] = new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + y2 - y1);
+                            ((PolyLineSegment)cover_pf.Segments[2]).Points[i] = new Point(((PolyLineSegment)cover_pf.Segments[2]).Points[i].X, ((PolyLineSegment)cover_pf.Segments[2]).Points[i].Y + y2 - y1);
                         }
                     }
 
@@ -768,6 +768,7 @@ namespace GraphicalStructure
                         else
                         {
                             //
+                            _y2 = ((PolyLineSegment)_cover_pf.Segments[2]).Points[((PolyLineSegment)_cover_pf.Segments[2]).Points.Count - 1].Y;
                         }
                         double offset = Math.Abs(_y2 - _y1) - Math.Abs(y2 - y1);
                         if (offset != 0) {
@@ -784,6 +785,10 @@ namespace GraphicalStructure
                             else
                             {
                                 //
+                                for (int j = 0; j < ((PolyLineSegment)pf.Segments[2]).Points.Count - 1; j++)
+                                {
+                                    ((PolyLineSegment)_cover_pf.Segments[2]).Points[j] = new Point(((PolyLineSegment)_cover_pf.Segments[2]).Points[j].X, ((PolyLineSegment)_cover_pf.Segments[2]).Points[j].Y + offset);
+                                }
                             }
                         }
                         else {
@@ -801,6 +806,10 @@ namespace GraphicalStructure
                             else
                             {
                                 //
+                                for (int j = 0; j < ((PolyLineSegment)pf.Segments[2]).Points.Count - 1; j++)
+                                {
+                                    ((PolyLineSegment)_cover_pf.Segments[2]).Points[j] = new Point(((PolyLineSegment)_cover_pf.Segments[2]).Points[j].X, ((PolyLineSegment)_cover_pf.Segments[2]).Points[j].Y + offset);
+                                }
                             }
                         }
                         
@@ -1473,6 +1482,77 @@ namespace GraphicalStructure
             PfToCoverMap.Clear();
             CoverToPfMap.Clear();
             CoverToPathMap.Clear();
+        }
+
+        public static void moveVertical(Path path, double pace) {
+            PathGeometry pg = (PathGeometry)((GeometryGroup)((Path)path).Data).Children[0];
+            PathFigure pf = pg.Figures[0];
+            pf.StartPoint = new Point(pf.StartPoint.X, pf.StartPoint.Y + pace);
+            if (pf.Segments[0] is LineSegment)
+            {
+                ((LineSegment)pf.Segments[0]).Point = new Point(((LineSegment)pf.Segments[0]).Point.X, ((LineSegment)pf.Segments[0]).Point.Y + pace);
+            }
+            else if (pf.Segments[0] is ArcSegment)
+            {
+                ((ArcSegment)pf.Segments[0]).Point = new Point(((ArcSegment)pf.Segments[0]).Point.X, ((ArcSegment)pf.Segments[0]).Point.Y + pace);
+            }
+            else {
+                for (int i = 0; i < ((PolyLineSegment)pf.Segments[0]).Points.Count; i++) {
+                    ((PolyLineSegment)pf.Segments[0]).Points[i] = new Point(((PolyLineSegment)pf.Segments[0]).Points[i].X, ((PolyLineSegment)pf.Segments[0]).Points[i].Y + pace);
+                }
+            }
+
+            if (pf.Segments[1] is LineSegment)
+            {
+                ((LineSegment)pf.Segments[1]).Point = new Point(((LineSegment)pf.Segments[1]).Point.X, ((LineSegment)pf.Segments[1]).Point.Y + pace);
+            }
+            else if (pf.Segments[1] is ArcSegment)
+            {
+                ((ArcSegment)pf.Segments[1]).Point = new Point(((ArcSegment)pf.Segments[1]).Point.X, ((ArcSegment)pf.Segments[1]).Point.Y + pace);
+            }
+            else
+            {
+                for (int i = 0; i < ((PolyLineSegment)pf.Segments[1]).Points.Count; i++)
+                {
+                    ((PolyLineSegment)pf.Segments[1]).Points[i] = new Point(((PolyLineSegment)pf.Segments[1]).Points[i].X, ((PolyLineSegment)pf.Segments[1]).Points[i].Y + pace);
+                }
+            }
+
+            if (pf.Segments[2] is LineSegment)
+            {
+                ((LineSegment)pf.Segments[2]).Point = new Point(((LineSegment)pf.Segments[2]).Point.X, ((LineSegment)pf.Segments[2]).Point.Y + pace);
+            }
+            else if (pf.Segments[2] is ArcSegment)
+            {
+                ((ArcSegment)pf.Segments[2]).Point = new Point(((ArcSegment)pf.Segments[2]).Point.X, ((ArcSegment)pf.Segments[2]).Point.Y + pace);
+            }
+            else
+            {
+                for (int i = 0; i < ((PolyLineSegment)pf.Segments[2]).Points.Count; i++)
+                {
+                    ((PolyLineSegment)pf.Segments[2]).Points[i] = new Point(((PolyLineSegment)pf.Segments[2]).Points[i].X, ((PolyLineSegment)pf.Segments[2]).Points[i].Y + pace);
+                }
+            }
+
+            if (pf.Segments.Count <4) {
+
+            }
+            else if (pf.Segments[3] is LineSegment)
+            {
+                ((LineSegment)pf.Segments[3]).Point = new Point(((LineSegment)pf.Segments[3]).Point.X, ((LineSegment)pf.Segments[3]).Point.Y + pace);
+            }
+            else if (pf.Segments[3] is ArcSegment)
+            {
+                ((ArcSegment)pf.Segments[3]).Point = new Point(((ArcSegment)pf.Segments[3]).Point.X, ((ArcSegment)pf.Segments[3]).Point.Y + pace);
+            }
+            else
+            {
+                for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count; i++)
+                {
+                    ((PolyLineSegment)pf.Segments[3]).Points[i] = new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + pace);
+                }
+            }
+
         }
 
     }

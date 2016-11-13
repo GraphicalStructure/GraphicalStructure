@@ -254,7 +254,16 @@ namespace GraphicalStructure
             centerLine.Y1 = canvas.Height / 2;
             centerLine.X2 = canvas.Width - 20;
             centerLine.Y2 = canvas.Height / 2;
-
+            if (e.HeightChanged) {
+                double hChanged = e.PreviousSize.Height - e.NewSize.Height;
+                for (int i = 0; i < canvas.Children.Count; i++) {
+                    if (canvas.Children[i] is System.Windows.Shapes.Path) {
+                        System.Windows.Shapes.Path path = (System.Windows.Shapes.Path)canvas.Children[i];
+                        //Canvas.SetTop(path, Canvas.GetTop(path) - hChanged);
+                        ColorProc.moveVertical(path, -hChanged/2.0);
+                    }
+                }
+            }
             autoResize();
         }
 
@@ -2497,7 +2506,7 @@ namespace GraphicalStructure
         /**
          * 返回可能的两个圆心
          */
-        private Point[] calcuCentralPoints(Point p1, Point p2, double r)
+        public Point[] calcuCentralPoints(Point p1, Point p2, double r)
         {
             Point[] points = new Point[2];
             // p1与p2的距离
@@ -2553,7 +2562,7 @@ namespace GraphicalStructure
          * 根据圆心，半径，x区域，点的个数，得到一系列点,p1
          * p1终点，p2为起始点
          */
-        private PointCollection findPolyPointsByCircle(Point p0, double r, Point p1, Point p2, int num, int isConvex)
+        public PointCollection findPolyPointsByCircle(Point p0, double r, Point p1, Point p2, int num, int isConvex)
         {
             PointCollection points = new PointCollection();
             Point point;
@@ -2598,7 +2607,7 @@ namespace GraphicalStructure
          * 根据上层圆弧上的点对称求下层的点
          * y_mid 为中间点y坐标
          */
-        private PointCollection getSymmetricPoint(PointCollection pointsUp, double y_mid)
+        public PointCollection getSymmetricPoint(PointCollection pointsUp, double y_mid)
         {
             PointCollection points = new PointCollection();
             Point point;
@@ -2616,7 +2625,7 @@ namespace GraphicalStructure
         /**
          * reverse PointCollection
          */
-        private PointCollection reversePointCollection(PointCollection pointCollection)
+        public PointCollection reversePointCollection(PointCollection pointCollection)
         {
             PointCollection points = new PointCollection();
             PointCollection.Enumerator pe = pointCollection.GetEnumerator();
