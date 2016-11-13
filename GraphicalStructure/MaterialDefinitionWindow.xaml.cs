@@ -41,7 +41,11 @@ namespace GraphicalStructure
             InitializeComponent();
 
             adb = new UseAccessDB();
-            adb.OpenDb();
+            bool openDataBase = adb.OpenDb();
+            if (openDataBase == false)
+            {
+                this.Close();
+            }
         }
 
         private void receivedNewMaterialWindowData(object sender, Validity val) {

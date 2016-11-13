@@ -913,6 +913,21 @@ namespace GraphicalStructure
                         }
                     }
 
+                    rightCom.startPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y + offset / 2);
+                    rightCom.point2 = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset / 2);
+                    if (rightCoverPf.Segments[1] is LineSegment)
+                    {
+                        rightCom.point3 = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else if (rightCoverPf.Segments[1] is ArcSegment)
+                    {
+                        rightCom.point3 = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                    }
+                    else
+                    {
+                        // when poly
+                    }
+                    rightCom.point4 = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y + offset / 2);
                 }
                 else
                 {
