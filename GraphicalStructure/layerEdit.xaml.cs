@@ -50,8 +50,17 @@ namespace GraphicalStructure
         public string lastWidth;
         public string lastHeight;
         public string lastObliqueAngle;
+        private static IMainWindow mainWindow;
 
         public List<Dictionary<string, Dictionary<string, string>>> list;
+
+        private layerEdit(IMainWindow imw)
+        {
+            mainWindow = imw;
+            InitializeComponent();
+            flag = false;
+            list = new List<Dictionary<string, Dictionary<string, string>>>();
+        }
 
         public layerEdit()
         {
@@ -441,6 +450,8 @@ namespace GraphicalStructure
             {
 
             }
+            layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
+            mainWindow.makeLeftCoverConnectSkillfully();
         }
 
         public void rightSizeChange()
@@ -668,6 +679,8 @@ namespace GraphicalStructure
             }
             catch { 
             }
+            layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
+            mainWindow.makeRightCoverConnectSkillfully();
         }
 
         private void materialBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

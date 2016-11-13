@@ -35,7 +35,7 @@ namespace GraphicalStructure
         public double left_X;
         public double pathWidth;
 
-        private string shape;
+        public string shape;
         private string originShape;
         bool isFirstIn = true;
 

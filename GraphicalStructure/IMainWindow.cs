@@ -25,5 +25,9 @@ namespace GraphicalStructure
         void setCurLayerNum(int i);
 
         int getCurLayerNum();
+
+        void makeLeftCoverConnectSkillfully();
+
+        void makeRightCoverConnectSkillfully();
     }
 }
