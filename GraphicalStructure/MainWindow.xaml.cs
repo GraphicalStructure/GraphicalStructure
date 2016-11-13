@@ -156,6 +156,8 @@ namespace GraphicalStructure
             explosionData = new Hashtable();
             centralCubes = new ArrayList();
             centralCubePanel = new StackPanel();
+            centralCubePanel.Width = 0;
+            centralCubePanel.Height = 270;
             centralCubePanel.Orientation = Orientation.Horizontal;
             canvas.Children.Add(centralCubePanel);
 
@@ -498,13 +500,19 @@ namespace GraphicalStructure
             {
                 double leftX = Canvas.GetLeft(stackpanel);
                 double topY = Canvas.GetTop(stackpanel);
-
+                double allWidth = 0;
+                double maxHeight = 0;
                 for (int i = 0; i < centralCubes.Count; i++)
                 {
                     if (centralCubes[i] is Components)
                     {
                         Components cps = (Components)centralCubes[i];
                         cps.newPath.Fill = Brushes.White;
+                        allWidth += cps.newPath.Width;
+                        if (cps.newPath.Height > maxHeight)
+                        {
+                            maxHeight = cps.newPath.Height;
+                        }
                         double duangai = 0;
                         if (isHaveLeftEndCap)
                         {
@@ -515,6 +523,9 @@ namespace GraphicalStructure
                         Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - cps.newPath.Height) / 2);
                     }
                 }
+
+                centralCubePanel.Width = allWidth;
+                centralCubePanel.Height = maxHeight;
             }
         }
 
@@ -557,6 +568,8 @@ namespace GraphicalStructure
             topPg.Figures.Add(topPf);
             topPf.IsClosed = true;
 
+            ColorProc.processWhenAddLayer(this.canvas, this.centralCubePanel, (System.Windows.Shapes.Path)centralCubePanel.Children[centralCubeIndex], topPf, 0, (Color)ColorConverter.ConvertFromString("#FF787878"));
+
             //绘制下层路径
             bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
             LineSegment ls_bottom = new LineSegment();
@@ -574,6 +587,10 @@ namespace GraphicalStructure
             ls3_bottom.Point = forthPoint_bottom;
             bottomPf.Segments.Add(ls3_bottom);
             bottomPg.Figures.Add(bottomPf);
+
+            ColorProc.processWhenAddLayer(this.canvas, this.centralCubePanel, (System.Windows.Shapes.Path)centralCubePanel.Children[centralCubeIndex], bottomPf, 1, (Color)ColorConverter.ConvertFromString("#FF787878"));
+
+
             //将上下层路径添加到组中
             geometryGroup.Children.Add(topPg);
             geometryGroup.Children.Add(bottomPg);
@@ -627,21 +644,21 @@ namespace GraphicalStructure
             cps.newPath.MouseUp += Img1_MouseLeftButtonUp;
             centralCubePanel.Children.Add(cps.newPath);
             centralCubeIndex = centralCubePanel.Children.IndexOf(cps.newPath);
+            
+            
+            double offset = 0;
+            if (isHaveLeftEndCap)
+            {
+                System.Windows.Shapes.Path leftEndCap = (System.Windows.Shapes.Path)stackpanel.Children[0];
+                offset = leftEndCap.Width;
+            }
+
+            Canvas.SetLeft(centralCubePanel, leftX + offset);
+            Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - centralCubePanel.Height) / 2);
+            
+
             //添加层
             addCubeLayer_Click(sender, e);
-
-            if (centralCubePanel.Children.Count == 1)
-            {
-                double offset = 0;
-                if (isHaveLeftEndCap)
-                {
-                    System.Windows.Shapes.Path leftEndCap = (System.Windows.Shapes.Path)stackpanel.Children[0];
-                    offset = leftEndCap.Width;
-                }
-
-                Canvas.SetLeft(centralCubePanel, leftX + offset);
-                Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - cps.newPath.Height) / 2);
-            }
 
             isHaveCentralTube = true;
 
@@ -659,7 +676,7 @@ namespace GraphicalStructure
             deleteCentralTubeMenu.Click += deleteCentralTubeMenu_Click;
             MenuItem copyCentralTubeMenu = new MenuItem();
             copyCentralTubeMenu.Header = "复制中心管";
-            copyCentralTubeMenu.Click += copyCentralCubeMenu_Click;
+            copyCentralTubeMenu.Click += copyCompMenu_Click;
             aMenu.Items.Add(editCubeMenu);
             aMenu.Items.Add(copyCentralTubeMenu);
             aMenu.Items.Add(deleteCentralTubeMenu);
@@ -670,10 +687,6 @@ namespace GraphicalStructure
             ((System.Windows.Shapes.Path)centralCubePanel.Children[index]).ContextMenu = aMenu;
         }
 
-        private void copyCentralCubeMenu_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         void editCubeMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -1072,16 +1085,19 @@ namespace GraphicalStructure
         // 复制该层处理函数
         void copyCompMenu_Click(object sender, RoutedEventArgs e)
         {
-            
+
             int index = stackpanel.Children.IndexOf(insertShape);
             Components curComp = (Components)components[index];
-
+            
             Components comp = new Components(curComp.startPoint, curComp.point2, curComp.point3, curComp.point4);
             comp.newPath.Height += (curComp.startPoint.Y > curComp.point4.Y ? curComp.point4.Y : curComp.startPoint.Y) - 100;
             comp.newPath.MouseRightButtonDown += viewbox_MouseRightButtonDown;
             comp.newPath.MouseDown += Img1_MouseLeftButtonDown;
             comp.newPath.MouseUp += Img1_MouseLeftButtonUp;
-            components.Insert(index + 1, comp);
+            if (stackpanel.Children.Contains(insertShape))
+                components.Insert(index + 1, comp);
+            else
+                centralCubes.Insert(index +1, comp);
             comp.newPath.Fill = curComp.newPath.Fill;
 
             //切换insertshape
@@ -1271,8 +1287,9 @@ namespace GraphicalStructure
                         }
                     }
 
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel,comp.newPath, topPf, 0, color);
-
+                    
+                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
+                    
                     //绘制下层路径
                     bottomPf.StartPoint = ((LineSegment)curPf.Segments[0]).Point;
                     LineSegment ls_bottom = new LineSegment();
@@ -1369,6 +1386,7 @@ namespace GraphicalStructure
                             Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                             string mColor = cdic["content"];
                             string materialName = mdic["content"];
+                            
                             if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
@@ -1376,7 +1394,9 @@ namespace GraphicalStructure
                         }
                     }
 
+                    
                     ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                    
 
                     //将上下层路径添加到组中
                     geometryGroup_.Children.Add(topPg);
@@ -1600,12 +1620,15 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
+                                    
                                     if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
                                 }
                             }
+
+                            
                             ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
                             
                             
@@ -1705,14 +1728,18 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
+                                    
                                     if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
+                                   
                                 }
                             }
 
+                            
                             ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                           
                             
                             //将上下层路径添加到组中
                             geometryGroup_.Children.Add(topPg);
@@ -1821,15 +1848,18 @@ namespace GraphicalStructure
                                         Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                         string mColor = cdic["content"];
                                         string materialName = mdic["content"];
+                                        
                                         if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                         {
                                             color = (Color)ColorConverter.ConvertFromString(mColor);
                                         }
+                                        
                                     }
                                 }
 
+                               
                                 ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
-
+                                
                                 //将上下层路径添加到组中
                                 geometryGroup_.Children.Add(topPg);
                             }
@@ -1921,26 +1951,29 @@ namespace GraphicalStructure
                                     }
                                 }
 
-                                    bottomPg.Figures.Add(bottomPf);
-                                    bottomPf.IsClosed = true;
+                                bottomPg.Figures.Add(bottomPf);
+                                bottomPf.IsClosed = true;
 
-                                    Color color = new Color();
-                                    if (DataBaseMaterials != null)
+                                Color color = new Color();
+                                if (DataBaseMaterials != null)
+                                {
+                                    for (int j = 0; j < DataBaseMaterials.Count; j++)
                                     {
-                                        for (int j = 0; j < DataBaseMaterials.Count; j++)
+                                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
+                                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
+                                        string mColor = cdic["content"];
+                                        string materialName = mdic["content"];
+                                        
+                                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                         {
-                                            Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                            Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                            string mColor = cdic["content"];
-                                            string materialName = mdic["content"];
-                                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
-                                            {
-                                                color = (Color)ColorConverter.ConvertFromString(mColor);
-                                            }
+                                            color = (Color)ColorConverter.ConvertFromString(mColor);
                                         }
                                     }
+                                }
+                                
+                                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                               
 
-                                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
                                 //将上下层路径添加到组中
                                 geometryGroup_.Children.Add(bottomPg);
 

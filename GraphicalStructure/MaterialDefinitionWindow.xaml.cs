@@ -419,8 +419,8 @@ namespace GraphicalStructure
                     Dictionary<string, string> matData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["mat"];
                     Dictionary<string, string> eosData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["soe"];
                     string refer = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["refer"])["content"];
-                    //string density = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["density"])["content"];
-                    //string color = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["color"])["content"];
+                    string density = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["density"])["content"];
+                    string color = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)data[i])["color"])["content"];
 
                     //新增一条材料   需要更新三个表
                     bool success;
@@ -501,7 +501,7 @@ namespace GraphicalStructure
                     }
                     ArrayList materialType = adb.queryALLMaterialFromTable("select * from Material_Type where mat_name ='" + matName + "'");
                     string material_type_name = ((ArrayList)materialType[0])[1].ToString();
-                    materialSql2 += "'"+ materialName + "','" + material_type_name + "','" + (mid + 1).ToString() + "','" + (eosid + 1).ToString() + "','" + refer + "','1','1')";
+                    materialSql2 += "'"+ materialName + "','" + material_type_name + "','" + (mid + 1).ToString() + "','" + (eosid + 1).ToString() + "','" + refer + "','" +density + "','"+color+"')";
                     string materialSql = materialSql1 + materialSql2;
                     success = adb.insertTableData(materialSql);
                     if (success)
