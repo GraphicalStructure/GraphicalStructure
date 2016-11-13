@@ -459,7 +459,7 @@ namespace GraphicalStructure
                 _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
-                _le.OKButton_Click(null, null);
+                _le.leftSizeChange();
                 int isConvex = 0;
                 if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeLineSegmentToPolySegmentForLayer(currentCom.radius, isConvex);
@@ -702,7 +702,7 @@ namespace GraphicalStructure
                 _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
-                _le.OKButton_Click(null, null);
+                _le.rightSizeChange();
                 int isConvex = 0;
                 if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeLineSegmentToPolySegmentForLayer(currentCom.radius, isConvex);
