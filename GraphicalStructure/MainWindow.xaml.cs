@@ -659,7 +659,7 @@ namespace GraphicalStructure
             deleteCentralTubeMenu.Click += deleteCentralTubeMenu_Click;
             MenuItem copyCentralTubeMenu = new MenuItem();
             copyCentralTubeMenu.Header = "复制中心管";
-            copyCentralTubeMenu.Click += copyCompMenu_Click;
+            copyCentralTubeMenu.Click += copyCentralCubeMenu_Click;
             aMenu.Items.Add(editCubeMenu);
             aMenu.Items.Add(copyCentralTubeMenu);
             aMenu.Items.Add(deleteCentralTubeMenu);
@@ -670,15 +670,15 @@ namespace GraphicalStructure
             ((System.Windows.Shapes.Path)centralCubePanel.Children[index]).ContextMenu = aMenu;
         }
 
+        private void copyCentralCubeMenu_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         void editCubeMenu_Click(object sender, RoutedEventArgs e)
         {
-            if (centralCubes.Count > 0)
-            {
-                layerEdit le = new layerEdit();
-                le.setComponent((Components)centralCubes[0]);
-                le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
-                le.Show();
-            }
+            changeTitle = 2;
+            btEdit_Click(sender, e);
         }
 
         //编辑起爆点
@@ -1265,7 +1265,7 @@ namespace GraphicalStructure
                             Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                             string mColor = cdic["content"];
                             string materialName = mdic["content"];
-                            if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                             }
@@ -1370,7 +1370,7 @@ namespace GraphicalStructure
                             Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                             string mColor = cdic["content"];
                             string materialName = mdic["content"];
-                            if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                             }
@@ -1601,7 +1601,7 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
-                                    if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                    if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
@@ -1706,7 +1706,7 @@ namespace GraphicalStructure
                                     Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                     string mColor = cdic["content"];
                                     string materialName = mdic["content"];
-                                    if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                    if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                     {
                                         color = (Color)ColorConverter.ConvertFromString(mColor);
                                     }
@@ -1822,7 +1822,7 @@ namespace GraphicalStructure
                                         Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                         string mColor = cdic["content"];
                                         string materialName = mdic["content"];
-                                        if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                                         {
                                             color = (Color)ColorConverter.ConvertFromString(mColor);
                                         }
@@ -1920,6 +1920,7 @@ namespace GraphicalStructure
                                         }
                                         bottomPf.Segments.Add(pls2_bottom);
                                     }
+                                }
 
                                     bottomPg.Figures.Add(bottomPf);
                                     bottomPf.IsClosed = true;
@@ -1933,7 +1934,7 @@ namespace GraphicalStructure
                                             Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
                                             string mColor = cdic["content"];
                                             string materialName = mdic["content"];
-                                            if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
+                                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                             {
                                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                                             }
@@ -1941,8 +1942,6 @@ namespace GraphicalStructure
                                     }
 
                                     ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
-                                }
-
                                 //将上下层路径添加到组中
                                 geometryGroup_.Children.Add(bottomPg);
 
@@ -3412,7 +3411,7 @@ namespace GraphicalStructure
         {
             editWindow ew = new editWindow();
             ew.list = DataBaseMaterials;
-            //ew.isCylinder = changeTitle;
+            ew.changeTitle = changeTitle;
 
             double leftWidth = 0;
             for (int i = 0; i < stackpanel.Children.IndexOf(insertShape); i++)

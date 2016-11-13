@@ -179,14 +179,18 @@ namespace GraphicalStructure
         //显示当前信息
         public void showComponentInfo()
         {
-            //if (isCylinder)
-            //{
-            //    this.Title = "Define Explosive Section";
-            //}
-            //else
-            //{
-            //    this.Title = "Define CentralCube Section";
-            //}
+            if (changeTitle == 0)
+            {
+                this.Title = "Define Explosive Section";
+            }
+            else if (changeTitle == 1)
+            {
+                this.Title = "Define EndCap Section";
+            }
+            else
+            {
+                this.Title = "Define CentralCube Section";
+            }
 
             ArrayList material = new ArrayList();
             if (list != null)
@@ -271,14 +275,14 @@ namespace GraphicalStructure
                 Cylinder.IsChecked = true;
             }
 
-            //if ()
-            //{
+            if (changeTitle == 2)
+            {
                 RadioCube.Visibility = Visibility.Visible;
                 if (currentCom.cubeOffset > 0)
                 {
                     RadioCube.IsChecked = true;
                 }
-            //}
+            }
             else
             {
                 RadioCube.Visibility = Visibility.Hidden;
