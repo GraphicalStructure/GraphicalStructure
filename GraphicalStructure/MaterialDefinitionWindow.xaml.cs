@@ -132,6 +132,7 @@ namespace GraphicalStructure
                 record.Add("soe", eosData);
                 count = ((ArrayList)eosDataResult[0]).Count;
                 List<string> eosFieldName = adb.GetTableFieldNameList("Eos_" + eosName);
+                num = 1;
                 while (num < count)
                 {
                     eosData.Add(eosFieldName[num], ((ArrayList)eosDataResult[0])[num].ToString());

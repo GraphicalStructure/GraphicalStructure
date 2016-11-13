@@ -36,7 +36,7 @@
         <TextBox Name="segmentWidth" HorizontalAlignment="Left" Height="20" Margin="269,170,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="53"/>
         <Label Content="mm&#xA;" HorizontalAlignment="Left" Margin="327,167,0,0" VerticalAlignment="Top" Height="25"/>
         <Label Name="radius" Content="R =" HorizontalAlignment="Left" Margin="234,199,0,0" VerticalAlignment="Top"/>
-        <TextBox Name="radiusText" HorizontalAlignment="Left" Height="20" Margin="270,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="53"/>
+        <TextBox Name="radiusText" Text="0" HorizontalAlignment="Left" Height="20" Margin="270,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="53"/>
         <RadioButton Name="Cylinder" Content="Cylinder" GroupName="g1" HorizontalAlignment="Left" Margin="245,60,0,0" VerticalAlignment="Top" IsChecked="True" Checked="RadioButton_Checked"/>
         <!--<RadioButton Content="Cone" GroupName="g1" HorizontalAlignment="Left" Margin="245,85,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>-->
         <RadioButton Name="Ogive" Content="Ogive" GroupName="g1" HorizontalAlignment="Left" Margin="245,86,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
