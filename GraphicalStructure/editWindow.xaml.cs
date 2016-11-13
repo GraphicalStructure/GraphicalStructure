@@ -932,6 +932,7 @@ namespace GraphicalStructure
                         }
                     }
                     rightCom.newPath.Height += offset;
+                    
 
                     rightCom.startPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y);
                     rightCom.point2 = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y);
@@ -966,6 +967,7 @@ namespace GraphicalStructure
                     Path originalInsertShape = mainWindow.getInsertShape();
                     int originalCurLayerNum = mainWindow.getCurLayerNum();
                     ew.currentCom = rightCom;
+                    color = (Color)ColorConverter.ConvertFromString(currentCom.newPath.Fill.ToString());
                     mainWindow.setInsertShape(rightCom.newPath);
                     mainWindow.setCurLayerNum(rightCom.layerNum);
                     ew.OKButton_Click(null, null);

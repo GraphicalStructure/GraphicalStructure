@@ -5344,6 +5344,7 @@ namespace GraphicalStructure
                                     Color color = new Color();
                                     if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                     {
+                                        bool isfind = false;
                                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                                         {
                                             Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -5352,9 +5353,13 @@ namespace GraphicalStructure
                                             string materialName = mdic["content"];
                                             if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                             {
-                                                
+                                                isfind = true;
                                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                                             }
+                                        }
+                                        if (isfind == false)
+                                        {
+                                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                         }
                                     }
                                     else
@@ -5462,6 +5467,7 @@ namespace GraphicalStructure
 
                                     if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                     {
+                                        bool isfind = false;
                                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                                         {
                                             Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -5470,8 +5476,13 @@ namespace GraphicalStructure
                                             string materialName = mdic["content"];
                                             if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                             {
+                                                isfind = true;
                                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                                             }
+                                        }
+                                        if (isfind == false)
+                                        {
+                                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                         }
                                     }
                                     else
@@ -5706,6 +5717,7 @@ namespace GraphicalStructure
                                         Color color = new Color();
                                         if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                         {
+                                            bool isfind = false;
                                             for (int j = 0; j < DataBaseMaterials.Count; j++)
                                             {
                                                 Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -5714,8 +5726,13 @@ namespace GraphicalStructure
                                                 string materialName = mdic["content"];
                                                 if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                                 {
+                                                    isfind = true;
                                                     color = (Color)ColorConverter.ConvertFromString(mColor);
                                                 }
+                                            }
+                                            if (isfind == false)
+                                            {
+                                                color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                             }
                                         }
                                         else
@@ -5835,6 +5852,7 @@ namespace GraphicalStructure
                                         Color color = new Color();
                                         if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                         {
+                                            bool isfind = false;
                                             for (int j = 0; j < DataBaseMaterials.Count; j++)
                                             {
                                                 Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -5843,8 +5861,13 @@ namespace GraphicalStructure
                                                 string materialName = mdic["content"];
                                                 if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                                 {
+                                                    isfind = true;
                                                     color = (Color)ColorConverter.ConvertFromString(mColor);
                                                 }
+                                            }
+                                            if (isfind == false)
+                                            {
+                                                color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                             }
                                         }
                                         else
