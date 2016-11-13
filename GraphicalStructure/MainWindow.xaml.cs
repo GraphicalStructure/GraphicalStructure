@@ -905,6 +905,7 @@ namespace GraphicalStructure
                 stackpanel.Children.Insert(stackpanel.Children.Count - 1, cps.newPath);
 
                 //自动调整图形位置
+                makeRightCoverConnectSkillfully();
                 autoResize();
                 //MessageBox.Show("已有右端盖，不能添加段！", "警告");
             }
@@ -2083,7 +2084,8 @@ namespace GraphicalStructure
                     ColorProc.processWhenDelLayer(front_canvas, ((PathGeometry)geometryGroup.Children[i]).Figures[0]);
                     geometryGroup.Children.RemoveAt(i);
                 }
-
+                makeLeftCoverConnectSkillfully();
+                makeRightCoverConnectSkillfully();
                 autoResize();
             }
         }
@@ -3428,6 +3430,8 @@ namespace GraphicalStructure
             ((Components)components[index]).layerRightThickness.Add(20);
             ((Components)components[index]).layerRightThickness.Add(20);
 
+            makeLeftCoverConnectSkillfully();
+            makeRightCoverConnectSkillfully();
             autoResize();
             //}
             //catch
@@ -3498,14 +3502,19 @@ namespace GraphicalStructure
                 e.Handled = true;
                 return;
             }
+            if (index == 1 && isHaveRightEndCap && isHaveLeftEndCap && stackpanel.Children.Count == 3) {
+                MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
+                e.Handled = true;
+                return;
+            }
 
-            if(index != 0)
+            if(index != 0 && index + 1 <= stackpanel.Children.Count - 1)
             {
                 //删除中间的，需要判断左右是否连续
                 System.Windows.Shapes.Path leftPath = (System.Windows.Shapes.Path)stackpanel.Children[index - 1];
                 System.Windows.Shapes.Path rightPath = (System.Windows.Shapes.Path)stackpanel.Children[index + 1];
 
-                if (index == 1 && (isHaveRightEndCap|| isHaveLeftEndCap) && stackpanel.Children.Count <= 3)
+                if (index == 1 && (isHaveRightEndCap|| isHaveLeftEndCap) && stackpanel.Children.Count < 3)
                 {
                     MessageBox.Show("不能删除最后一个段！如果非要删除，请新建项目！", "警告");
                     e.Handled = true;
@@ -3575,6 +3584,7 @@ namespace GraphicalStructure
                 setInsertShape(originalInsertShape);
                 setCurLayerNum(originalCurLayerNum);
             }
+           
             if (index == 0 && isHaveLeftEndCap)
             {
                 isHaveLeftEndCap = false;
@@ -3599,6 +3609,8 @@ namespace GraphicalStructure
 
             stackpanel.Children.Remove(insertShape);
 
+            makeLeftCoverConnectSkillfully();
+            makeRightCoverConnectSkillfully();
             autoResize();
 
             //移动浮层
@@ -5818,6 +5830,121 @@ namespace GraphicalStructure
         public int getCurLayerNum()
         {
             return curLayerNum;
+        }
+
+        // 轻松衔接左端盖
+        public void makeLeftCoverConnectSkillfully() {
+            // 如果有左端盖
+            if (isHaveLeftEndCap) {
+                // 删除左端盖
+                ContextMenu c = canvas.ContextMenu;
+                MenuItem m = c.Items[0] as MenuItem;
+                MenuItem mi_delete = m.Items[1] as MenuItem;
+                // 原左端盖com
+                Components originalLeftCoverCom = (Components)components[0];
+                // 原左端盖的shape
+                System.Windows.Shapes.Path originalLeftCover = (System.Windows.Shapes.Path)stackpanel.Children[0];
+                RoutedEventArgs e1 = new RoutedEventArgs(MenuItem.ClickEvent);
+                mi_delete.RaiseEvent(e1);
+
+                // 添加新的左端盖
+                MenuItem mi_add = m.Items[0] as MenuItem;
+                RoutedEventArgs e2 = new RoutedEventArgs(MenuItem.ClickEvent);
+                mi_add.RaiseEvent(e2);
+                // 修改左端盖
+                Components currentLeftCoverCom = (Components)components[0];
+                editWindow ew = new editWindow();
+                ew.setComponent(currentLeftCoverCom);
+                ew.Owner = this;
+                ew.leftD.Text = originalLeftCoverCom.pg.Bounds.BottomLeft.Y - originalLeftCoverCom.pg.Bounds.TopLeft.Y + "";
+                ew.rightD.Text = currentLeftCoverCom.pg.Bounds.BottomRight.Y - currentLeftCoverCom.pg.Bounds.TopRight.Y + "";
+                ew.radiusText.Text = originalLeftCoverCom.radius.ToString();
+                ew.segmentWidth.Text = originalLeftCoverCom.width.ToString();
+                ew.isLeftEndCap = originalLeftCover.Fill.ToString();
+                ew.isRightEndCap = originalLeftCover.Fill.ToString();
+                ew.canvas = canvas;
+                if (originalLeftCoverCom.isChangeOgive)
+                {
+                    ew.shape = "Ogive";
+                }
+                else if (originalLeftCoverCom.isChangeIOgive)
+                {
+                    ew.shape = "IOgive";
+                }
+                else {
+                    ew.shape = "Cylinder";
+                }
+                ew.sp = stackpanel;
+                ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
+                ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
+                System.Windows.Shapes.Path originalInsertShape = getInsertShape();
+                int originalCurLayerNum = getCurLayerNum();
+                setInsertShape(currentLeftCoverCom.newPath);
+                setCurLayerNum(currentLeftCoverCom.layerNum);
+                ew.OKButton_Click(null, null);
+                setInsertShape(originalInsertShape);
+                setCurLayerNum(originalCurLayerNum);
+            }
+        }
+
+        public void makeRightCoverConnectSkillfully() {
+            // 如果有右端盖
+            if (isHaveRightEndCap)
+            {
+                // 删除右端盖
+                ContextMenu c = canvas.ContextMenu;
+                MenuItem m = c.Items[1] as MenuItem;
+                MenuItem mi_delete = m.Items[1] as MenuItem;
+                // 原右端盖com
+                Components originalRightCoverCom = (Components)components[components.Count - 1];
+                // 原右端盖的shape
+                System.Windows.Shapes.Path originalRightCover = (System.Windows.Shapes.Path)stackpanel.Children[stackpanel.Children.Count - 1];
+                RoutedEventArgs e1 = new RoutedEventArgs(MenuItem.ClickEvent);
+                mi_delete.RaiseEvent(e1);
+
+                // 添加新的右端盖
+                MenuItem mi_add = m.Items[0] as MenuItem;
+                RoutedEventArgs e2 = new RoutedEventArgs(MenuItem.ClickEvent);
+                mi_add.RaiseEvent(e2);
+                // 修改右端盖
+                Components currentRightCoverCom = (Components)components[components.Count - 1];
+                editWindow ew = new editWindow();
+                ew.setComponent(currentRightCoverCom);
+                ew.Owner = this;
+                ew.leftD.Text = currentRightCoverCom.pg.Bounds.BottomLeft.Y - currentRightCoverCom.pg.Bounds.TopLeft.Y + "";
+                ew.rightD.Text = originalRightCoverCom.pg.Bounds.BottomRight.Y - originalRightCoverCom.pg.Bounds.TopRight.Y + "";
+                ew.radiusText.Text = originalRightCoverCom.radius.ToString();
+                ew.segmentWidth.Text = originalRightCoverCom.width.ToString();
+                ew.isLeftEndCap = originalRightCover.Fill.ToString();
+                ew.isRightEndCap = originalRightCover.Fill.ToString();
+                ew.canvas = canvas;
+                if (originalRightCoverCom.isChangeOgive)
+                {
+                    ew.shape = "Ogive";
+                }
+                else if (originalRightCoverCom.isChangeIOgive)
+                {
+                    ew.shape = "IOgive";
+                }
+                else
+                {
+                    ew.shape = "Cylinder";
+                }
+                ew.sp = stackpanel;
+                ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
+                ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+                ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
+                System.Windows.Shapes.Path originalInsertShape = getInsertShape();
+                int originalCurLayerNum = getCurLayerNum();
+                setInsertShape(currentRightCoverCom.newPath);
+                setCurLayerNum(currentRightCoverCom.layerNum);
+                ew.OKButton_Click(null, null);
+                setInsertShape(originalInsertShape);
+                setCurLayerNum(originalCurLayerNum);
+            }
         }
     }
 }
