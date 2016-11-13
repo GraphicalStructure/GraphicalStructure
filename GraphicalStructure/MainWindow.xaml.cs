@@ -3313,9 +3313,9 @@ namespace GraphicalStructure
 
                 if (curPf.Segments[1] is LineSegment)
                 {
-                    //LineSegment ls4_bottom = new LineSegment();
-                    //ls4_bottom.Point = bottomPf.StartPoint;
-                    //bottomPf.Segments.Add(ls4_bottom);
+                    LineSegment ls4_bottom = new LineSegment();
+                    ls4_bottom.Point = bottomPf.StartPoint;
+                    bottomPf.Segments.Add(ls4_bottom);
                 }
                 else if (curPf.Segments[1] is ArcSegment)
                 {
@@ -3693,8 +3693,8 @@ namespace GraphicalStructure
             ((Components)components[index]).layerNums.Add(((Components)components[index]).layerNum);
             ((Components)components[index]).layerType.Add("结构");
             ((Components)components[index]).layerType.Add("结构");
-            ((Components)components[index]).layerMaterial.Add("金");
-            ((Components)components[index]).layerMaterial.Add("金");
+            ((Components)components[index]).layerMaterial.Add("空气");
+            ((Components)components[index]).layerMaterial.Add("空气");
             ((Components)components[index]).layerSize.Add(((Components)components[index]).layerNum - 1, new Hashtable());
             ((Components)components[index]).layerSize.Add(((Components)components[index]).layerNum, new Hashtable());
             ((Hashtable)(((Components)components[index]).layerSize[((Components)components[index]).layerNum - 1])).Add("diameter", 20);
@@ -5143,7 +5143,7 @@ namespace GraphicalStructure
                                     topPf.IsClosed = true;
 
                                     Color color = new Color();
-                                    if (DataBaseMaterials != null)
+                                    if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                     {
                                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                                         {
@@ -5153,9 +5153,14 @@ namespace GraphicalStructure
                                             string materialName = mdic["content"];
                                             if (materialName == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
                                             {
+                                                
                                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                     }
                                     //{
                                     //    if (row[dt.Columns[1]].ToString() == ((Components)components[components.Count - 1]).layerMaterial[((Components)components[components.Count - 1]).layerNum - 2].ToString())
@@ -5222,9 +5227,9 @@ namespace GraphicalStructure
 
                                     if (curPf.Segments[1] is LineSegment)
                                     {
-                                        //LineSegment ls4_bottom = new LineSegment();
-                                        //ls4_bottom.Point = bottomPf.StartPoint;
-                                        //bottomPf.Segments.Add(ls4_bottom);
+                                        LineSegment ls4_bottom = new LineSegment();
+                                        ls4_bottom.Point = bottomPf.StartPoint;
+                                        bottomPf.Segments.Add(ls4_bottom);
                                     }
                                     else if (curPf.Segments[1] is ArcSegment)
                                     {
@@ -5256,7 +5261,7 @@ namespace GraphicalStructure
 
                                     bottomPg.Figures.Add(bottomPf);
 
-                                    if (DataBaseMaterials != null)
+                                    if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                     {
                                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                                         {
@@ -5269,6 +5274,10 @@ namespace GraphicalStructure
                                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                     }
                                     
                                     ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, insertShape, bottomPf, 1, color);
@@ -5392,7 +5401,7 @@ namespace GraphicalStructure
                                         {
                                             if (curPf2.Segments[3] is LineSegment)
                                             {
-                                                //((LineSegment)curPf2.Segments[3]).Point = new Point(((LineSegment)curPf2.Segments[3]).Point.X, ((LineSegment)curPf2.Segments[3]).Point.Y + 20);
+                                                ((LineSegment)curPf2.Segments[3]).Point = new Point(((LineSegment)curPf2.Segments[3]).Point.X, ((LineSegment)curPf2.Segments[3]).Point.Y + maxCh_Width);
                                             }
                                             else if (curPf2.Segments[3] is ArcSegment)
                                             {
@@ -5496,7 +5505,7 @@ namespace GraphicalStructure
                                         topPf.IsClosed = true;
 
                                         Color color = new Color();
-                                        if (DataBaseMaterials != null)
+                                        if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                         {
                                             for (int j = 0; j < DataBaseMaterials.Count; j++)
                                             {
@@ -5509,6 +5518,10 @@ namespace GraphicalStructure
                                                     color = (Color)ColorConverter.ConvertFromString(mColor);
                                                 }
                                             }
+                                        }
+                                        else
+                                        {
+                                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                         }
                                         //foreach (DataRow row in dt.Rows)
                                         //{
@@ -5566,23 +5579,29 @@ namespace GraphicalStructure
                                         }
 
                                         LineSegment ls3_bottom = new LineSegment();
-                                        //if (curPf2.Segments[1] is LineSegment)
-                                        //{
-                                        Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[2]).Point.X, ((LineSegment)curPf2.Segments[2]).Point.Y + rightWidth);
-                                        ls3_bottom.Point = forthPoint_bottom;
-                                        //}
-                                        //else
-                                        //{
-                                        // Point forthPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
-                                        // ls3_bottom.Point = forthPoint_bottom; ;
-                                        //}
+                                        if (curPf2.Segments[1] is LineSegment)
+                                        {
+                                            Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y);
+                                            ls3_bottom.Point = forthPoint_bottom;
+                                        }
+                                        else if (curPf2.Segments[1] is ArcSegment)
+                                        {
+                                            Point forthPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
+                                            ls3_bottom.Point = forthPoint_bottom;
+                                        }
+                                        else
+                                        {
+                                            //TODO...
+                                        }
                                         bottomPf.Segments.Add(ls3_bottom);
 
                                         if (curPf2.Segments.Count > 3)
                                         {
                                             if (curPf2.Segments[3] is LineSegment)
                                             {
-
+                                                LineSegment ls4_bottom = new LineSegment();
+                                                ls4_bottom.Point = bottomPf.StartPoint;
+                                                bottomPf.Segments.Add(ls4_bottom);
                                             }
                                             else if (curPf2.Segments[3] is ArcSegment)
                                             {
@@ -5615,7 +5634,7 @@ namespace GraphicalStructure
                                         bottomPg.Figures.Add(bottomPf);
 
                                         Color color = new Color();
-                                        if (DataBaseMaterials != null)
+                                        if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
                                         {
                                             for (int j = 0; j < DataBaseMaterials.Count; j++)
                                             {
@@ -5628,6 +5647,10 @@ namespace GraphicalStructure
                                                     color = (Color)ColorConverter.ConvertFromString(mColor);
                                                 }
                                             }
+                                        }
+                                        else
+                                        {
+                                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                                         }
 
                                         //UseAccessDB accessDb = new UseAccessDB();

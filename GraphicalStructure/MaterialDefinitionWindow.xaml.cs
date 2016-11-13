@@ -34,6 +34,8 @@ namespace GraphicalStructure
 
         public event PassValuesHandler PassValuesEvent;
 
+        private bool openDataBase;
+
         public MaterialDefinitionWindow()
         {
             totalMaterials = new List<Dictionary<string, Dictionary<string, string>>>();
@@ -41,11 +43,7 @@ namespace GraphicalStructure
             InitializeComponent();
 
             adb = new UseAccessDB();
-            bool openDataBase = adb.OpenDb();
-            if (openDataBase == false)
-            {
-                this.Close();
-            }
+            openDataBase = adb.OpenDb();
         }
 
         private void receivedNewMaterialWindowData(object sender, Validity val) {
@@ -184,15 +182,26 @@ namespace GraphicalStructure
         }
 
         private void newMaterial(object sender, RoutedEventArgs e) {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！","警告");
+                return;
+            }
             NewMaterialWindow nmw = new NewMaterialWindow();
             nmw.setPreUpdateMaterialData(0, null, -1);
             nmw.PassValuesEvent += new NewMaterialWindow.PassValuesHandler(receivedNewMaterialWindowData);
             nmw.Show();
+            
         }
 
         // 删除一条,更新容器编号，tag值
         private void delMaterial(object sender, RoutedEventArgs e)
         {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！", "警告");
+                return;
+            }
             if (listBox.Items.Count == 0)
             {
                 MessageBox.Show("操作有误");
@@ -224,6 +233,11 @@ namespace GraphicalStructure
         //更新该条的参数
         private void  updateMaterial(object sender, RoutedEventArgs e)
         {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！", "警告");
+                return;
+            }
             // 修改该条材料和新建材料使用同一个window
             NewMaterialWindow nmw = new NewMaterialWindow();
             ListBoxItem listBoxItem = (ListBoxItem)listBox.SelectedItem;
@@ -246,6 +260,11 @@ namespace GraphicalStructure
 
         private void findMaterial(object sender, RoutedEventArgs e)
         {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！", "警告");
+                return;
+            }
             MaterialLoadWindow mlw = new MaterialLoadWindow();
             findAllMaterialFromDb();// 查找的数据放入DataBaseMaterials
             mlw.setCURDType("r", DataBaseMaterials);
@@ -255,6 +274,11 @@ namespace GraphicalStructure
 
         private void saveMaterial(object sender, RoutedEventArgs e)
         {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！", "警告");
+                return;
+            }
             saveDataToFile(totalMaterials);
 
             addMaterialToDataBase(totalMaterials);
@@ -262,6 +286,11 @@ namespace GraphicalStructure
 
         // 复制一条
         private void copyMaterial(object sender, RoutedEventArgs e) {
+            if (!openDataBase)
+            {
+                MessageBox.Show("打开数据库失败！", "警告");
+                return;
+            }
             if (listBox.Items.Count == 0)
             {
                 MessageBox.Show("操作有误");

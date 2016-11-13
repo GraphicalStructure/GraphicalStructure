@@ -469,16 +469,16 @@ namespace GraphicalStructure
                 {
                     // 当前改变左侧段高的段为第一个段，则需改变左端盖
                     PathFigure leftCoverPf = leftCom.pg.Figures[0];
-                    leftCoverPf.StartPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y - offset/2);
-                    ((LineSegment)leftCoverPf.Segments[0]).Point = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset / 2);
+                    leftCoverPf.StartPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y);
+                    ((LineSegment)leftCoverPf.Segments[0]).Point = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset);
                     if (leftCoverPf.Segments[1] is LineSegment) {
-                        ((LineSegment)leftCoverPf.Segments[1]).Point = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                        ((LineSegment)leftCoverPf.Segments[1]).Point = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset);
                     } else if (leftCoverPf.Segments[1] is ArcSegment) {
-                        ((ArcSegment)leftCoverPf.Segments[1]).Point = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                        ((ArcSegment)leftCoverPf.Segments[1]).Point = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset);
                     } else {
                         // when poly
                     }
-                    ((LineSegment)leftCoverPf.Segments[2]).Point = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y - offset / 2);
+                    ((LineSegment)leftCoverPf.Segments[2]).Point = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y);
                     // 最后一条边可能需要处理
                     if (leftCoverPf.Segments.Count == 4) {
                         if (leftCoverPf.Segments[3] is LineSegment) {
@@ -490,22 +490,23 @@ namespace GraphicalStructure
                             // when poly
                         }
                     }
+                    leftCom.newPath.Height += offset;
 
-                    leftCom.startPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y + offset / 2);
-                    leftCom.point2 = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset / 2);
+                    leftCom.startPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y);
+                    leftCom.point2 = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y);
                     if (leftCoverPf.Segments[1] is LineSegment)
                     {
-                        leftCom.point3 = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                        leftCom.point3 = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y);
                     }
                     else if (leftCoverPf.Segments[1] is ArcSegment)
                     {
-                        leftCom.point3 = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset / 2);
+                        leftCom.point3 = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y);
                     }
                     else
                     {
                         // when poly
                     }
-                    leftCom.point4 = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y + offset / 2);
+                    leftCom.point4 = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y);
 
                 }
                 else
@@ -605,6 +606,7 @@ namespace GraphicalStructure
                         ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
                         ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y);
                         ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
                     }
                     else if (bottomPf.Segments[1] is ArcSegment)
                     {
@@ -686,6 +688,7 @@ namespace GraphicalStructure
                         ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
                         ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y);
                         ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)last_bottomPf.Segments[1]).Point.X, ((LineSegment)last_bottomPf.Segments[1]).Point.Y + rightlayerHeight);
+                        ((LineSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
                     }
                     else if (bottomPf.Segments[1] is ArcSegment)
                     {
@@ -897,21 +900,21 @@ namespace GraphicalStructure
                 {
                     // 当前改变右侧段高的段为最后一个段，则需改变右端盖
                     PathFigure rightCoverPf = rightCom.pg.Figures[0];
-                    rightCoverPf.StartPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y - offset / 2);
-                    ((LineSegment)rightCoverPf.Segments[0]).Point = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset / 2);
+                    rightCoverPf.StartPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y);
+                    ((LineSegment)rightCoverPf.Segments[0]).Point = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset);
                     if (rightCoverPf.Segments[1] is LineSegment)
                     {
-                        ((LineSegment)rightCoverPf.Segments[1]).Point = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                        ((LineSegment)rightCoverPf.Segments[1]).Point = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y + offset );
                     }
                     else if (rightCoverPf.Segments[1] is ArcSegment)
                     {
-                        ((ArcSegment)rightCoverPf.Segments[1]).Point = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                        ((ArcSegment)rightCoverPf.Segments[1]).Point = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y + offset);
                     }
                     else
                     {
                         // when poly
                     }
-                    ((LineSegment)rightCoverPf.Segments[2]).Point = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y - offset / 2);
+                    ((LineSegment)rightCoverPf.Segments[2]).Point = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y);
                     // 最后一条边可能需要处理
                     if (rightCoverPf.Segments.Count == 4)
                     {
@@ -928,22 +931,23 @@ namespace GraphicalStructure
                             // when poly
                         }
                     }
+                    rightCom.newPath.Height += offset;
 
-                    rightCom.startPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y + offset / 2);
-                    rightCom.point2 = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset / 2);
+                    rightCom.startPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y);
+                    rightCom.point2 = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y);
                     if (rightCoverPf.Segments[1] is LineSegment)
                     {
-                        rightCom.point3 = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                        rightCom.point3 = new Point(((LineSegment)rightCoverPf.Segments[1]).Point.X, ((LineSegment)rightCoverPf.Segments[1]).Point.Y);
                     }
                     else if (rightCoverPf.Segments[1] is ArcSegment)
                     {
-                        rightCom.point3 = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y + offset / 2);
+                        rightCom.point3 = new Point(((ArcSegment)rightCoverPf.Segments[1]).Point.X, ((ArcSegment)rightCoverPf.Segments[1]).Point.Y);
                     }
                     else
                     {
                         // when poly
                     }
-                    rightCom.point4 = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y + offset / 2);
+                    rightCom.point4 = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y);
                 }
                 else
                 {
