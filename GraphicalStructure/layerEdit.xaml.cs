@@ -452,8 +452,10 @@ namespace GraphicalStructure
                 layerEdit _ = new layerEdit((MainWindow)Application.Current.MainWindow);
                 mainWindow.changeArcSegmentToLineSegment(1, 2);
                 layerEdit _le = new layerEdit();
-                _le.setComponent(currentCom);
+                _le.layerNums.ItemsSource = currentCom.layerNums;
+                _le.layerNums.SelectedIndex = currentLayerNum - 1;
                 _le.currentLayerNum = currentLayerNum;
+                _le.setComponent(currentCom);
                 _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
@@ -689,7 +691,21 @@ namespace GraphicalStructure
                     this.currentCom.layerRightThickness[layerNumberTwo - 1] = Double.Parse(rightSize.Text);
                 }
             }
-            catch { 
+            catch {
+                layerEdit _ = new layerEdit((MainWindow)Application.Current.MainWindow);
+                mainWindow.changeArcSegmentToLineSegment(1, 2);
+                layerEdit _le = new layerEdit();
+                _le.setComponent(currentCom);
+                _le.currentLayerNum = currentLayerNum;
+                _le.layerNums.ItemsSource = currentCom.layerNums;
+                _le.layerNums.SelectedIndex = currentLayerNum - 1;
+                _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
+                _le.leftSize.Text = leftSize.Text;
+                _le.rightSize.Text = rightSize.Text;
+                _le.OKButton_Click(null, null);
+                int isConvex = 0;
+                if (currentCom.isChangeIOgive) isConvex = 1;
+                mainWindow.changeLineSegmentToPolySegmentForLayer(currentCom.radius, isConvex);
             }
             layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
             mainWindow.makeRightCoverConnectSkillfully();
