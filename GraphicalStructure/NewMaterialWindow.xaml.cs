@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 
 namespace GraphicalStructure
 {
@@ -110,6 +111,8 @@ namespace GraphicalStructure
                         MatComboBox.SelectedItem = cbi;
                     }
                 }
+                textBox_Density.Text = materialForUpdate["density"]["content"];
+                textBox_Color.Text = materialForUpdate["color"]["content"];
                 textBox_refer.Text = materialForUpdate["refer"]["content"];
 
                 gatherDataFromEditWindow = new Dictionary<string, Dictionary<string, string>>();
@@ -160,6 +163,17 @@ namespace GraphicalStructure
                 data.Add("mat", gatherDataFromEditWindow["mat"]);
                 data.Add("soeName", new Dictionary<string, string>() { { "content", currentSoeName } });
                 data.Add("soe", gatherDataFromEditWindow["soe"]);
+                string density = textBox_Density.Text;
+                if (density == null) {
+                    density = "";
+                }
+                data.Add("density", new Dictionary<string, string>() { { "content", density } });
+                string color = textBox_Color.Text;
+                if (color == null)
+                {
+                    color = "";
+                }
+                data.Add("color", new Dictionary<string, string>() { { "content", color } });
                 data.Add("refer", new Dictionary<string, string>() { { "content", textBox_refer.Text } });
                 data.Add("density", new Dictionary<string, string>() { { "content", "1314" } });
                 data.Add("color", new Dictionary<string, string>() { { "content", "#FFFFA500" } });
@@ -173,6 +187,8 @@ namespace GraphicalStructure
                 materialForUpdate["refer"]["content"] = textBox_refer.Text;
                 materialForUpdate["matName"]["content"] = ((ComboBoxItem)MatComboBox.SelectedItem).Content.ToString();
                 materialForUpdate["soeName"]["content"] = textBox_soe.Text;
+                materialForUpdate["density"]["content"] = textBox_Density.Text;
+                materialForUpdate["color"]["content"] = textBox_Color.Text;
 
                 materialForUpdate["mat"] = new Dictionary<string, string>(gatherDataFromEditWindow["mat"]);
                 materialForUpdate["soe"] = new Dictionary<string, string>(gatherDataFromEditWindow["soe"]);
@@ -197,6 +213,21 @@ namespace GraphicalStructure
                 result +=kvp.Key + "=" + kvp.Value;
             }
             return result;
+        }
+
+        private void colorCanvas_SelectedColorChanged(object sender, EventArgs e)
+        {
+            textBox_Color.Text = colorCanvas.SelectedColor.ToString();
+        }
+
+        private void showColorCanvas(object sender, RoutedEventArgs e) {
+            colorCanvas.Visibility = Visibility.Visible;
+            e.Handled = true;
+        }
+
+        private void hiddenColorCanvas(object sender, RoutedEventArgs e) {
+            colorCanvas.Visibility = Visibility.Hidden;
+            e.Handled = true;
         }
     }
 }
