@@ -17,6 +17,8 @@ namespace GraphicalStructure
 
         void changeLineSegmentToArcSegment(double radius, int isConvex);
 
+        void changeLineSegmentToPolySegmentForLayer(double radius, int isConvex);
+
         void changeArcSegmentToLineSegment(double a, int b);
 
         Path getInsertShape();

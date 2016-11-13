@@ -254,7 +254,7 @@ namespace GraphicalStructure
             centerLine.Y1 = canvas.Height / 2;
             centerLine.X2 = canvas.Width - 20;
             centerLine.Y2 = canvas.Height / 2;
-            if (e.HeightChanged) {
+            /*if (e.HeightChanged) {
                 double hChanged = e.PreviousSize.Height - e.NewSize.Height;
                 for (int i = 0; i < canvas.Children.Count; i++) {
                     if (canvas.Children[i] is System.Windows.Shapes.Path) {
@@ -263,7 +263,7 @@ namespace GraphicalStructure
                         ColorProc.moveVertical(path, -hChanged/2.0);
                     }
                 }
-            }
+            }*/
             autoResize();
         }
 
@@ -2991,6 +2991,205 @@ namespace GraphicalStructure
                     }
                 }
             }
+            ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
+        }
+
+        public void changeLineSegmentToPolySegmentForLayer(double radius, int isConvex) {
+            //绘制上段
+            Point p1, p2;
+            GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
+            geometryGroup.FillRule = FillRule.Nonzero;
+            int index = stackpanel.Children.IndexOf(insertShape);
+            if (isConvex == 0)
+            {
+                ((Components)components[index]).isChangeOgive = true;
+                ((Components)components[index]).isChangeIOgive = false;
+            }
+            else
+            {
+                ((Components)components[index]).isChangeOgive = false;
+                ((Components)components[index]).isChangeIOgive = true;
+            }
+
+            //未添加层时，直接根据段添加弧形
+            PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
+            PathFigure curPf = curPg.Figures.ElementAt(0);
+            p1 = new Point(curPf.StartPoint.X, curPf.StartPoint.Y);
+            p2 = ((LineSegment)curPf.Segments[2]).Point;
+
+            ArcSegment arcSegment = new ArcSegment();
+            PolyLineSegment polyLineSegment = new PolyLineSegment();
+            PointCollection points = new PointCollection();
+            Point[] circle_centers = calcuCentralPoints(p1, p2, radius);
+
+            Point point_in_x1_x2 = new Point(Math.Abs((p1.X - p2.X) / 2), Math.Abs((p1.Y - p2.Y) / 2));
+            double distance_x1_x2 = Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+            double radius1, radius2 = 0;
+            if (radius < distance_x1_x2 / 2)
+            {
+                return;
+            }
+            else
+            {
+                radius1 = distance_x1_x2 / 2;
+                radius2 = radius - Math.Sqrt(Math.Pow(radius, 2) - Math.Pow(radius1, 2));
+            }
+            arcSegment.Size = new Size(radius1, radius2);
+            arcSegment.Point = p1;
+
+            if (isConvex == 0)
+            {   //凸
+                points = findPolyPointsByCircle(circle_centers[0], radius, p1, p2, 1000, isConvex);
+                polyLineSegment.Points = points;
+                arcSegment.SweepDirection = SweepDirection.Counterclockwise;
+            }
+            else
+            {   //凹
+                points = findPolyPointsByCircle(circle_centers[1], radius, p1, p2, 1000, isConvex);
+                polyLineSegment.Points = points;
+                arcSegment.SweepDirection = SweepDirection.Clockwise;
+            }
+            curPf.Segments[3] = polyLineSegment;
+
+            if (curLayerNum != 0)
+            {
+                //return;
+                //有层时，根据层数绘制弧形
+                //每层默认height 20
+                    //有层且层为polysegment处理
+                    Point _p1, _p2, _p3, _p4;
+                    PathGeometry _curPg;
+                    PathFigure _curPf;
+                    PolyLineSegment pls1, pls2;
+                    for (int i = 1; i <= curLayerNum; i += 2)
+                    {
+                        _curPg = (PathGeometry)geometryGroup.Children[i];
+                        _curPf = _curPg.Figures.ElementAt(0);
+                        pls1 = new PolyLineSegment();
+                        pls2 = new PolyLineSegment();
+                        _p1 = _curPf.StartPoint;
+                        if (_curPf.Segments[0] is LineSegment)
+                        {
+                            _p2 = ((LineSegment)_curPf.Segments[0]).Point;
+                        }
+                        else
+                        {
+                            _p2 = new Point();
+                        }
+                        _p3 = ((LineSegment)_curPf.Segments[1]).Point;
+
+                        if (_curPf.Segments[2] is LineSegment)
+                        {
+                            _p4 = ((LineSegment)_curPf.Segments[2]).Point;
+                        }
+                        else
+                        {
+                            _p4 = new Point();
+                        }
+                        if (isConvex == 0)
+                        {
+                            Point[] _circle_centers = calcuCentralPoints(_p1, _p2, radius);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p1, _p2, 1000, isConvex);
+                            _points = reversePointCollection(_points);
+                            pls1.Points = _points;
+
+                            PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
+                            PathGeometry _downPg = (PathGeometry)geometryGroup.Children[i + 1];
+                            PathFigure _downPf = _downPg.Figures.ElementAt(0);
+                            PolyLineSegment _polyLineSegment = new PolyLineSegment();
+                            _polyLineSegment.Points = _downPoints;
+                            if (_downPf.Segments.Count < 4)
+                            {
+                                _downPf.Segments.Add(_polyLineSegment);
+                            }
+                            _downPf.Segments[3] = _polyLineSegment;
+                        }
+                        else
+                        {
+                            Point[] _circle_centers = calcuCentralPoints(_p1, _p2, radius);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p1, _p2, 1000, isConvex);
+                            _points = reversePointCollection(_points);
+                            pls1.Points = _points;
+
+                            PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
+                            PathGeometry _downPg = (PathGeometry)geometryGroup.Children[i + 1];
+                            PathFigure _downPf = _downPg.Figures.ElementAt(0);
+                            PolyLineSegment _polyLineSegment = new PolyLineSegment();
+                            _polyLineSegment.Points = _downPoints;
+                            if (_downPf.Segments.Count < 4)
+                            {
+                                _downPf.Segments.Add(_polyLineSegment);
+                            }
+                            _downPf.Segments[3] = _polyLineSegment;
+                        }
+
+                        if (isConvex == 0)
+                        {
+                            Point[] _circle_centers = calcuCentralPoints(_p4, _p3, radius);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[0], radius, _p4, _p3, 1000, isConvex);
+                            pls2.Points = _points;
+
+                            PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
+                            PathGeometry _downPg = (PathGeometry)geometryGroup.Children[i + 1];
+                            PathFigure _downPf = _downPg.Figures.ElementAt(0);
+                            _downPf.Segments[1] = new PolyLineSegment();
+                            ((PolyLineSegment)_downPf.Segments[1]).Points = _downPoints;
+                        }
+                        else
+                        {
+                            Point[] _circle_centers = calcuCentralPoints(_p4, _p3, radius);
+                            PointCollection _points = findPolyPointsByCircle(_circle_centers[1], radius, _p4, _p3, 1000, isConvex);
+                            pls2.Points = _points;
+
+                            PointCollection _downPoints = getSymmetricPoint(_points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
+                            PathGeometry _downPg = (PathGeometry)geometryGroup.Children[i + 1];
+                            PathFigure _downPf = _downPg.Figures.ElementAt(0);
+                            _downPf.Segments[1] = new PolyLineSegment();
+                            ((PolyLineSegment)_downPf.Segments[1]).Points = _downPoints;
+                        }
+
+                        _curPf.Segments[0] = pls1;
+                        _curPf.Segments[2] = pls2;
+                }
+            }
+
+
+            //绘制下段
+
+            PointCollection downPoints = getSymmetricPoint(polyLineSegment.Points, Math.Abs(p1.Y + ((LineSegment)curPf.Segments[0]).Point.Y) / 2);
+            PolyLineSegment downPolyLineSegment = new PolyLineSegment();
+            downPolyLineSegment.Points = downPoints;
+            p1 = ((LineSegment)curPf.Segments[0]).Point;
+            if (curPf.Segments[1] is LineSegment)
+            {
+                p2 = ((LineSegment)curPf.Segments[1]).Point;
+            }
+            else if (curPf.Segments[1] is ArcSegment)
+            {
+                p2 = ((ArcSegment)curPf.Segments[1]).Point;
+            }
+            else
+            {
+                PointCollection pointCollection = ((PolyLineSegment)curPf.Segments[1]).Points;
+                Point point = ((PolyLineSegment)curPf.Segments[1]).Points[pointCollection.Count - 1];
+                p2 = new Point(point.X, point.Y);
+            }
+
+            arcSegment = new ArcSegment();
+            arcSegment.Size = new Size(radius1, radius2);
+            arcSegment.Point = p2;
+            if (isConvex == 0)
+            {//凸
+                arcSegment.SweepDirection = SweepDirection.Counterclockwise;
+            }
+            else
+            {//凹
+                arcSegment.SweepDirection = SweepDirection.Clockwise;
+            }
+            
+                curPf.Segments[1] = downPolyLineSegment;
+            
+            Console.WriteLine("curLayerNum: " + curLayerNum);
             ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
         }
 
