@@ -329,11 +329,12 @@ namespace GraphicalStructure
 
                         }
                     }
-                    if (changeValue != 0) {
+                    if (changeValue != 0)
+                    {
                         ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
                         ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
                     }
-                    
+
                 }
                 else
                 {
@@ -448,7 +449,182 @@ namespace GraphicalStructure
             }
             catch
             {
+                /*
+                // 不为直线的层的左高度发生变化
+                // layerNumberOne为鼠标点选的层号，层号即时pg在geometryGroup.Children的位置
+                int layerNumberOne = Int32.Parse(layerNums.SelectedItem.ToString());
+                // layerNumberTwo为鼠标点选的层对应的另外一边的层的层号，层号即时pg在geometryGroup.Children的位置
+                int layerNumberTwo;
+                double originLeftSize;
+                double radius = currentCom.radius;
+                int isConvex = 0;
+                layerEdit _le = new layerEdit((MainWindow)Application.Current.MainWindow);
+                if (currentCom.isChangeOgive) {
+                    isConvex = 0;
+                }
+                else {
+                    isConvex = 1;
+                }
+                if (layerNumberOne % 2 == 0)
+                {
+                    // layerNumberOne指下层，layerNumberTwo为上层
+                    layerNumberTwo = layerNumberOne - 1;
 
+                    GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
+                    // t_curPg为上层， b_curPg为下层
+                    PathGeometry t_curPg = (PathGeometry)geometryGroup.Children[layerNumberTwo];
+                    PathFigure t_curPf = t_curPg.Figures.ElementAt(0);
+                    PathGeometry b_curPg = (PathGeometry)geometryGroup.Children[layerNumberOne];
+                    PathFigure b_curPf = b_curPg.Figures.ElementAt(0);
+
+                    // 上边的层原左边高度,及四个点的坐标
+                    Point p1, p2, p3, p4;
+                    p1 = new Point(t_curPf.StartPoint.X, t_curPf.StartPoint.Y);
+                    if (t_curPf.Segments[0] is ArcSegment)
+                    {
+                        p2 = new Point(((ArcSegment)t_curPf.Segments[0]).Point.X, ((ArcSegment)t_curPf.Segments[0]).Point.Y);
+                    }
+                    else {
+                        Point _p = ((PolyLineSegment)t_curPf.Segments[0]).Points[((PolyLineSegment)t_curPf.Segments[0]).Points.Count - 1];
+                        p2 = new Point(_p.X, _p.Y);
+                    }
+                    p3 = new Point(((LineSegment)t_curPf.Segments[1]).Point.X, ((LineSegment)t_curPf.Segments[1]).Point.Y);
+
+                    if (t_curPf.Segments[2] is ArcSegment)
+                    {
+                        p4 = new Point(((ArcSegment)t_curPf.Segments[2]).Point.X, ((ArcSegment)t_curPf.Segments[2]).Point.Y);
+                    }
+                    else
+                    {
+                        Point _p = ((PolyLineSegment)t_curPf.Segments[2]).Points[((PolyLineSegment)t_curPf.Segments[2]).Points.Count - 1];
+                        p4 = new Point(_p.X, _p.Y);
+                    }
+                    originLeftSize = p1.Y - p4.Y;
+                    double nowLeftSize = 0;
+                    double changeValue;
+                    try {
+                        nowLeftSize = Double.Parse(leftSize.Text);
+                    }
+                    catch {
+                        // 填写数据有误
+                    }
+                    changeValue = originLeftSize - nowLeftSize; // 大于0时，左边高度变小，小于零时，左边高度变大
+
+                    // layerNumberTwo层只改变pf[2]为polySegments，并更新坐标
+                    p4.Y += changeValue;
+                    Point[] circle_Points =  mainWindow.calcuCentralPoints(p4, p3, radius);
+                    if (isConvex == 0)
+                    {
+                        //凸，circle_Points取第0个计算polySegment的points
+                        PointCollection up_pc = mainWindow.findPolyPointsByCircle(circle_Points[0], radius, p4, p3, 1000, 0);
+                        PolyLineSegment up_pls = new PolyLineSegment();
+                        up_pls.Points = up_pc;
+                        t_curPf.Segments[2] = up_pls;
+                        PointCollection down_pc = mainWindow.getSymmetricPoint(up_pc, t_curPf.StartPoint.Y + Math.Abs(t_curPf.StartPoint.Y - b_curPf.StartPoint.Y) / 2);
+                        PolyLineSegment down_pls = new PolyLineSegment();
+                        down_pls.Points = down_pc;
+                        ((LineSegment)b_curPf.Segments[0]).Point = new Point(((LineSegment)b_curPf.Segments[0]).Point.X, ((LineSegment)b_curPf.Segments[0]).Point.Y - changeValue);
+                        b_curPf.Segments[1] = down_pls;
+                    }
+                    else {
+                        //凹，circle_Points取第1个计算polySegment的points
+                        PointCollection up_pc = mainWindow.findPolyPointsByCircle(circle_Points[1], radius, p4, p3, 1000, 0);
+                        PolyLineSegment up_pls = new PolyLineSegment();
+                        up_pls.Points = up_pc;
+                        t_curPf.Segments[2] = up_pls;
+                        PointCollection down_pc = mainWindow.getSymmetricPoint(up_pc, (t_curPf.StartPoint.Y - b_curPf.StartPoint.Y) / 2);
+                        PolyLineSegment down_pls = new PolyLineSegment();
+                        down_pls.Points = down_pc;
+                        b_curPf.Segments[1] = down_pls;
+                    }
+                    if (changeValue != 0)
+                    {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                    }
+                }
+                else
+                {
+                    // layerNumberOne指上层，layerNumberTwo为下层
+                    layerNumberTwo = layerNumberOne + 1;
+
+                    GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
+                    // t_curPg为上层， b_curPg为下层
+                    PathGeometry t_curPg = (PathGeometry)geometryGroup.Children[layerNumberOne];
+                    PathFigure t_curPf = t_curPg.Figures.ElementAt(0);
+                    PathGeometry b_curPg = (PathGeometry)geometryGroup.Children[layerNumberTwo];
+                    PathFigure b_curPf = b_curPg.Figures.ElementAt(0);
+
+                    // 上边的层原左边高度,及四个点的坐标
+                    Point p1, p2, p3, p4;
+                    p1 = new Point(t_curPf.StartPoint.X, t_curPf.StartPoint.Y);
+                    if (t_curPf.Segments[0] is ArcSegment)
+                    {
+                        p2 = new Point(((ArcSegment)t_curPf.Segments[0]).Point.X, ((ArcSegment)t_curPf.Segments[0]).Point.Y);
+                    }
+                    else
+                    {
+                        Point _p = ((PolyLineSegment)t_curPf.Segments[0]).Points[((PolyLineSegment)t_curPf.Segments[0]).Points.Count - 1];
+                        p2 = new Point(_p.X, _p.Y);
+                    }
+                    p3 = new Point(((LineSegment)t_curPf.Segments[1]).Point.X, ((LineSegment)t_curPf.Segments[1]).Point.Y);
+
+                    if (t_curPf.Segments[2] is ArcSegment)
+                    {
+                        p4 = new Point(((ArcSegment)t_curPf.Segments[2]).Point.X, ((ArcSegment)t_curPf.Segments[2]).Point.Y);
+                    }
+                    else
+                    {
+                        Point _p = ((PolyLineSegment)t_curPf.Segments[2]).Points[((PolyLineSegment)t_curPf.Segments[2]).Points.Count - 1];
+                        p4 = new Point(_p.X, _p.Y);
+                    }
+                    originLeftSize = p1.Y - p4.Y;
+                    double nowLeftSize = 0;
+                    double changeValue;
+                    try
+                    {
+                        nowLeftSize = Double.Parse(leftSize.Text);
+                    }
+                    catch
+                    {
+                        // 填写数据有误
+                    }
+                    changeValue = originLeftSize - nowLeftSize; // 大于0时，左边高度变小，小于零时，左边高度变大
+
+                    // layerNumberTwo层只改变pf[2]为polySegments，并更新坐标
+                    p4.Y += changeValue;
+                    Point[] circle_Points = mainWindow.calcuCentralPoints(p4, p3, radius);
+                    if (isConvex == 0)
+                    {
+                        //凸，circle_Points取第0个计算polySegment的points
+                        PointCollection up_pc = mainWindow.findPolyPointsByCircle(circle_Points[0], radius, p4, p3, 1000, 0);
+                        PolyLineSegment up_pls = new PolyLineSegment();
+                        up_pls.Points = up_pc;
+                        t_curPf.Segments[2] = up_pls;
+                        PointCollection down_pc = mainWindow.getSymmetricPoint(up_pc, t_curPf.StartPoint.Y + Math.Abs(t_curPf.StartPoint.Y - b_curPf.StartPoint.Y) / 2);
+                        PolyLineSegment down_pls = new PolyLineSegment();
+                        down_pls.Points = down_pc;
+                        ((LineSegment)b_curPf.Segments[0]).Point = new Point(((LineSegment)b_curPf.Segments[0]).Point.X, ((LineSegment)b_curPf.Segments[0]).Point.Y - changeValue);
+                        b_curPf.Segments[1] = down_pls;
+                    }
+                    else
+                    {
+                        //凹，circle_Points取第1个计算polySegment的points
+                        PointCollection up_pc = mainWindow.findPolyPointsByCircle(circle_Points[1], radius, p4, p3, 1000, 0);
+                        PolyLineSegment up_pls = new PolyLineSegment();
+                        up_pls.Points = up_pc;
+                        t_curPf.Segments[2] = up_pls;
+                        PointCollection down_pc = mainWindow.getSymmetricPoint(up_pc, (t_curPf.StartPoint.Y - b_curPf.StartPoint.Y) / 2);
+                        PolyLineSegment down_pls = new PolyLineSegment();
+                        down_pls.Points = down_pc;
+                        b_curPf.Segments[1] = down_pls;
+                    }
+                    if (changeValue != 0)
+                    {
+                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                    }
+                }*/
             }
             layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
             mainWindow.makeLeftCoverConnectSkillfully();

@@ -119,14 +119,17 @@ namespace GraphicalStructure
                 gatherDataFromEditWindow.Add("mat", new Dictionary<string, string>(materialForUpdate["mat"]));
                 gatherDataFromEditWindow.Add("soe", new Dictionary<string, string>(materialForUpdate["soe"]));
             }
-            else {
-            }
         }
 
 
         private void editSoeClick(object sender, RoutedEventArgs e) {
             // 编辑soe参数
             EditMaterialAttrWindow edaw = new EditMaterialAttrWindow();
+            if (gatherDataFromEditWindow == null) {
+                e.Handled = true;
+                System.Windows.MessageBox.Show("请先选择材料强度模型！", "警告");
+                return;
+            }
             Dictionary<string, string> soeData = gatherDataFromEditWindow["soe"];
             edaw.PassValuesEvent += new EditMaterialAttrWindow.PassValuesHandler(receivedEditSoeWindowData);
             edaw.setSoe(soeData);
@@ -136,6 +139,12 @@ namespace GraphicalStructure
 
         private void editMatClick(object sender, RoutedEventArgs e) {
             // 编辑mat参数
+            if (gatherDataFromEditWindow == null)
+            {
+                e.Handled = true;
+                System.Windows.MessageBox.Show("请先选择材料强度模型！", "警告");
+                return;
+            }
             EditMaterialAttrWindow edaw = new EditMaterialAttrWindow();
             Dictionary<string, string> matData = gatherDataFromEditWindow["mat"];
             edaw.PassValuesEvent += new EditMaterialAttrWindow.PassValuesHandler(receivedEditMatWindowData);
