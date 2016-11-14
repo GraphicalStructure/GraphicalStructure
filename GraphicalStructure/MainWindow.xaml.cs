@@ -3869,9 +3869,9 @@ namespace GraphicalStructure
                         else
                         {
                             PolyLineSegment pls2_bottom = new PolyLineSegment();
-                            for (int j = 0; j <= ((PolyLineSegment)curPf2.Segments[3]).Points.Count - 1; j++)
+                            for (int j = ((PolyLineSegment)curPf2.Segments[3]).Points.Count - 1; j >= 0; j--)
                             {
-                                pls2_bottom.Points.Add(new Point(((PolyLineSegment)curPf2.Segments[3]).Points[j].X, ((PolyLineSegment)curPf2.Segments[3]).Points[j].Y + 20));
+                                pls2_bottom.Points.Add(new Point(((PolyLineSegment)curPf2.Segments[1]).Points[j].X, ((PolyLineSegment)curPf2.Segments[1]).Points[j].Y));
                             }
                             bottomPf.Segments.Add(pls2_bottom);
                         }
@@ -6446,6 +6446,7 @@ namespace GraphicalStructure
                 ew.segmentWidth.Text = originalRightCoverCom.width.ToString();
                 ew.isLeftEndCap = originalRightCover.Fill.ToString();
                 ew.isRightEndCap = originalRightCover.Fill.ToString();
+
                 ew.canvas = canvas;
                 if (originalRightCoverCom.isChangeOgive)
                 {

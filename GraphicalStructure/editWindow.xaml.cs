@@ -606,14 +606,16 @@ namespace GraphicalStructure
                         ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
                         ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y);
                         ((LineSegment)(bottomPf.Segments[1])).Point = new Point(((LineSegment)basePf.Segments[1]).Point.X, ((LineSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
-                        ((LineSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
+                        if (bottomPf.Segments.Count > 3)
+                            ((LineSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
                     }
                     else if (bottomPf.Segments[1] is ArcSegment)
                     {
                         ((LineSegment)(bottomPf.Segments[0])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftlayerHeight);
                         ((LineSegment)(bottomPf.Segments[2])).Point = new Point(((ArcSegment)basePf.Segments[1]).Point.X, ((ArcSegment)basePf.Segments[1]).Point.Y);
                         ((ArcSegment)(bottomPf.Segments[1])).Point = new Point(((ArcSegment)basePf.Segments[1]).Point.X, ((ArcSegment)basePf.Segments[1]).Point.Y + rightlayerHeight);
-                        ((ArcSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
+                        if (bottomPf.Segments.Count > 3)   
+                            ((ArcSegment)(bottomPf.Segments[3])).Point = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y);
                     }
                     else
                     {
@@ -973,6 +975,7 @@ namespace GraphicalStructure
                     ew.OKButton_Click(null, null);
                     mainWindow.setInsertShape(originalInsertShape);
                     mainWindow.setCurLayerNum(originalCurLayerNum);
+                    mainWindow.makeRightCoverConnectSkillfully();
                 }
             }
 
@@ -982,6 +985,7 @@ namespace GraphicalStructure
             }
 
             rightLength = Double.Parse(rightD.Text.ToString());
+
         }
 
         public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
