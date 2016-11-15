@@ -13,6 +13,8 @@ namespace GraphicalStructure
     {
         void showEditLayer(int indexOfLayer, PathFigure pg, Path path);
 
+        void showEditLayer_CC(int indexOfLayer, PathFigure pg, Path path);
+
         void autoResize();
 
         void changeLineSegmentToArcSegment(double radius, int isConvex);

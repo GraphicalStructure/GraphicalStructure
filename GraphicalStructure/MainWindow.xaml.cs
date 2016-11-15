@@ -2331,6 +2331,7 @@ namespace GraphicalStructure
             le.list = DataBaseMaterials;
             le.currentLayerNum = curLayerNum;
             le.setComponent(currentComp);
+            le.changeTitle = changeTitle;
             le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
             le.Show();
         }
@@ -6781,9 +6782,25 @@ namespace GraphicalStructure
             le.currentLayerNum = indexOfLayer;
             int index = stackpanel.Children.IndexOf(path);
             currentComp = (Components)components[index];
+            le.changeTitle = changeTitle;
             le.setComponent(currentComp);
             le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
             le.Show();
+        }
+
+        public void showEditLayer_CC(int indexOfLayer, PathFigure pg, System.Windows.Shapes.Path path)
+        {
+            changeTitle = 2;
+            insertShape = path;
+            layerEdit _le = new layerEdit();
+            _le.list = DataBaseMaterials;
+            _le.currentLayerNum = indexOfLayer;
+            _le.changeTitle = changeTitle;
+            int _index = centralCubePanel.Children.IndexOf(path);
+            currentComp = (Components)centralCubes[_index];
+            _le.setComponent(currentComp);
+            _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
+            _le.Show();
         }
 
         public System.Windows.Shapes.Path getInsertShape() {

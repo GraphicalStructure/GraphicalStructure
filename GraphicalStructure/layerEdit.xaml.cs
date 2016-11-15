@@ -29,6 +29,8 @@ namespace GraphicalStructure
         private double leftLength;
         private double rightLength;
 
+        public int changeTitle;
+
         public int currentLayerNum = 1;
 
         public double left_X;
@@ -331,8 +333,15 @@ namespace GraphicalStructure
                     }
                     if (changeValue != 0)
                     {
-                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
-                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                        if (changeTitle == 2)
+                        {
+                            ColorProc.processWhenChangeLayerHeight_CC(b_curPf, 0, 1);
+                            ColorProc.processWhenChangeLayerHeight_CC(t_curPf, 0, 0);
+                        }
+                        else {
+                            ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                            ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                        }
                     }
 
                 }
@@ -435,8 +444,15 @@ namespace GraphicalStructure
                     }
                     if (changeValue != 0)
                     {
-                        ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
-                        ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                        if (changeTitle == 2)
+                        {
+                            ColorProc.processWhenChangeLayerHeight_CC(b_curPf, 0, 1);
+                            ColorProc.processWhenChangeLayerHeight_CC(t_curPf, 0, 0);
+                        }
+                        else {
+                            ColorProc.processWhenChangeLayerHeight(b_curPf, 0, 1);
+                            ColorProc.processWhenChangeLayerHeight(t_curPf, 0, 0);
+                        }
                     }
                 }
 
@@ -456,6 +472,7 @@ namespace GraphicalStructure
                 _le.layerNums.SelectedIndex = currentLayerNum - 1;
                 _le.currentLayerNum = currentLayerNum;
                 _le.setComponent(currentCom);
+                _le.changeTitle = changeTitle;
                 _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
@@ -574,8 +591,16 @@ namespace GraphicalStructure
                     }
                     if (changeValue != 0)
                     {
-                        ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
-                        ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
+                        if (changeTitle == 2)
+                        {
+                            ColorProc.processWhenChangeLayerHeight_CC(b_curPf, 1, 1);
+                            ColorProc.processWhenChangeLayerHeight_CC(t_curPf, 1, 0);
+                        }
+                        else {
+                            ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
+                            ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
+                        }
+                        
                     }
                 }
                 else
@@ -678,8 +703,15 @@ namespace GraphicalStructure
 
                     if (changeValue != 0)
                     {
-                        ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
-                        ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
+                        if (changeTitle == 2)
+                        {
+                            ColorProc.processWhenChangeLayerHeight_CC(b_curPf, 1, 1);
+                            ColorProc.processWhenChangeLayerHeight_CC(t_curPf, 1, 0);
+                        }
+                        else {
+                            ColorProc.processWhenChangeLayerHeight(b_curPf, 1, 1);
+                            ColorProc.processWhenChangeLayerHeight(t_curPf, 1, 0);
+                        }
                     }
                 }
 
@@ -699,6 +731,7 @@ namespace GraphicalStructure
                 _le.currentLayerNum = currentLayerNum;
                 _le.layerNums.ItemsSource = currentCom.layerNums;
                 _le.layerNums.SelectedIndex = currentLayerNum - 1;
+                _le.changeTitle = changeTitle;
                 _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(mainWindow.autoResize);
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
