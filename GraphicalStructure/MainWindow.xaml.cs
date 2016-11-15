@@ -6738,6 +6738,10 @@ namespace GraphicalStructure
             //dbw.Show();
            
             MaterialDefinitionWindow mdw = new MaterialDefinitionWindow();
+            if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
+            {
+                mdw.receivedMaterialFromMainWindow(DataBaseMaterials);
+            }
             mdw.PassValuesEvent += new MaterialDefinitionWindow.PassValuesHandler(ReceiveValues);
             mdw.Show();
             

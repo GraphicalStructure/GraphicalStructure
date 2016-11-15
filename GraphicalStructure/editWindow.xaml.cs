@@ -102,28 +102,6 @@ namespace GraphicalStructure
             
             leftD_Changed();
             rightD_Changed();
-            //if (rightLength.ToString() != rightD.Text)
-            //{
-            //    rightD_Changed();
-            //    if (rightCom != null)
-            //    {
-            //        currentCom = rightCom;
-            //        leftD.Text = rightD.Text;
-            //        leftD_Changed();
-            //        leftLength = rightLength;
-            //    }
-            //}
-            //if (leftLength.ToString() != leftD.Text)
-            //{
-            //    leftD_Changed();
-            //    if (leftCom != null)
-            //    {
-            //        currentCom = leftCom;
-            //        rightD.Text = leftD.Text;
-            //        rightD_Changed();
-            //        rightLength = leftLength;
-            //    }
-            //}
             
 
             if (Double.Parse(segmentWidth.Text) != pathWidth)
@@ -199,7 +177,13 @@ namespace GraphicalStructure
                 {
                     Dictionary<string, string> dict = ((Dictionary<string, Dictionary<string, string>>)list[i])["matName"];
                     Dictionary<string, string> dic = ((Dictionary<string, Dictionary<string, string>>)list[i])["materialName"];
-                    if (dict["content"] == "HIGH_EXPLOSIVE_BURN")
+                    if (dict["content"] == "HIGH_EXPLOSIVE_BURN" && changeTitle == 0)
+                    {
+                        string materialName = dic["content"];
+                        material.Add(materialName);
+                    }
+
+                    if ((dict["content"] == "JOHNSON_COOK" || dict["content"] == "PLASTIC_KINEMATIC") && changeTitle == 1)
                     {
                         string materialName = dic["content"];
                         material.Add(materialName);

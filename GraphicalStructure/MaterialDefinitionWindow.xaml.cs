@@ -46,6 +46,21 @@ namespace GraphicalStructure
             openDataBase = adb.OpenDb();
         }
 
+        public void receivedMaterialFromMainWindow(List<Dictionary<string, Dictionary<string, string>>> dict)
+        {
+            totalMaterials = dict;
+            for (int i = 0; i < totalMaterials.Count; i++)
+            {
+                ListBoxItem listBoxItem = new ListBoxItem();
+                Dictionary<string, Dictionary<string, string>> choosedMaterial = totalMaterials[i];
+                string materialName = choosedMaterial["materialName"]["content"];
+                listBoxItem.Tag = totalMaterialsNum;
+                listBoxItem.Content = (totalMaterialsNum + 1) + "\t" + materialName;
+                totalMaterialsNum += 1;
+                listBox.Items.Add(listBoxItem);
+            }
+        }
+
         private void receivedNewMaterialWindowData(object sender, Validity val) {
             // 处理来自新建材料窗口的数据
             Dictionary<string, Dictionary<string, string>> newMaterial= val.data;
