@@ -242,6 +242,9 @@ namespace GraphicalStructure
             //aMenu.Items.Add(addCopyMenu);
 
             this.canvas.ContextMenu = aMenu;
+
+
+            autoResize();
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -517,6 +520,7 @@ namespace GraphicalStructure
                 double topY = Canvas.GetTop(stackpanel);
                 double allWidth = 0;
                 double maxHeight = 0;
+                double left_centralCubeMaxOffset = 0;
                 for (int i = 0; i < centralCubes.Count; i++)
                 {
                     if (centralCubes[i] is Components)
@@ -533,8 +537,17 @@ namespace GraphicalStructure
                         {
                             duangai = ((System.Windows.Shapes.Path)stackpanel.Children[0]).Width;
                         }
-                        double xLeft = cps.cubeOffset;
-                        Canvas.SetLeft(centralCubePanel, leftX + xLeft + duangai);
+
+                        for (int j = 0; j < centralCubes.Count; j++)
+                        {
+                            if (cps.cubeOffset > left_centralCubeMaxOffset)
+                            {
+                                left_centralCubeMaxOffset = ((Components)centralCubes[j]).cubeOffset;
+                            }
+                        }
+                        
+
+                        Canvas.SetLeft(centralCubePanel, leftX + left_centralCubeMaxOffset + duangai);
                         Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - maxHeight) / 2);
                     }
                 }
@@ -961,10 +974,22 @@ namespace GraphicalStructure
                 offset = leftEndCap.Width;
             }
 
-            Canvas.SetLeft(centralCubePanel, leftX + offset);
+            //判断当前的中心管之前是否有中心管有offset
+            double left_centralCubeMaxOffset = 0;
+            if (centralCubes.Count != 1)
+            {
+                for (int i = 0; i < centralCubes.Count; i++)
+                {
+                    if (((Components)centralCubes[i]).cubeOffset > left_centralCubeMaxOffset)
+                    {
+                        left_centralCubeMaxOffset = ((Components)centralCubes[i]).cubeOffset;
+                    }
+                }
+            }
+
+            Canvas.SetLeft(centralCubePanel, leftX + offset + left_centralCubeMaxOffset);
             Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - centralCubePanel.Height) / 2);
             
-
             //添加层
             addCubeLayer_Click(sender, e);
 
@@ -1000,7 +1025,7 @@ namespace GraphicalStructure
         void editCubeMenu_Click(object sender, RoutedEventArgs e)
         {
             changeTitle = 2;
-            btEdit_Click(sender, e);
+            btEdit_CentralCube_Click(sender, e);
         }
 
         //编辑起爆点
@@ -4136,6 +4161,41 @@ namespace GraphicalStructure
             ew.Show();
         }
 
+        //编辑空心管
+        private void btEdit_CentralCube_Click(object sender, RoutedEventArgs e)
+        {
+            editWindow ew = new editWindow();
+            ew.list = DataBaseMaterials;
+            ew.changeTitle = changeTitle;
+
+            double leftWidth = 0;
+            for (int i = 0; i < centralCubePanel.Children.IndexOf(insertShape); i++)
+            {
+                leftWidth += ((System.Windows.Shapes.Path)centralCubePanel.Children[i]).Width;
+            }
+            ew.left_X = leftWidth;
+            ew.setComponent(currentComp);
+            int index = centralCubes.IndexOf(currentComp);
+            if (centralCubes.Count - 1 > index)
+            {
+                ew.rightCom = (Components)centralCubes[index + 1];
+            }
+            if (index > 0)
+            {
+                ew.leftCom = (Components)centralCubes[index - 1];
+            }
+
+            ew.Owner = this;
+            ew.canvas = this.canvas;
+            ew.sp = this.centralCubePanel;
+            ew.ChangeTextEvent += new ChangeTextHandler(autoResize);
+            //ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+            ew.ChangeShapeEvent += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+            ew.ChangeShapeEvent2 += new ChangeShapeHandler(changeLineSegmentToArcSegment);
+            ew.ChangeShapeEvent3 += new ChangeShapeHandler(changeArcSegmentToLineSegment);
+            ew.Show();
+        }
+
 
         //删除MenuItem点击事件
         private void delMenu_Click(object sender, RoutedEventArgs e)
@@ -4332,13 +4392,15 @@ namespace GraphicalStructure
                 if (sender is System.Windows.Shapes.Path)
                 {
                     currentComp = (Components)components[index];
-                    changeTitle = 0;
+
+
                     if ((isHaveLeftEndCap && index == 0) || (isHaveRightEndCap && index == components.Count - 1))
                     {
                         changeTitle = 1;
                     }
-                    
-                    btEdit_Click(sender, e);
+
+                    if (changeTitle == 0 || changeTitle == 1)
+                        btEdit_Click(sender, e);
                 }
                 else
                 {
@@ -4625,7 +4687,7 @@ namespace GraphicalStructure
             {
                 Console.WriteLine("双击，调用编辑界面！");
                 changeTitle = 2;
-                btEdit_Click(sender, e);
+                btEdit_CentralCube_Click(sender, e);
             }
         }
 
@@ -4903,7 +4965,8 @@ namespace GraphicalStructure
                                     file.Write(c.startPoint.X); file.Write(","); file.Write(c.startPoint.Y); file.Write('|');
                                     file.Write(c.point2.X); file.Write(","); file.Write(c.point2.Y); file.Write('|');
                                     file.Write(c.point3.X); file.Write(","); file.Write(c.point3.Y); file.Write('|');
-                                    file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y); 
+                                    file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y);
+                                    file.Write('|'); file.Write(c.cubeOffset); file.Write(","); file.Write(0);
                                     if (c.isChangeOgive)
                                     {
                                         file.Write('|'); file.Write(1); file.Write(","); file.Write(1); file.Write('|');
@@ -4914,7 +4977,7 @@ namespace GraphicalStructure
                                         file.Write('|'); file.Write(2); file.Write(","); file.Write(2); file.Write('|');
                                         file.Write(c.radius); file.Write(","); file.Write(1);
                                     }
-                                    file.Write('|'); file.Write(c.cubeOffset); file.Write(","); file.Write(0);
+                                    
                                     file.WriteLine();
 
 
@@ -6310,10 +6373,10 @@ namespace GraphicalStructure
                                 centralCubePanel.Children.Add(cps.newPath);
                                 changeTitle = 2;
                                 insertShape = cps.newPath;
-                                if (compNum[8] == 1 || compNum[8] == 2)
+                                if (compNum[10] == 1 || compNum[10] == 2)
                                 {
-                                    changeLineSegmentToArcSegment((double)compNum[10], (int)compNum[11]);
-                                    cps.radius = (double)compNum[10];
+                                    changeLineSegmentToArcSegment((double)compNum[12], (int)compNum[13]);
+                                    cps.radius = (double)compNum[12];
                                 }
 
                                 //double leftX = Double.Parse(CentralTubeArr[4]);
@@ -6326,13 +6389,14 @@ namespace GraphicalStructure
                                 //    duangai = cps1.newPath.Width;
                                 //}
                                 //Canvas.SetLeft(centralCubePanel, leftX + Double.Parse(CentralTubeArr[7]) + duangai);
-                                //cps.cubeOffset = Double.Parse(CentralTubeArr[7]);
+                                cps.cubeOffset = compNum[8];
                                 //Console.Write(Canvas.GetLeft(centralCubePanel));
                                 //Canvas.SetTop(centralCubePanel, topY + (stackpanel.Height - cps.newPath.Height) / 2);
                                 //cps.newPath.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(CentralTubeArr[6]));
                                 //cps.newPath.Stroke = Brushes.Blue;
 
                                 isHaveCentralTube = true;
+                                autoResize();
                                 
                                 continue;
                             }

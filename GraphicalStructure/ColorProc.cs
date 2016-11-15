@@ -1482,6 +1482,10 @@ namespace GraphicalStructure
             PfToCoverMap.Clear();
             CoverToPfMap.Clear();
             CoverToPathMap.Clear();
+
+            PfToCoverMap_CC.Clear();
+            CoverToPfMap_CC.Clear();
+            CoverToPathMap_CC.Clear();
         }
 
         public static void moveVertical(Path path, double pace) {

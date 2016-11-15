@@ -519,7 +519,8 @@ namespace GraphicalStructure
                     ew.radiusText.Text = leftCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
                     ew.sp = sp;
-                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.changeTitle = changeTitle;
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer_CC);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
@@ -962,10 +963,11 @@ namespace GraphicalStructure
                     ew.setComponent(rightCom);
                     ew.Owner = this;
                     ew.sp = sp;
+                    ew.changeTitle = changeTitle;
                     ew.leftD.Text = Math.Abs(currentCom.point3.Y - currentCom.point4.Y) + "";
                     ew.radiusText.Text = rightCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
-                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer_CC);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
