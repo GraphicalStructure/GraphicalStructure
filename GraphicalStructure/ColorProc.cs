@@ -623,7 +623,7 @@ namespace GraphicalStructure
                             ((PolyLineSegment)curPf.Segments[0]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[0]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[0]).Points[i].Y);
                         }
                     }
-                    ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
+                     ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
                     if (curPf.Segments[2] is LineSegment)
                     {
                         ((LineSegment)curPf.Segments[2]).Point = new Point(left, ((LineSegment)curPf.Segments[2]).Point.Y);
@@ -1555,5 +1555,685 @@ namespace GraphicalStructure
 
         }
 
+
+
+        //空心管相关属性方法
+        public static Dictionary<PathFigure, Path> PfToCoverMap_CC = new Dictionary<PathFigure, Path>();
+        public static Dictionary<Shape, PathFigure> CoverToPfMap_CC = new Dictionary<Shape, PathFigure>();
+        public static Dictionary<Shape, Path> CoverToPathMap_CC = new Dictionary<Shape, Path>();
+
+        public static void processWhenAddLayer_CC(Canvas canvas, StackPanel curSp, Path curPath, PathFigure pf, int isTop, Color color)
+        {
+            //获取当前添加层的坐标
+            ArrayList arr = new ArrayList(getPathFigureCoordinate(canvas, curSp, curPath, pf, isTop));
+            //添加cover 
+            if (isTop == 0)
+            {
+                Path newPath = new Path();
+                // Create a blue and a black Brush
+                Random random = new Random();
+                SolidColorBrush brush = new SolidColorBrush();
+                if (color == null)
+                    brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                else
+                    brush.Color = color;
+                SolidColorBrush blackBrush = new SolidColorBrush();
+                blackBrush.Color = Colors.Blue;
+
+                newPath.Stroke = blackBrush;
+                newPath.StrokeThickness = 1;
+                newPath.Fill = brush;
+                newPath.Stretch = Stretch.None;
+
+                GeometryGroup geometryGroup = new GeometryGroup();
+                geometryGroup.FillRule = FillRule.Nonzero;
+
+                PathGeometry pg = new PathGeometry();
+                PathFigure newpf = new PathFigure();
+                newpf.StartPoint = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+
+                if (pf.Segments[0] is LineSegment)
+                {
+                    LineSegment ls = new LineSegment();
+                    ls.Point = new Point(((Point)arr[1]).X, ((Point)arr[1]).Y);
+                    newpf.Segments.Add(ls);
+                }
+                else if (pf.Segments[0] is ArcSegment)
+                {
+                    ArcSegment ls = new ArcSegment();
+                    ls.Point = new Point(((Point)arr[1]).X, ((Point)arr[1]).Y);
+                    ls.Size = new Size(((ArcSegment)pf.Segments[0]).Size.Width, ((ArcSegment)pf.Segments[0]).Size.Height);
+                    ls.SweepDirection = ((ArcSegment)pf.Segments[0]).SweepDirection;
+                    newpf.Segments.Add(ls);
+                }
+                else
+                {
+                    PolyLineSegment ls = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)pf.Segments[0]).Points.Count - 1; i++)
+                    {
+                        double delta_x, delta_y;
+                        delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                        delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                        ls.Points.Add(new Point(((PolyLineSegment)pf.Segments[0]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[0]).Points[i].Y + delta_y));
+                    }
+                    newpf.Segments.Add(ls);
+                }
+                LineSegment ls2 = new LineSegment();
+                ls2.Point = new Point(((Point)arr[2]).X, ((Point)arr[2]).Y);
+                newpf.Segments.Add(ls2);
+
+                if (pf.Segments[2] is LineSegment)
+                {
+                    LineSegment ls3 = new LineSegment();
+                    ls3.Point = new Point(((Point)arr[3]).X, ((Point)arr[3]).Y);
+                    newpf.Segments.Add(ls3);
+                }
+                else if (pf.Segments[2] is ArcSegment)
+                {
+                    ArcSegment ls3 = new ArcSegment();
+                    ls3.Point = new Point(((Point)arr[3]).X, ((Point)arr[3]).Y);
+                    ls3.Size = new Size(((ArcSegment)pf.Segments[2]).Size.Width, ((ArcSegment)pf.Segments[2]).Size.Height);
+                    ls3.SweepDirection = ((ArcSegment)pf.Segments[2]).SweepDirection;
+                    newpf.Segments.Add(ls3);
+                }
+                else
+                {
+                    PolyLineSegment ls3 = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)pf.Segments[2]).Points.Count - 1; i++)
+                    {
+                        double delta_x, delta_y;
+                        delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                        delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                        ls3.Points.Add(new Point(((PolyLineSegment)pf.Segments[2]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[2]).Points[i].Y + delta_y));
+                    }
+                    newpf.Segments.Add(ls3);
+                }
+
+                newpf.IsClosed = true;
+                pg.Figures.Add(newpf);
+
+                geometryGroup.Children.Add(pg);
+                newPath.Data = geometryGroup;
+                newPath.MouseDown += doubleClickOnCover;
+                canvas.Children.Add(newPath);
+                PfToCoverMap_CC.Add(pf, newPath);
+                CoverToPfMap_CC.Add(newPath, pf);
+                CoverToPathMap_CC.Add(newPath, curPath);
+            }
+            else
+            {
+                Path newPath = new Path();
+                // Create a blue and a black Brush
+                Random random = new Random();
+                SolidColorBrush brush = new SolidColorBrush();
+                if (color == null)
+                    brush.Color = Color.FromRgb((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+                else
+                    brush.Color = color;
+                SolidColorBrush blackBrush = new SolidColorBrush();
+                blackBrush.Color = Colors.Blue;
+
+                newPath.Stroke = blackBrush;
+                newPath.StrokeThickness = 1;
+                newPath.Fill = brush;
+
+                GeometryGroup geometryGroup = new GeometryGroup();
+                geometryGroup.FillRule = FillRule.Nonzero;
+
+                PathGeometry pg = new PathGeometry();
+                PathFigure newpf = new PathFigure();
+                newpf.StartPoint = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+
+                LineSegment ls1 = new LineSegment();
+                ls1.Point = new Point(((Point)arr[1]).X, ((Point)arr[1]).Y);
+                newpf.Segments.Add(ls1);
+
+                if (pf.Segments[1] is LineSegment)
+                {
+                    LineSegment ls2 = new LineSegment();
+                    ls2.Point = new Point(((Point)arr[2]).X, ((Point)arr[2]).Y);
+                    newpf.Segments.Add(ls2);
+                }
+                else if (pf.Segments[1] is ArcSegment)
+                {
+                    ArcSegment ls2 = new ArcSegment();
+                    ls2.Point = new Point(((Point)arr[2]).X, ((Point)arr[2]).Y);
+                    ls2.Size = new Size(((ArcSegment)pf.Segments[1]).Size.Width, ((ArcSegment)pf.Segments[1]).Size.Height);
+                    ls2.SweepDirection = ((ArcSegment)pf.Segments[1]).SweepDirection;
+                    newpf.Segments.Add(ls2);
+                }
+                else
+                {
+                    PolyLineSegment ls2 = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)pf.Segments[1]).Points.Count - 1; i++)
+                    {
+                        double delta_x, delta_y;
+                        delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                        delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                        ls2.Points.Add(new Point(((PolyLineSegment)pf.Segments[1]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[1]).Points[i].Y + delta_y));
+                    }
+                    newpf.Segments.Add(ls2);
+                }
+                LineSegment ls3 = new LineSegment();
+                ls3.Point = new Point(((Point)arr[3]).X, ((Point)arr[3]).Y);
+                newpf.Segments.Add(ls3);
+
+                if (pf.Segments.Count < 4 || pf.Segments[3] is LineSegment)
+                {
+                    LineSegment ls4 = new LineSegment();
+                    ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+                    newpf.Segments.Add(ls4);
+                }
+                else if (pf.Segments[3] is ArcSegment)
+                {
+                    ArcSegment ls4 = new ArcSegment();
+                    ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+                    ls4.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
+                    ls4.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
+                    newpf.Segments.Add(ls4);
+                }
+                else
+                {
+                    PolyLineSegment ls4 = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                    {
+                        double delta_x, delta_y;
+                        delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                        delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                        ls4.Points.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
+                    }
+                    newpf.Segments.Add(ls4);
+                }
+
+                newpf.IsClosed = true;
+                pg.Figures.Add(newpf);
+
+                geometryGroup.Children.Add(pg);
+                newPath.Data = geometryGroup;
+                newPath.MouseDown += doubleClickOnCover;
+                canvas.Children.Add(newPath);
+                PfToCoverMap_CC.Add(pf, newPath);
+                CoverToPfMap_CC.Add(newPath, pf);
+                CoverToPathMap_CC.Add(newPath, curPath);
+            }
+
+        }
+
+        public static void processWhenDelCylindrical_CC(Canvas canvas, Path path)
+        {
+            for (int i = 0; i < CoverToPathMap_CC.Keys.Count; i++)
+            {
+                Shape shape = CoverToPathMap_CC.Keys.ElementAt(i);
+                if (CoverToPathMap_CC[shape] == path)
+                {
+                    PathFigure pf = CoverToPfMap_CC[shape];
+                    CoverToPathMap_CC.Remove(shape);
+                    PfToCoverMap_CC.Remove(pf);
+                    CoverToPfMap_CC.Remove(shape);
+                    if (canvas.Children.Contains(shape))
+                    {
+                        canvas.Children.Remove(shape);
+                    }
+                    i--;
+                }
+            }
+        }
+
+        public static void processWhenMoveLayer_CC(Canvas canvas, StackPanel curSp)
+        {
+            foreach (Shape shape in CoverToPathMap_CC.Keys)
+            {
+                Path path = CoverToPathMap_CC[shape];
+                int index = curSp.Children.IndexOf(path);
+                double leftPanel = 0;
+                double leftCanvas = 0;
+                double left;
+                if (index > 0)
+                {
+                    for (int i = 0; i < index; i++)
+                    {
+                        leftPanel += ((Path)curSp.Children[i]).Width;
+                    }
+                }
+                leftCanvas = Canvas.GetLeft(curSp);
+                left = leftCanvas + leftPanel;
+
+                GeometryGroup geometryGroup = (GeometryGroup)((Path)shape).Data;
+                PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
+                PathFigure curPf = curPg.Figures.ElementAt(0);
+                double offset = left - curPf.StartPoint.X;
+                bool isBottom = (curPf.Segments[0] is LineSegment && curPf.StartPoint.X == ((LineSegment)curPf.Segments[0]).Point.X);
+                curPf.StartPoint = new Point(left, curPf.StartPoint.Y);
+                if (!isBottom)
+                {
+                    if (curPf.Segments[0] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[0]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[0]).Point.Y);
+                    }
+                    else if (curPf.Segments[0] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[0]).Point = new Point(left + path.Width, ((ArcSegment)curPf.Segments[0]).Point.Y);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[0]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[0]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[0]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[0]).Points[i].Y);
+                        }
+                    }
+                    ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
+                    if (curPf.Segments[2] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[2]).Point = new Point(left, ((LineSegment)curPf.Segments[2]).Point.Y);
+                    }
+                    else if (curPf.Segments[2] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[2]).Point = new Point(left, ((ArcSegment)curPf.Segments[2]).Point.Y);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[2]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[2]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[2]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[2]).Points[i].Y);
+                        }
+                    }
+                }
+                else
+                {
+                    ((LineSegment)curPf.Segments[0]).Point = new Point(left, ((LineSegment)curPf.Segments[0]).Point.Y);
+
+                    if (curPf.Segments[1] is LineSegment)
+                    {
+                        ((LineSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[1]).Point.Y);
+                    }
+                    else if (curPf.Segments[1] is ArcSegment)
+                    {
+                        ((ArcSegment)curPf.Segments[1]).Point = new Point(left + path.Width, ((ArcSegment)curPf.Segments[1]).Point.Y);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[1]).Points.Count; i++)
+                        {
+                            ((PolyLineSegment)curPf.Segments[1]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[1]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[1]).Points[i].Y);
+                        }
+                    }
+                    ((LineSegment)curPf.Segments[2]).Point = new Point(left + path.Width, ((LineSegment)curPf.Segments[2]).Point.Y);
+                    if (curPf.Segments.Count > 3)
+                    {
+                        if (curPf.Segments[3] is LineSegment)
+                        {
+                            ((LineSegment)curPf.Segments[3]).Point = new Point(left, ((LineSegment)curPf.Segments[3]).Point.Y);
+                        }
+                        else if (curPf.Segments[3] is ArcSegment)
+                        {
+                            ((ArcSegment)curPf.Segments[3]).Point = new Point(left, ((ArcSegment)curPf.Segments[3]).Point.Y);
+                        }
+                        else
+                        {
+                            for (int i = 0; i < ((PolyLineSegment)curPf.Segments[3]).Points.Count; i++)
+                            {
+                                ((PolyLineSegment)curPf.Segments[3]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[3]).Points[i].X + offset, ((PolyLineSegment)curPf.Segments[3]).Points[i].Y);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void processWhenChangeCylindricalHeight_CC(Path path, int isLeft, double offset)
+        {
+            int isTop = 0;
+            if (isLeft == 1)
+            {
+                foreach (Path pa in CoverToPathMap_CC.Keys)
+                {
+                    if (CoverToPathMap_CC[pa] == path)
+                    {
+                        if (isTop % 2 == 0)
+                        {
+                            //处理上层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure topPf = topPg.Figures.ElementAt(0);
+
+                            topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
+                            if (topPf.Segments[2] is LineSegment)
+                            {
+                                ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                        }
+                        else
+                        {
+                            //处理下层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                            bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
+                            if (bottomPf.Segments[1] is LineSegment)
+                            {
+                                ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
+                                if (bottomPf.Segments.Count > 3)
+                                {
+                                    ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                }
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                        }
+                    }
+
+                    isTop++;
+                }
+            }
+            else
+            {
+                foreach (Path pa in CoverToPathMap_CC.Keys)
+                {
+                    if (CoverToPathMap_CC[pa] == path)
+                    {
+                        if (isTop % 2 == 0)
+                        {
+                            //处理上层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure topPf = topPg.Figures.ElementAt(0);
+
+                            if (topPf.Segments[2] is LineSegment)
+                            {
+                                ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                            ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
+                        }
+                        else
+                        {
+                            //处理下层cover
+                            GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+                            PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+                            PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+                            if (bottomPf.Segments[1] is LineSegment)
+                            {
+                                ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                            }
+                            else
+                            {
+                                //
+                                MessageBox.Show("不能调整段的宽度", "警告");
+                            }
+                            ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
+                        }
+                    }
+
+                    isTop++;
+                }
+            }
+        }
+
+        public static void processWhenChangeLayerShape_CC(Canvas canvas, StackPanel curSp, Path curPath)
+        {
+            GeometryGroup gg = (GeometryGroup)((Path)curPath).Data;
+            int layerIndex = 0;
+            foreach (PathGeometry pg in gg.Children)
+            {
+                if (layerIndex == 0)
+                {
+                    layerIndex++;
+                    continue;
+                }
+                PathFigure pf = pg.Figures[0];
+                if (layerIndex % 2 == 1)
+                {
+                    // 奇数时 isTop为0
+                    ArrayList arr = new ArrayList(getPathFigureCoordinateWhenChangeShapeOfLayer(canvas, curSp, curPath, pf, 0));
+                    Path coverPath = (Path)PfToCoverMap_CC[pf];
+                    GeometryGroup _gg = (GeometryGroup)((Path)coverPath).Data;
+                    PathGeometry coverPg = (PathGeometry)(_gg.Children[0]);
+                    PathFigure coverPf = coverPg.Figures[0];
+
+                    if (pf.Segments[0] is LineSegment)
+                    {
+                        LineSegment ls = new LineSegment();
+                        if (coverPf.Segments[0] is LineSegment)
+                        {
+                            ls.Point = new Point(((LineSegment)coverPf.Segments[0]).Point.X, ((LineSegment)coverPf.Segments[0]).Point.Y);
+                        }
+                        else if (coverPf.Segments[0] is ArcSegment)
+                        {
+                            ls.Point = new Point(((ArcSegment)coverPf.Segments[0]).Point.X, ((ArcSegment)coverPf.Segments[0]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[0]).Points[((PolyLineSegment)coverPf.Segments[0]).Points.Count - 1];
+                            ls.Point = new Point(_point.X, _point.Y);
+                        }
+                        coverPf.Segments[0] = ls;
+                    }
+                    else if (pf.Segments[0] is ArcSegment)
+                    {
+                        ArcSegment aas = new ArcSegment();
+                        if (coverPf.Segments[0] is LineSegment)
+                        {
+                            aas.Point = new Point(((LineSegment)coverPf.Segments[0]).Point.X, ((LineSegment)coverPf.Segments[0]).Point.Y);
+                        }
+                        else if (coverPf.Segments[0] is ArcSegment)
+                        {
+                            aas.Point = new Point(((ArcSegment)coverPf.Segments[0]).Point.X, ((ArcSegment)coverPf.Segments[0]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[0]).Points[((PolyLineSegment)coverPf.Segments[0]).Points.Count - 1];
+                            aas.Point = new Point(_point.X, _point.Y);
+                        }
+                        aas.Size = new Size(((ArcSegment)pf.Segments[0]).Size.Width, ((ArcSegment)pf.Segments[0]).Size.Height);
+                        aas.SweepDirection = ((ArcSegment)pf.Segments[0]).SweepDirection;
+                        coverPf.Segments[0] = aas;
+                    }
+                    else
+                    {
+                        PolyLineSegment ls = new PolyLineSegment();
+                        PointCollection pc = new PointCollection();
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[0]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            pc.Add(new Point(((PolyLineSegment)pf.Segments[0]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[0]).Points[i].Y + delta_y));
+                        }
+                        ls.Points = pc;
+                        coverPf.Segments[0] = ls;
+                    }
+                    if (pf.Segments[2] is LineSegment)
+                    {
+                        LineSegment ls = new LineSegment();
+                        if (coverPf.Segments[2] is LineSegment)
+                        {
+                            ls.Point = new Point(((LineSegment)coverPf.Segments[2]).Point.X, ((LineSegment)coverPf.Segments[2]).Point.Y);
+                        }
+                        else if (coverPf.Segments[2] is ArcSegment)
+                        {
+                            ls.Point = new Point(((ArcSegment)coverPf.Segments[2]).Point.X, ((ArcSegment)coverPf.Segments[2]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[2]).Points[((PolyLineSegment)coverPf.Segments[2]).Points.Count - 1];
+                            ls.Point = new Point(_point.X, _point.Y);
+                        }
+                        coverPf.Segments[2] = ls;
+                    }
+                    else if (pf.Segments[2] is ArcSegment)
+                    {
+                        ArcSegment aas = new ArcSegment();
+                        if (coverPf.Segments[2] is LineSegment)
+                        {
+                            aas.Point = new Point(((LineSegment)coverPf.Segments[2]).Point.X, ((LineSegment)coverPf.Segments[2]).Point.Y);
+                        }
+                        else if (coverPf.Segments[2] is ArcSegment)
+                        {
+                            aas.Point = new Point(((ArcSegment)coverPf.Segments[2]).Point.X, ((ArcSegment)coverPf.Segments[2]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[2]).Points[((PolyLineSegment)coverPf.Segments[2]).Points.Count - 1];
+                            aas.Point = new Point(_point.X, _point.Y);
+                        }
+                        aas.Size = new Size(((ArcSegment)pf.Segments[2]).Size.Width, ((ArcSegment)pf.Segments[2]).Size.Height);
+                        aas.SweepDirection = ((ArcSegment)pf.Segments[2]).SweepDirection;
+                        coverPf.Segments[2] = aas;
+                    }
+                    else
+                    {
+                        PolyLineSegment ls3 = new PolyLineSegment();
+                        PointCollection pc = new PointCollection();
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[2]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            pc.Add(new Point(((PolyLineSegment)pf.Segments[2]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[2]).Points[i].Y + delta_y));
+                        }
+                        ls3.Points = pc;
+                        coverPf.Segments[2] = ls3;
+                    }
+                }
+                else
+                {
+                    // 偶数时 isTop为1
+                    ArrayList arr = new ArrayList(getPathFigureCoordinateWhenChangeShapeOfLayer(canvas, curSp, curPath, pf, 1));
+                    Path coverPath = (Path)PfToCoverMap_CC[pf];
+                    GeometryGroup _gg = (GeometryGroup)((Path)coverPath).Data;
+                    PathGeometry coverPg = (PathGeometry)(_gg.Children[0]);
+                    PathFigure coverPf = coverPg.Figures[0];
+                    if (pf.Segments[1] is LineSegment)
+                    {
+                        LineSegment ls = new LineSegment();
+                        if (coverPf.Segments[1] is LineSegment)
+                        {
+                            ls.Point = new Point(((LineSegment)coverPf.Segments[1]).Point.X, ((LineSegment)coverPf.Segments[1]).Point.Y);
+                        }
+                        else if (coverPf.Segments[1] is ArcSegment)
+                        {
+                            ls.Point = new Point(((ArcSegment)coverPf.Segments[1]).Point.X, ((ArcSegment)coverPf.Segments[1]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[1]).Points[((PolyLineSegment)coverPf.Segments[1]).Points.Count - 1];
+                            ls.Point = new Point(_point.X, _point.Y);
+                        }
+                        coverPf.Segments[1] = ls;
+                    }
+                    else if (pf.Segments[1] is ArcSegment)
+                    {
+                        ArcSegment aas = new ArcSegment();
+                        if (coverPf.Segments[1] is LineSegment)
+                        {
+                            aas.Point = new Point(((LineSegment)coverPf.Segments[1]).Point.X, ((LineSegment)coverPf.Segments[1]).Point.Y);
+                        }
+                        else if (coverPf.Segments[1] is ArcSegment)
+                        {
+                            aas.Point = new Point(((ArcSegment)coverPf.Segments[1]).Point.X, ((ArcSegment)coverPf.Segments[1]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[1]).Points[((PolyLineSegment)coverPf.Segments[1]).Points.Count - 1];
+                            aas.Point = new Point(_point.X, _point.Y);
+                        }
+                        aas.Size = new Size(((ArcSegment)pf.Segments[1]).Size.Width, ((ArcSegment)pf.Segments[1]).Size.Height);
+                        aas.SweepDirection = ((ArcSegment)pf.Segments[1]).SweepDirection;
+                        coverPf.Segments[1] = aas;
+                    }
+                    else
+                    {
+                        PolyLineSegment ls = new PolyLineSegment();
+                        PointCollection pc = new PointCollection();
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[1]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            pc.Add(new Point(((PolyLineSegment)pf.Segments[1]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[1]).Points[i].Y + delta_y));
+                        }
+                        ls.Points = pc;
+                        coverPf.Segments[1] = ls;
+                    }
+
+                    if (pf.Segments.Count < 4 || pf.Segments[3] is LineSegment)
+                    {
+                        LineSegment ls = new LineSegment();
+                        if (coverPf.Segments[3] is LineSegment)
+                        {
+                            ls.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
+                        }
+                        else if (coverPf.Segments[3] is ArcSegment)
+                        {
+                            ls.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
+                            ls.Point = new Point(_point.X, _point.Y);
+                        }
+                        coverPf.Segments[3] = ls;
+                    }
+                    else if (pf.Segments[3] is ArcSegment)
+                    {
+                        ArcSegment aas = new ArcSegment();
+                        if (coverPf.Segments[3] is LineSegment)
+                        {
+                            aas.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
+                        }
+                        else if (coverPf.Segments[3] is ArcSegment)
+                        {
+                            aas.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
+                        }
+                        else
+                        {
+                            // 需要添加
+                            Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
+                            aas.Point = new Point(_point.X, _point.Y);
+                        }
+                        aas.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
+                        aas.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
+                        coverPf.Segments[3] = aas;
+                    }
+                    else
+                    {
+                        PolyLineSegment ls3 = new PolyLineSegment();
+                        PointCollection pc = new PointCollection();
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            pc.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
+                        }
+                        ls3.Points = pc;
+                        coverPf.Segments[3] = ls3;
+                    }
+                }
+
+                layerIndex++;
+            }
+        }
     }
 }

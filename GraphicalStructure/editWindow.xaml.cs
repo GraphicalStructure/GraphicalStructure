@@ -536,7 +536,10 @@ namespace GraphicalStructure
 
             if (offset != 0)
             {
-                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, offset / 2);
+                if(changeTitle == 0)
+                    ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 1, offset / 2);
+                else if(changeTitle == 2)
+                    ColorProc.processWhenChangeCylindricalHeight_CC(currentCom.newPath, 1, offset / 2);
             }
             
             
@@ -981,7 +984,10 @@ namespace GraphicalStructure
 
             if (offset != 0)
             {
-                ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 2, offset / 2);
+                if (changeTitle == 0)
+                    ColorProc.processWhenChangeCylindricalHeight(currentCom.newPath, 2, offset / 2);
+                else if (changeTitle == 2)
+                    ColorProc.processWhenChangeCylindricalHeight_CC(currentCom.newPath, 2, offset / 2);
             }
 
             rightLength = Double.Parse(rightD.Text.ToString());
@@ -1164,9 +1170,6 @@ namespace GraphicalStructure
 
         public void changeShape(double radius)
         {
-            if (changeTitle == 2)
-                return;
-
             GeometryGroup geometryGroup = (GeometryGroup)currentCom.newPath.Data;
             PathGeometry curPg = (PathGeometry)geometryGroup.Children[0];
             PathFigure curPf = curPg.Figures.ElementAt(0);
