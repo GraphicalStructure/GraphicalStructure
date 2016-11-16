@@ -5022,6 +5022,26 @@ namespace GraphicalStructure
                             file.WriteLine();
                         }
 
+                        //数据库材料
+                        file.Write("数据库材料"); file.WriteLine();
+                        if (DataBaseMaterials.Count != 0)
+                        {
+                            for (int temp = 0; temp < DataBaseMaterials.Count; temp++)
+                            {
+                                Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[temp])["materialName"];
+                                file.Write(mdic["content"]);
+                                if (temp != DataBaseMaterials.Count - 1)
+                                {
+                                    file.Write('|');
+                                }
+                            }
+                        }
+                        else
+                        {
+                            file.Write("无");
+                        }
+                        
+
                         saveFileName = saveFileDialog.FileName;
                     }
                 }
@@ -6647,6 +6667,26 @@ namespace GraphicalStructure
 
                                 autoResize();
                             }
+                            if (s == "数据库材料")
+                            {
+                                lastPath = "数据库材料";
+                                continue;
+                            }
+                            if (lastPath == "数据库材料" && s != "无")
+                            {
+                                if (s.Contains('|'))
+                                {
+                                    //有多种材料
+                                    string[] materialArr = s.Split('|');
+
+                                    
+                                }
+                                else
+                                {
+                                    //只有一种材料
+                                }
+                            }
+                            
                         }
                         else
                         {
