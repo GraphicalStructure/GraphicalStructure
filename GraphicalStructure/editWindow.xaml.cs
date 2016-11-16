@@ -109,7 +109,7 @@ namespace GraphicalStructure
                 ChangePathWidth();
             }
 
-            update_LayerCoordinate();
+            
             ChangeColor();
 
             /*
@@ -445,14 +445,14 @@ namespace GraphicalStructure
                     }
                 }
             }
-
+            update_LayerCoordinate();
             double offset = Double.Parse(leftD.Text) - leftLength;
             if (offset != 0 && leftCom != null)
             {
                 if (leftCom.isLeftCover)
                 {
                     // 当前改变左侧段高的段为第一个段，则需改变左端盖
-                    /*PathFigure leftCoverPf = leftCom.pg.Figures[0];
+                    PathFigure leftCoverPf = leftCom.pg.Figures[0];
                     leftCoverPf.StartPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y);
                     ((LineSegment)leftCoverPf.Segments[0]).Point = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset);
 
@@ -493,28 +493,8 @@ namespace GraphicalStructure
                         // when poly
                     }
                     leftCom.point4 = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y);
-                    */
-                    /*editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
-                    ew.setComponent(leftCom);
-                    ew.Owner = this;
-                    ew.rightD.Text = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y) + "";
-                    ew.radiusText.Text = leftCom.radius.ToString();
-                    ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
-                    ew.sp = sp;
-                    ew.changeTitle = changeTitle;
-                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
-                    ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
-                    ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
-                    ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
-                    Path originalInsertShape = mainWindow.getInsertShape();
-                    int originalCurLayerNum = mainWindow.getCurLayerNum();
-                    mainWindow.setInsertShape(leftCom.newPath);
-                    mainWindow.setCurLayerNum(leftCom.layerNum);
-                    ew.currentCom = leftCom;
-                    ew.OKButton_Click(null, null);
-                    mainWindow.setInsertShape(originalInsertShape);
-                    mainWindow.setCurLayerNum(originalCurLayerNum);*/
-                    editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
+                    
+                    editWindow _ = new editWindow((MainWindow)Application.Current.MainWindow);
                     mainWindow.makeLeftCoverConnectSkillfully();
                 }
                 else
@@ -906,6 +886,7 @@ namespace GraphicalStructure
                 }
             }
 
+            update_LayerCoordinate();
             double offset = Double.Parse(rightD.Text) - rightLength;
 
             if (offset != 0 && rightCom != null)
@@ -913,7 +894,7 @@ namespace GraphicalStructure
                 if (rightCom.isRightCover)
                 {
                     // 当前改变右侧段高的段为最后一个段，则需改变右端盖
-                    /*PathFigure rightCoverPf = rightCom.pg.Figures[0];
+                    PathFigure rightCoverPf = rightCom.pg.Figures[0];
                     rightCoverPf.StartPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y);
                     ((LineSegment)rightCoverPf.Segments[0]).Point = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset);
                     if (rightCoverPf.Segments[1] is LineSegment)
@@ -963,13 +944,13 @@ namespace GraphicalStructure
                         // when poly
                     }
                     rightCom.point4 = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y);
-                    */
+                    
                     editWindow _ = new editWindow((MainWindow)Application.Current.MainWindow);
                     mainWindow.makeRightCoverConnectSkillfully();
                 }
                 else
                 {
-                    // 当前改变左侧段高的段不为第一个段，则需改变后一个段的左侧段高
+                    // 当前改变右侧段高的段不为最后一个段，则需改变后一个段的左侧段高
                     editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
                     ew.setComponent(rightCom);
                     ew.Owner = this;

@@ -1355,60 +1355,62 @@ namespace GraphicalStructure
                         ls.Points = pc;
                         coverPf.Segments[1] = ls;
                     }
-
-                    if (pf.Segments.Count < 4 || pf.Segments[3] is LineSegment)
+                    if (pf.Segments.Count > 3)
                     {
-                        LineSegment ls = new LineSegment();
-                        if (coverPf.Segments[3] is LineSegment)
+                        if (pf.Segments[3] is LineSegment)
                         {
-                            ls.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
+                            LineSegment ls = new LineSegment();
+                            if (coverPf.Segments[3] is LineSegment)
+                            {
+                                ls.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
+                            }
+                            else if (coverPf.Segments[3] is ArcSegment)
+                            {
+                                ls.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
+                            }
+                            else
+                            {
+                                // 需要添加
+                                Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
+                                ls.Point = new Point(_point.X, _point.Y);
+                            }
+                            coverPf.Segments[3] = ls;
                         }
-                        else if (coverPf.Segments[3] is ArcSegment)
+                        else if (pf.Segments[3] is ArcSegment)
                         {
-                            ls.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
+                            ArcSegment aas = new ArcSegment();
+                            if (coverPf.Segments[3] is LineSegment)
+                            {
+                                aas.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
+                            }
+                            else if (coverPf.Segments[3] is ArcSegment)
+                            {
+                                aas.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
+                            }
+                            else
+                            {
+                                // 需要添加
+                                Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
+                                aas.Point = new Point(_point.X, _point.Y);
+                            }
+                            aas.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
+                            aas.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
+                            coverPf.Segments[3] = aas;
                         }
                         else
                         {
-                            // 需要添加
-                            Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
-                            ls.Point = new Point(_point.X, _point.Y);
+                            PolyLineSegment ls3 = new PolyLineSegment();
+                            PointCollection pc = new PointCollection();
+                            for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                            {
+                                double delta_x, delta_y;
+                                delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                                delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                                pc.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
+                            }
+                            ls3.Points = pc;
+                            coverPf.Segments[3] = ls3;
                         }
-                        coverPf.Segments[3] = ls;
-                    }
-                    else if (pf.Segments[3] is ArcSegment)
-                    {
-                        ArcSegment aas = new ArcSegment();
-                        if (coverPf.Segments[3] is LineSegment)
-                        {
-                            aas.Point = new Point(((LineSegment)coverPf.Segments[3]).Point.X, ((LineSegment)coverPf.Segments[3]).Point.Y);
-                        }
-                        else if (coverPf.Segments[3] is ArcSegment)
-                        {
-                            aas.Point = new Point(((ArcSegment)coverPf.Segments[3]).Point.X, ((ArcSegment)coverPf.Segments[3]).Point.Y);
-                        }
-                        else
-                        {
-                            // 需要添加
-                            Point _point = ((PolyLineSegment)coverPf.Segments[3]).Points[((PolyLineSegment)coverPf.Segments[3]).Points.Count - 1];
-                            aas.Point = new Point(_point.X, _point.Y);
-                        }
-                        aas.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
-                        aas.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
-                        coverPf.Segments[3] = aas;
-                    }
-                    else
-                    {
-                        PolyLineSegment ls3 = new PolyLineSegment();
-                        PointCollection pc = new PointCollection();
-                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
-                        {
-                            double delta_x, delta_y;
-                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
-                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
-                            pc.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
-                        }
-                        ls3.Points = pc;
-                        coverPf.Segments[3] = ls3;
                     }
                 }
                 
