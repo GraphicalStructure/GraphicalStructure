@@ -4650,6 +4650,54 @@ namespace GraphicalStructure
             showTotalSizeOnCanvas();
         }
 
+        private void storeMaterialToFile(string path)
+        {
+            string[] file = path.Split('.');
+            
+            //写入文件.
+            string filePath = file[0] + "_MaterialData.txt";
+            FileStream myFs = new FileStream(filePath, FileMode.Create);
+            
+
+            if (DataBaseMaterials != null && DataBaseMaterials.Count != 0)
+            {
+                byte[] bt = MainWindow.Serializer(DataBaseMaterials);
+
+                BinaryWriter bw = new BinaryWriter(myFs);
+                bw.Write(bt);
+                bw.Close();
+            }
+            else
+            {
+                byte[] bt = new byte[] { 0x01};
+                BinaryWriter bw = new BinaryWriter(myFs);
+                bw.Write(bt);
+                bw.Close();
+            }
+
+            myFs.Close();
+        }
+
+        private List<Dictionary<string, Dictionary<string, string>>> getMaterialFromFile(string path)
+        {
+            string[] file = path.Split('.');
+            string filePath = file[0] + "_MaterialData.txt";
+
+            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // 读取文件的 byte[] 
+            byte[] bytes = new byte[fileStream.Length];
+            fileStream.Read(bytes, 0, bytes.Length);
+            fileStream.Close();
+
+            byte[] bt = new byte[] { 0x01};
+            if (bytes.Length == bt.Length)
+                return null;
+
+            List<Dictionary<string, Dictionary<string, string>>> result = (List<Dictionary<string, Dictionary<string, string>>>)MainWindow.Deserialize(bytes);
+
+            return result;
+        }
+
         private void Store_Click(object sender, RoutedEventArgs e)
         {
             if (saveFileName == null || saveFileName == "")
@@ -4662,6 +4710,9 @@ namespace GraphicalStructure
                     //File.WriteAllText(saveFileDialog.FileName, "");
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(saveFileDialog.FileName))
                     {
+                        //保存数据库中材料
+                        storeMaterialToFile(saveFileDialog.FileName);
+
                         int num = 0;
                         foreach (Components c in components)
                         {
@@ -5262,6 +5313,9 @@ namespace GraphicalStructure
                 if (openFileDialog.ShowDialog() == true)
                 {
                     initWindow();
+
+                    //读取保存的数据库材料
+                    DataBaseMaterials = getMaterialFromFile(openFileDialog.FileName);
 
                     string[] temp = File.ReadAllLines(openFileDialog.FileName);
                     string lastPath = "";
