@@ -3917,6 +3917,7 @@ namespace GraphicalStructure
 
         private void btEdit_Click(object sender, RoutedEventArgs e)
         {
+            changeTitle = 0;
             editWindow ew = new editWindow();
             ew.list = DataBaseMaterials;
             ew.changeTitle = changeTitle;
@@ -3961,6 +3962,7 @@ namespace GraphicalStructure
         //编辑空心管
         private void btEdit_CentralCube_Click(object sender, RoutedEventArgs e)
         {
+            changeTitle = 2;
             editWindow ew = new editWindow();
             ew.list = DataBaseMaterials;
             ew.changeTitle = changeTitle;
@@ -4190,7 +4192,7 @@ namespace GraphicalStructure
                 {
                     currentComp = (Components)components[index];
 
-
+                    changeTitle = 0;
                     if ((isHaveLeftEndCap && index == 0) || (isHaveRightEndCap && index == components.Count - 1))
                     {
                         changeTitle = 1;
@@ -6629,7 +6631,7 @@ namespace GraphicalStructure
         {
             layerEdit le = new layerEdit();
             insertShape = path;
-            
+            changeTitle = 0;
             le.list = DataBaseMaterials;
             le.currentLayerNum = indexOfLayer;
             int index = stackpanel.Children.IndexOf(path);
@@ -6698,7 +6700,8 @@ namespace GraphicalStructure
                 editWindow ew = new editWindow();
                 ew.setComponent(currentLeftCoverCom);
                 ew.Owner = this;
-                ew.leftD.Text = originalLeftCoverCom.pg.Bounds.BottomLeft.Y - originalLeftCoverCom.pg.Bounds.TopLeft.Y + "";
+                ew.changeTitle = 1;
+                //ew.leftD.Text = originalLeftCoverCom.pg.Bounds.BottomLeft.Y - originalLeftCoverCom.pg.Bounds.TopLeft.Y + "";
                 ew.rightD.Text = currentLeftCoverCom.pg.Bounds.BottomRight.Y - currentLeftCoverCom.pg.Bounds.TopRight.Y + "";
                 ew.radiusText.Text = originalLeftCoverCom.radius.ToString();
                 ew.segmentWidth.Text = originalLeftCoverCom.width.ToString();
@@ -6753,10 +6756,11 @@ namespace GraphicalStructure
                 // 修改右端盖
                 Components currentRightCoverCom = (Components)components[components.Count - 1];
                 editWindow ew = new editWindow();
+                ew.changeTitle = 1;
                 ew.setComponent(currentRightCoverCom);
                 ew.Owner = this;
                 ew.leftD.Text = currentRightCoverCom.pg.Bounds.BottomLeft.Y - currentRightCoverCom.pg.Bounds.TopLeft.Y + "";
-                ew.rightD.Text = originalRightCoverCom.pg.Bounds.BottomRight.Y - originalRightCoverCom.pg.Bounds.TopRight.Y + "";
+                //ew.rightD.Text = originalRightCoverCom.pg.Bounds.BottomRight.Y - originalRightCoverCom.pg.Bounds.TopRight.Y + "";
                 ew.radiusText.Text = originalRightCoverCom.radius.ToString();
                 ew.segmentWidth.Text = originalRightCoverCom.width.ToString();
                 ew.isLeftEndCap = originalRightCover.Fill.ToString();
