@@ -257,7 +257,7 @@ namespace GraphicalStructure
             centerLine.Y1 = canvas.Height / 2;
             centerLine.X2 = canvas.Width - 20;
             centerLine.Y2 = canvas.Height / 2;
-            /*if (e.HeightChanged) {
+            if (e.HeightChanged) {
                 double hChanged = e.PreviousSize.Height - e.NewSize.Height;
                 for (int i = 0; i < canvas.Children.Count; i++) {
                     if (canvas.Children[i] is System.Windows.Shapes.Path) {
@@ -266,7 +266,7 @@ namespace GraphicalStructure
                         ColorProc.moveVertical(path, -hChanged/2.0);
                     }
                 }
-            }*/
+            }
             autoResize();
         }
 
@@ -2701,7 +2701,7 @@ namespace GraphicalStructure
             GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
             geometryGroup.FillRule = FillRule.Nonzero;
             int index;
-            if (changeTitle == 0)
+            if (changeTitle == 0 || changeTitle == 1)
             {
                 index = stackpanel.Children.IndexOf(insertShape);
                 if (isConvex == 0)
@@ -3076,7 +3076,7 @@ namespace GraphicalStructure
             geometryGroup.FillRule = FillRule.Nonzero;
             
             int index;
-            if (changeTitle == 0)
+            if (changeTitle == 0 || changeTitle == 1)
             {
                 index = stackpanel.Children.IndexOf(insertShape);
                 if (isConvex == 0)
@@ -3294,7 +3294,7 @@ namespace GraphicalStructure
         public void changeArcSegmentToLineSegment(double a, int b)
         {
             int index;
-            if (changeTitle == 0)
+            if (changeTitle == 0 || changeTitle == 1)
             {
                 index = stackpanel.Children.IndexOf(insertShape);
                 if (index >= 0)
