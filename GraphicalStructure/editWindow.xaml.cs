@@ -452,15 +452,17 @@ namespace GraphicalStructure
                 if (leftCom.isLeftCover)
                 {
                     // 当前改变左侧段高的段为第一个段，则需改变左端盖
-                    PathFigure leftCoverPf = leftCom.pg.Figures[0];
+                    /*PathFigure leftCoverPf = leftCom.pg.Figures[0];
                     leftCoverPf.StartPoint = new Point(leftCoverPf.StartPoint.X, leftCoverPf.StartPoint.Y);
                     ((LineSegment)leftCoverPf.Segments[0]).Point = new Point(((LineSegment)leftCoverPf.Segments[0]).Point.X, ((LineSegment)leftCoverPf.Segments[0]).Point.Y + offset);
+
                     if (leftCoverPf.Segments[1] is LineSegment) {
                         ((LineSegment)leftCoverPf.Segments[1]).Point = new Point(((LineSegment)leftCoverPf.Segments[1]).Point.X, ((LineSegment)leftCoverPf.Segments[1]).Point.Y + offset);
                     } else if (leftCoverPf.Segments[1] is ArcSegment) {
                         ((ArcSegment)leftCoverPf.Segments[1]).Point = new Point(((ArcSegment)leftCoverPf.Segments[1]).Point.X, ((ArcSegment)leftCoverPf.Segments[1]).Point.Y + offset);
                     } else {
                         // when poly
+
                     }
                     ((LineSegment)leftCoverPf.Segments[2]).Point = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y);
                     // 最后一条边可能需要处理
@@ -491,7 +493,29 @@ namespace GraphicalStructure
                         // when poly
                     }
                     leftCom.point4 = new Point(((LineSegment)leftCoverPf.Segments[2]).Point.X, ((LineSegment)leftCoverPf.Segments[2]).Point.Y);
-
+                    */
+                    /*editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
+                    ew.setComponent(leftCom);
+                    ew.Owner = this;
+                    ew.rightD.Text = Math.Abs(currentCom.startPoint.Y - currentCom.point2.Y) + "";
+                    ew.radiusText.Text = leftCom.radius.ToString();
+                    ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
+                    ew.sp = sp;
+                    ew.changeTitle = changeTitle;
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
+                    ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
+                    ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
+                    Path originalInsertShape = mainWindow.getInsertShape();
+                    int originalCurLayerNum = mainWindow.getCurLayerNum();
+                    mainWindow.setInsertShape(leftCom.newPath);
+                    mainWindow.setCurLayerNum(leftCom.layerNum);
+                    ew.currentCom = leftCom;
+                    ew.OKButton_Click(null, null);
+                    mainWindow.setInsertShape(originalInsertShape);
+                    mainWindow.setCurLayerNum(originalCurLayerNum);*/
+                    editWindow ew = new editWindow((MainWindow)Application.Current.MainWindow);
+                    mainWindow.makeLeftCoverConnectSkillfully();
                 }
                 else
                 {
@@ -504,7 +528,7 @@ namespace GraphicalStructure
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
                     ew.sp = sp;
                     ew.changeTitle = changeTitle;
-                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer_CC);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
@@ -889,7 +913,7 @@ namespace GraphicalStructure
                 if (rightCom.isRightCover)
                 {
                     // 当前改变右侧段高的段为最后一个段，则需改变右端盖
-                    PathFigure rightCoverPf = rightCom.pg.Figures[0];
+                    /*PathFigure rightCoverPf = rightCom.pg.Figures[0];
                     rightCoverPf.StartPoint = new Point(rightCoverPf.StartPoint.X, rightCoverPf.StartPoint.Y);
                     ((LineSegment)rightCoverPf.Segments[0]).Point = new Point(((LineSegment)rightCoverPf.Segments[0]).Point.X, ((LineSegment)rightCoverPf.Segments[0]).Point.Y + offset);
                     if (rightCoverPf.Segments[1] is LineSegment)
@@ -939,6 +963,9 @@ namespace GraphicalStructure
                         // when poly
                     }
                     rightCom.point4 = new Point(((LineSegment)rightCoverPf.Segments[2]).Point.X, ((LineSegment)rightCoverPf.Segments[2]).Point.Y);
+                    */
+                    editWindow _ = new editWindow((MainWindow)Application.Current.MainWindow);
+                    mainWindow.makeRightCoverConnectSkillfully();
                 }
                 else
                 {
@@ -951,7 +978,7 @@ namespace GraphicalStructure
                     ew.leftD.Text = Math.Abs(currentCom.point3.Y - currentCom.point4.Y) + "";
                     ew.radiusText.Text = rightCom.radius.ToString();
                     ew.ChangeTextEvent += new ChangeTextHandler(mainWindow.autoResize);
-                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer_CC);
+                    ew.ChangeCoverEvent += new ChangeCoverLocation(ColorProc.processWhenMoveLayer);
                     ew.ChangeShapeEvent += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent2 += new ChangeShapeHandler(mainWindow.changeLineSegmentToArcSegment);
                     ew.ChangeShapeEvent3 += new ChangeShapeHandler(mainWindow.changeArcSegmentToLineSegment);
@@ -964,7 +991,6 @@ namespace GraphicalStructure
                     ew.OKButton_Click(null, null);
                     mainWindow.setInsertShape(originalInsertShape);
                     mainWindow.setCurLayerNum(originalCurLayerNum);
-                    mainWindow.makeRightCoverConnectSkillfully();
                 }
             }
 
