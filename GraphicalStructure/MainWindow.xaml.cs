@@ -2768,80 +2768,14 @@ namespace GraphicalStructure
                 polyLineSegment.Points = points;
                 arcSegment.SweepDirection = SweepDirection.Clockwise;
             }
-            if (p1.Y == p2.Y)
-            {
-                curPf.Segments[3] = arcSegment;
-            }
-            else { curPf.Segments[3] = polyLineSegment; }
+            
+            curPf.Segments[3] = polyLineSegment;
 
             if (curLayerNum != 0)
             {
                 //return;
                 //有层时，根据层数绘制弧形
                 //每层默认height 20
-                if (p1.Y == p2.Y)
-                {
-                    Point p3, p4;
-                    ArcSegment arcSegment1, arcSegment2;
-                    PathGeometry _curPg;
-                    PathFigure _curPf;
-                    for (int i = 1; i <= curLayerNum; i += 2)
-                    {
-                        arcSegment1 = new ArcSegment();
-                        arcSegment2 = new ArcSegment();
-                        _curPg = (PathGeometry)geometryGroup.Children[i];
-                        _curPf = _curPg.Figures.ElementAt(0);
-                        p1 = _curPf.StartPoint;
-                        if (_curPf.Segments[0] is LineSegment)
-                        {
-                            p2 = ((LineSegment)_curPf.Segments[0]).Point;
-                        }
-                        else
-                        {
-                            p2 = ((ArcSegment)_curPf.Segments[0]).Point;
-                        }
-                        if (_curPf.Segments[1] is LineSegment)
-                        {
-                            p3 = ((LineSegment)_curPf.Segments[1]).Point;
-                        }
-                        else
-                        {
-                            p3 = ((ArcSegment)_curPf.Segments[1]).Point;
-                        }
-                        if (_curPf.Segments[2] is LineSegment)
-                        {
-                            p4 = ((LineSegment)_curPf.Segments[2]).Point;
-                        }
-                        else
-                        {
-                            p4 = ((ArcSegment)_curPf.Segments[2]).Point;
-                        }
-                        if (isConvex == 0)
-                        {   //凸
-                            arcSegment1.Size = new Size(radius1, radius2);
-                            arcSegment1.Point = p2;
-                            arcSegment1.SweepDirection = SweepDirection.Clockwise;
-                            arcSegment2.Size = new Size(radius1, radius2);
-                            arcSegment2.Point = p4;
-                            arcSegment2.SweepDirection = SweepDirection.Counterclockwise;
-                        }
-                        else
-                        {   //凹
-                            arcSegment1.Size = new Size(radius1, radius2);
-                            arcSegment1.Point = p2;
-                            arcSegment1.SweepDirection = SweepDirection.Counterclockwise;
-                            arcSegment2.Size = new Size(radius1, radius2);
-                            arcSegment2.Point = p4;
-                            arcSegment2.SweepDirection = SweepDirection.Clockwise;
-                        }
-
-                        _curPf.Segments[0] = arcSegment1;
-                        _curPf.Segments[2] = arcSegment2;
-
-                    }
-                }
-                else
-                {
                     //有层且层为polysegment处理
                     Point _p1, _p2, _p3, _p4;
                     PathGeometry _curPg;
@@ -2937,7 +2871,6 @@ namespace GraphicalStructure
                         _curPf.Segments[0] = pls1;
                         _curPf.Segments[2] = pls2;
 
-                    }
                 }
             }
 
@@ -2974,91 +2907,9 @@ namespace GraphicalStructure
             {//凹
                 arcSegment.SweepDirection = SweepDirection.Clockwise;
             }
-            if (p1.Y == p2.Y)
-            {
-                curPf.Segments[1] = arcSegment;
-            }
-            else
-            {
-                curPf.Segments[1] = downPolyLineSegment;
-            }
+            curPf.Segments[1] = downPolyLineSegment;
             Console.WriteLine("curLayerNum: " + curLayerNum);
-            if (curLayerNum != 0)
-            {
-                //return;
-                //有层时，根据层数绘制弧形
-                if (p1.Y == p2.Y)
-                {
-                    Point p3, p4;
-                    ArcSegment arcSegment1, arcSegment2;
-                    PathGeometry _curPg;
-                    PathFigure _curPf;
-                    for (int i = 1; i <= curLayerNum; i += 2)
-                    {
-                        arcSegment1 = new ArcSegment();
-                        arcSegment2 = new ArcSegment();
-                        _curPg = (PathGeometry)geometryGroup.Children[i + 1];
-                        _curPf = _curPg.Figures.ElementAt(0);
-                        p1 = _curPf.StartPoint;
-                        if (_curPf.Segments[0] is LineSegment)
-                        {
-                            p2 = ((LineSegment)_curPf.Segments[0]).Point;
-                        }
-                        else
-                        {
-                            p2 = ((ArcSegment)_curPf.Segments[0]).Point;
-                        }
-                        if (_curPf.Segments[1] is LineSegment)
-                        {
-                            p3 = ((LineSegment)_curPf.Segments[1]).Point;
-                        }
-                        else
-                        {
-                            p3 = ((ArcSegment)_curPf.Segments[1]).Point;
-                        }
-                        if (_curPf.Segments[2] is LineSegment)
-                        {
-                            p4 = ((LineSegment)_curPf.Segments[2]).Point;
-                        }
-                        else
-                        {
-                            p4 = ((ArcSegment)_curPf.Segments[2]).Point;
-                        }
-                        
-                        if (isConvex == 0)
-                        {   //凸
-                            arcSegment1.Size = new Size(radius1, radius2);
-                            arcSegment1.Point = p3;
-                            arcSegment1.SweepDirection = SweepDirection.Counterclockwise;
-                            arcSegment2.Size = new Size(radius1, radius2);
-                            arcSegment2.Point = p1;
-                            arcSegment2.SweepDirection = SweepDirection.Clockwise;
-
-
-                        }
-                        else
-                        {   //凹
-                            arcSegment1.Size = new Size(radius1, radius2);
-                            arcSegment1.Point = p3;
-                            arcSegment1.SweepDirection = SweepDirection.Clockwise;
-                            arcSegment2.Size = new Size(radius1, radius2);
-                            arcSegment2.Point = p1;
-                            arcSegment2.SweepDirection = SweepDirection.Counterclockwise;
-                        }
-
-                        _curPf.Segments[1] = arcSegment1;
-                        if (_curPf.Segments.Count > 3)
-                        {
-                            _curPf.Segments[3] = arcSegment2;
-                        }
-                        else
-                        {
-                            _curPf.Segments.Add(arcSegment2);
-                        }
-                    }
-                }
-            }
-
+            
             if (changeTitle == 0)
             {
                 ColorProc.processWhenChangeLayerShape(front_canvas, stackpanel, insertShape);
@@ -6778,10 +6629,13 @@ namespace GraphicalStructure
         public void showEditLayer(int indexOfLayer, PathFigure pg, System.Windows.Shapes.Path path)
         {
             layerEdit le = new layerEdit();
+            insertShape = path;
+            
             le.list = DataBaseMaterials;
             le.currentLayerNum = indexOfLayer;
             int index = stackpanel.Children.IndexOf(path);
             currentComp = (Components)components[index];
+            curLayerNum = currentComp.layerNum;
             le.changeTitle = changeTitle;
             le.setComponent(currentComp);
             le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
@@ -6798,6 +6652,7 @@ namespace GraphicalStructure
             _le.changeTitle = changeTitle;
             int _index = centralCubePanel.Children.IndexOf(path);
             currentComp = (Components)centralCubes[_index];
+            curLayerNum = currentComp.layerNum;
             _le.setComponent(currentComp);
             _le.ChangeLayerSizeEvent += new ChangeLayerSizeHandler(autoResize);
             _le.Show();

@@ -466,6 +466,8 @@ namespace GraphicalStructure
             catch
             {
                 layerEdit _ = new layerEdit((MainWindow)Application.Current.MainWindow);
+                int isConvex = 0;
+                if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeArcSegmentToLineSegment(1, 2);
                 layerEdit _le = new layerEdit();
                 _le.layerNums.ItemsSource = currentCom.layerNums;
@@ -477,8 +479,6 @@ namespace GraphicalStructure
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
                 _le.leftSizeChange();
-                int isConvex = 0;
-                if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeLineSegmentToPolySegmentForLayer(currentCom.radius, isConvex);
             }
             layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
@@ -725,6 +725,8 @@ namespace GraphicalStructure
             }
             catch {
                 layerEdit _ = new layerEdit((MainWindow)Application.Current.MainWindow);
+                int isConvex = 0;
+                if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeArcSegmentToLineSegment(1, 2);
                 layerEdit _le = new layerEdit();
                 _le.setComponent(currentCom);
@@ -736,8 +738,6 @@ namespace GraphicalStructure
                 _le.leftSize.Text = leftSize.Text;
                 _le.rightSize.Text = rightSize.Text;
                 _le.rightSizeChange();
-                int isConvex = 0;
-                if (currentCom.isChangeIOgive) isConvex = 1;
                 mainWindow.changeLineSegmentToPolySegmentForLayer(currentCom.radius, isConvex);
             }
             layerEdit le = new layerEdit((MainWindow)Application.Current.MainWindow);
