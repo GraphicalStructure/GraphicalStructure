@@ -1437,14 +1437,8 @@ namespace GraphicalStructure
             PathFigure compPf = ((PathGeometry)((GeometryGroup)curComp.newPath.Data).Children[0]).Figures[0];
             stackpanel.Children.Insert(index + 1, comp.newPath);
 
-            if (compPf.Segments[1] is ArcSegment)
-            {
-                if(((ArcSegment)compPf.Segments[1]).SweepDirection == SweepDirection.Counterclockwise)
-                    changeLineSegmentToArcSegment(curComp.radius, 0);
-                else
-                    changeLineSegmentToArcSegment(curComp.radius, 1);
-            }
-            else if (compPf.Segments[1] is PolyLineSegment)
+           
+            if (compPf.Segments[1] is PolyLineSegment)
             {
                 if (curComp.isChangeOgive)
                 {
@@ -1461,807 +1455,222 @@ namespace GraphicalStructure
 
             //判断是否存在层
             GeometryGroup geometryGroup = (GeometryGroup)insertShape.Data;
-            if (geometryGroup.Children.Count != 1)
+            
+            for (int i = 1; i < geometryGroup.Children.Count; i++)
             {
-                for (int i = 1; i < geometryGroup.Children.Count; i++)
+                // layerNum 总层数
+                ((Components)components[index + 1]).layerNum += 1;
+                // layerNums 
+                ((Components)components[index + 1]).layerNums.Add(curComp.layerNums[i - 1]);
+                ((Components)components[index + 1]).layerType.Add(curComp.layerType[i - 1]);
+                ((Components)components[index + 1]).layerMaterial.Add(curComp.layerMaterial[i - 1]);
+                ((Components)components[index + 1]).layerSize.Add(Int32.Parse(curComp.layerNums[i - 1].ToString()), new Hashtable());
+                ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])).Add("diameter", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["diameter"]);
+                ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("longLength", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["longLength"]);
+                ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("width", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["width"]);
+                ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("height", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["height"]);
+                ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("ObliqueAngle", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["ObliqueAngle"]);
+                ((Components)components[index + 1]).layerLeftThickness.Add(curComp.layerLeftThickness[i - 1]);
+                ((Components)components[index + 1]).layerRightThickness.Add(curComp.layerRightThickness[i - 1]);
+            }
+
+            GeometryGroup geometryGroup_ = (GeometryGroup)(comp).newPath.Data;
+
+            for (int k = 1; k < geometryGroup.Children.Count; k += 2)
+            {
+                double leftWidth = Double.Parse(comp.layerLeftThickness[k].ToString());
+                double rightWidth = Double.Parse(comp.layerRightThickness[k].ToString());
+                double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
+
+                PathGeometry curPg = (PathGeometry)geometryGroup_.Children[0];
+                PathFigure curPf = curPg.Figures.ElementAt(0);
+                Point startP = new Point(curPf.StartPoint.X, curPf.StartPoint.Y + maxCh_Width);
+                curPf.StartPoint = startP;
+                ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
+                if (curPf.Segments[1] is LineSegment)
                 {
-                    // layerNum 总层数
-                    ((Components)components[index + 1]).layerNum += 1;
-                    // layerNums 
-                    ((Components)components[index + 1]).layerNums.Add(curComp.layerNums[i - 1]);
-                    ((Components)components[index + 1]).layerType.Add(curComp.layerType[i - 1]);
-                    ((Components)components[index + 1]).layerMaterial.Add(curComp.layerMaterial[i - 1]);
-                    ((Components)components[index + 1]).layerSize.Add(Int32.Parse(curComp.layerNums[i - 1].ToString()), new Hashtable());
-                    ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])).Add("diameter", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["diameter"]);
-                    ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("longLength", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["longLength"]);
-                    ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("width", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["width"]);
-                    ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("height", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["height"]);
-                    ((Hashtable)(((Components)components[index + 1]).layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString())])).Add("ObliqueAngle", ((Hashtable)curComp.layerSize[Int32.Parse(curComp.layerNums[i - 1].ToString().ToString())])["ObliqueAngle"]);
-                    ((Components)components[index + 1]).layerLeftThickness.Add(curComp.layerLeftThickness[i - 1]);
-                    ((Components)components[index + 1]).layerRightThickness.Add(curComp.layerRightThickness[i - 1]);
-                }
-
-                GeometryGroup geometryGroup_ = (GeometryGroup)(comp).newPath.Data;
-                if (comp.layerNum <= 2)
-                {
-                    double leftWidth = Double.Parse(comp.layerLeftThickness[comp.layerNum - 2].ToString());
-                    double rightWidth = Double.Parse(comp.layerRightThickness[comp.layerNum - 2].ToString());
-                    double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
-                    PathGeometry curPg = (PathGeometry)geometryGroup_.Children[0];
-                    PathFigure curPf = curPg.Figures.ElementAt(0);
-                    Point startP = new Point(curPf.StartPoint.X, curPf.StartPoint.Y + maxCh_Width);
-                    curPf.StartPoint = startP;
-                    ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
-                    if (curPf.Segments[1] is LineSegment)
-                    {
-                        ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
-                    }
-                    else if (curPf.Segments[1] is ArcSegment)
-                    {
-                        ((ArcSegment)curPf.Segments[1]).Point = new Point(((ArcSegment)curPf.Segments[1]).Point.X, ((ArcSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[1]).Points.Count; i++)
-                        {
-                            ((PolyLineSegment)curPf.Segments[1]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[1]).Points[i].X, ((PolyLineSegment)curPf.Segments[1]).Points[i].Y + maxCh_Width);
-                        }
-                    }
-                    ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
-                    if (curPf.Segments[3] is LineSegment)
-                    {
-                        ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + maxCh_Width);
-                    }
-                    else if (curPf.Segments[3] is ArcSegment)
-                    {
-                        ((ArcSegment)curPf.Segments[3]).Point = new Point(((ArcSegment)curPf.Segments[3]).Point.X, ((ArcSegment)curPf.Segments[3]).Point.Y + maxCh_Width);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < ((PolyLineSegment)curPf.Segments[3]).Points.Count; i++)
-                        {
-                            ((PolyLineSegment)curPf.Segments[3]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[3]).Points[i].X, ((PolyLineSegment)curPf.Segments[3]).Points[i].Y + maxCh_Width);
-                        }
-                    }
-
-                    //创建上下层路径
-                    PathGeometry curPg_top = (PathGeometry)geometryGroup.Children[1];
-                    PathFigure curPf_top = curPg_top.Figures.ElementAt(0);
-                    PathGeometry topPg = new PathGeometry();
-                    PathGeometry bottomPg = new PathGeometry();
-
-                    PathFigure topPf = new PathFigure();
-                    PathFigure bottomPf = new PathFigure();
-
-                    //绘制上层路径
-                    topPf.StartPoint = curPf_top.StartPoint;
-                    if (curPf_top.Segments[0] is LineSegment)
-                    {
-                        LineSegment ls_top = new LineSegment();
-                        ls_top.Point = ((LineSegment)curPf_top.Segments[0]).Point;
-                        topPf.Segments.Add(ls_top);
-                    }
-                    else if (curPf_top.Segments[0] is ArcSegment)
-                    {
-                        ArcSegment ls_top = new ArcSegment();
-                        ls_top.Point = ((LineSegment)curPf_top.Segments[0]).Point;
-                        ls_top.Size = ((ArcSegment)curPf_top.Segments[0]).Size;
-                        ls_top.SweepDirection = ((ArcSegment)curPf_top.Segments[0]).SweepDirection;
-                        topPf.Segments.Add(ls_top);
-                    }
-                    else
-                    {
-                        PolyLineSegment pls_top = new PolyLineSegment();
-                        for (int i = 0; i <= ((PolyLineSegment)curPf_top.Segments[0]).Points.Count - 1; i++)
-                        {
-                            pls_top.Points.Add(((PolyLineSegment)curPf_top.Segments[0]).Points[i]);
-                        }
-                        topPf.Segments.Add(pls_top);
-                    }
-
-                    LineSegment ls2_top = new LineSegment();
-                    Point thirdPoint_top = new Point(((LineSegment)curPf_top.Segments[1]).Point.X, ((LineSegment)curPf_top.Segments[1]).Point.Y);
-                    ls2_top.Point = thirdPoint_top;
-                    topPf.Segments.Add(ls2_top);
-
-                    if (curPf_top.Segments[2] is LineSegment)
-                    {
-                        LineSegment ls3_top = new LineSegment();
-                        Point forthPoint_top = ((LineSegment)curPf_top.Segments[2]).Point;
-                        ls3_top.Point = forthPoint_top;
-                        topPf.Segments.Add(ls3_top);
-                    }
-                    else if (curPf_top.Segments[2] is ArcSegment)
-                    {
-                        ArcSegment ls3_top = new ArcSegment();
-                        Point forthPoint_top = ((ArcSegment)curPf_top.Segments[2]).Point;
-                        ls3_top.Point = forthPoint_top;
-                        ls3_top.Size = ((ArcSegment)curPf_top.Segments[2]).Size;
-                        ls3_top.SweepDirection = ((ArcSegment)curPf_top.Segments[2]).SweepDirection;
-                        topPf.Segments.Add(ls3_top);
-                    }
-                    else
-                    {
-                        PolyLineSegment pls2_top = new PolyLineSegment();
-                        for (int i = 0; i < ((PolyLineSegment)curPf_top.Segments[2]).Points.Count; i++)
-                        {
-                            pls2_top.Points.Add(new Point(((PolyLineSegment)curPf_top.Segments[2]).Points[i].X, ((PolyLineSegment)curPf_top.Segments[2]).Points[i].Y));
-                        }
-                        topPf.Segments.Add(pls2_top);
-                    }
-                    topPg.Figures.Add(topPf);
-                    topPf.IsClosed = true;
-
-                    Color color = new Color();
-                    if (DataBaseMaterials != null)
-                    {
-                        for (int j = 0; j < DataBaseMaterials.Count; j++)
-                        {
-                            Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                            Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                            string mColor = cdic["content"];
-                            string materialName = mdic["content"];
-                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                            {
-                                color = (Color)ColorConverter.ConvertFromString(mColor);
-                            }
-                        }
-                    }
-
-                    
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
-                    
-                    //绘制下层路径
-                    PathGeometry curPg_bottom = (PathGeometry)geometryGroup.Children[2];
-                    PathFigure curPf_bottom = curPg_bottom.Figures.ElementAt(0);
-
-                    bottomPf.StartPoint = curPf_bottom.StartPoint;
-                    LineSegment ls_bottom = new LineSegment();
-                    Point secondPoint_bottom = ((LineSegment)curPf_bottom.Segments[0]).Point;
-                    ls_bottom.Point = secondPoint_bottom;
-                    bottomPf.Segments.Add(ls_bottom);
-
-                    if (curPf_bottom.Segments[1] is LineSegment)
-                    {
-                        LineSegment ls2_bottom = new LineSegment();
-                        Point thirdPoint_bottom = new Point(((LineSegment)curPf_bottom.Segments[1]).Point.X, ((LineSegment)curPf_bottom.Segments[1]).Point.Y);
-                        ls2_bottom.Point = thirdPoint_bottom;
-                        bottomPf.Segments.Add(ls2_bottom);
-                    }
-                    else if (curPf_bottom.Segments[1] is ArcSegment)
-                    {
-                        ArcSegment ls2_bottom = new ArcSegment();
-                        Point thirdPoint_bottom = new Point(((ArcSegment)curPf_bottom.Segments[1]).Point.X, ((ArcSegment)curPf_bottom.Segments[1]).Point.Y);
-                        ls2_bottom.Point = thirdPoint_bottom;
-                        ls2_bottom.Size = ((ArcSegment)curPf_bottom.Segments[1]).Size;
-                        ls2_bottom.SweepDirection = ((ArcSegment)curPf_bottom.Segments[1]).SweepDirection;
-                        bottomPf.Segments.Add(ls2_bottom);
-                    }
-                    else
-                    {
-                        PolyLineSegment pls_bottom = new PolyLineSegment();
-                        for (int i = 0; i < ((PolyLineSegment)curPf_bottom.Segments[1]).Points.Count; i++)
-                        {
-                            pls_bottom.Points.Add(new Point(((PolyLineSegment)curPf_bottom.Segments[1]).Points[i].X, ((PolyLineSegment)curPf_bottom.Segments[1]).Points[i].Y));
-                        }
-                        bottomPf.Segments.Add(pls_bottom);
-                    }
-
-                    LineSegment ls3_bottom = new LineSegment();
-                    Point forthPoint_bottom = new Point(((LineSegment)curPf_bottom.Segments[2]).Point.X, ((LineSegment)curPf_bottom.Segments[2]).Point.Y);
-                    ls3_bottom.Point = forthPoint_bottom;
-                    bottomPf.Segments.Add(ls3_bottom);
-
-                    if (curPf_bottom.Segments.Count > 3)
-                    {
-                        if (curPf_bottom.Segments[1] is LineSegment)
-                        {
-                            LineSegment ls4_bottom = new LineSegment();
-                            ls4_bottom.Point = bottomPf.StartPoint;
-                            bottomPf.Segments.Add(ls4_bottom);
-                        }
-                        else if (curPf_bottom.Segments[1] is ArcSegment)
-                        {
-                            ArcSegment ls4_bottom = new ArcSegment();
-                            ls4_bottom.Point = bottomPf.StartPoint;
-                            ls4_bottom.Size = ((ArcSegment)curPf_bottom.Segments[3]).Size;
-                            ls4_bottom.SweepDirection = ((ArcSegment)curPf_bottom.Segments[1]).SweepDirection;
-                            bottomPf.Segments.Add(ls4_bottom);
-                        }
-                        else
-                        {
-                            PolyLineSegment pls2_bottom = new PolyLineSegment();
-                            for (int i = 0; i >= ((PolyLineSegment)curPf_bottom.Segments[3]).Points.Count - 1; i++)
-                            {
-                                pls2_bottom.Points.Add(((PolyLineSegment)curPf_bottom.Segments[3]).Points[i]);
-                            }
-                            bottomPf.Segments.Add(pls2_bottom);
-                        }
-                    }
-
-                    bottomPg.Figures.Add(bottomPf);
-
-                    if (DataBaseMaterials != null)
-                    {
-                        for (int j = 0; j < DataBaseMaterials.Count; j++)
-                        {
-                            Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                            Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                            string mColor = cdic["content"];
-                            string materialName = mdic["content"];
-                            
-                            if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                            {
-                                color = (Color)ColorConverter.ConvertFromString(mColor);
-                            }
-                        }
-                    }
-
-                    
-                    ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
-                    
-
-                    //将上下层路径添加到组中
-                    geometryGroup_.Children.Add(topPg);
-                    geometryGroup_.Children.Add(bottomPg);
-
-                    comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
-                    comp.height = comp.newPath.Height;
-
-
-                    //自动调整图形位置
-                    autoResize();
+                    ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
                 }
                 else
                 {
-                    for (int k = 1; k < geometryGroup.Children.Count; k += 2)
+                    for (int i = 0; i < ((PolyLineSegment)curPf.Segments[1]).Points.Count; i++)
                     {
-                        double leftWidth = Double.Parse(comp.layerLeftThickness[geometryGroup_.Children.Count - 1].ToString());
-                        double rightWidth = Double.Parse(comp.layerRightThickness[geometryGroup_.Children.Count - 1].ToString());
-                        double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
-                        int i;
-                        PathGeometry curPg_ = (PathGeometry)geometryGroup_.Children[0];
-                        PathFigure curPf_ = curPg_.Figures.ElementAt(0);
-                        Point startP_ = new Point(curPf_.StartPoint.X, curPf_.StartPoint.Y + maxCh_Width);
-                        curPf_.StartPoint = startP_;
-                        ((LineSegment)curPf_.Segments[0]).Point = new Point(((LineSegment)curPf_.Segments[0]).Point.X, ((LineSegment)curPf_.Segments[0]).Point.Y + maxCh_Width);
-                        if (curPf_.Segments[1] is LineSegment)
+                        ((PolyLineSegment)curPf.Segments[1]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[1]).Points[i].X, ((PolyLineSegment)curPf.Segments[1]).Points[i].Y + maxCh_Width);
+                    }
+                }
+                ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
+                if (curPf.Segments[3] is LineSegment)
+                {
+                    ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + maxCh_Width);
+                }
+                else
+                {
+                    for (int i = 0; i < ((PolyLineSegment)curPf.Segments[3]).Points.Count; i++)
+                    {
+                        ((PolyLineSegment)curPf.Segments[3]).Points[i] = new Point(((PolyLineSegment)curPf.Segments[3]).Points[i].X, ((PolyLineSegment)curPf.Segments[3]).Points[i].Y + maxCh_Width);
+                    }
+                }
+            }
+ 
+            for(int temp = 1; temp < geometryGroup.Children.Count; temp += 2)
+            {
+                double leftWidth = Double.Parse(comp.layerLeftThickness[temp].ToString());
+                double rightWidth = Double.Parse(comp.layerRightThickness[temp].ToString());
+                double maxCh_Width = leftWidth > rightWidth ? leftWidth : rightWidth;
+
+                //创建上下层路径
+                PathGeometry curPg_top = (PathGeometry)geometryGroup.Children[temp];
+                PathFigure curPf_top = curPg_top.Figures.ElementAt(0);
+                PathGeometry topPg = new PathGeometry();
+                PathGeometry bottomPg = new PathGeometry();
+
+                PathFigure topPf = new PathFigure();
+                PathFigure bottomPf = new PathFigure();
+
+                //绘制上层路径
+                topPf.StartPoint = curPf_top.StartPoint;
+                if (curPf_top.Segments[0] is LineSegment)
+                {
+                    LineSegment ls_top = new LineSegment();
+                    ls_top.Point = ((LineSegment)curPf_top.Segments[0]).Point;
+                    topPf.Segments.Add(ls_top);
+                }
+                else
+                {
+                    PolyLineSegment pls_top = new PolyLineSegment();
+                    for (int i = 0; i <= ((PolyLineSegment)curPf_top.Segments[0]).Points.Count - 1; i++)
+                    {
+                        pls_top.Points.Add(((PolyLineSegment)curPf_top.Segments[0]).Points[i]);
+                    }
+                    topPf.Segments.Add(pls_top);
+                }
+
+                LineSegment ls2_top = new LineSegment();
+                Point thirdPoint_top = new Point(((LineSegment)curPf_top.Segments[1]).Point.X, ((LineSegment)curPf_top.Segments[1]).Point.Y);
+                ls2_top.Point = thirdPoint_top;
+                topPf.Segments.Add(ls2_top);
+
+                if (curPf_top.Segments[2] is LineSegment)
+                {
+                    LineSegment ls3_top = new LineSegment();
+                    Point forthPoint_top = ((LineSegment)curPf_top.Segments[2]).Point;
+                    ls3_top.Point = forthPoint_top;
+                    topPf.Segments.Add(ls3_top);
+                }
+                else
+                {
+                    PolyLineSegment pls2_top = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)curPf_top.Segments[2]).Points.Count; i++)
+                    {
+                        pls2_top.Points.Add(new Point(((PolyLineSegment)curPf_top.Segments[2]).Points[i].X, ((PolyLineSegment)curPf_top.Segments[2]).Points[i].Y));
+                    }
+                    topPf.Segments.Add(pls2_top);
+                }
+                topPg.Figures.Add(topPf);
+                topPf.IsClosed = true;
+
+                Color color = new Color();
+                if (DataBaseMaterials != null)
+                {
+                    for (int j = 0; j < DataBaseMaterials.Count; j++)
+                    {
+                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
+                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
+                        string mColor = cdic["content"];
+                        string materialName = mdic["content"];
+                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                         {
-                            ((LineSegment)curPf_.Segments[1]).Point = new Point(((LineSegment)curPf_.Segments[1]).Point.X, ((LineSegment)curPf_.Segments[1]).Point.Y + maxCh_Width);
-                        }
-                        else if (curPf_.Segments[1] is ArcSegment)
-                        {
-                            ((ArcSegment)curPf_.Segments[1]).Point = new Point(((ArcSegment)curPf_.Segments[1]).Point.X, ((ArcSegment)curPf_.Segments[1]).Point.Y + maxCh_Width);
-                        }
-                        else
-                        {
-                            for (int j = 0; j < (((PolyLineSegment)curPf_.Segments[1]).Points.Count); j++)
-                            {
-                                ((PolyLineSegment)curPf_.Segments[1]).Points[j] = new Point(((PolyLineSegment)curPf_.Segments[1]).Points[j].X, ((PolyLineSegment)curPf_.Segments[1]).Points[j].Y + maxCh_Width);
-                            }
-                        }
-                        ((LineSegment)curPf_.Segments[2]).Point = new Point(((LineSegment)curPf_.Segments[2]).Point.X, ((LineSegment)curPf_.Segments[2]).Point.Y + maxCh_Width);
-                        if (curPf_.Segments[1] is LineSegment)
-                        {
-                            ((LineSegment)curPf_.Segments[3]).Point = new Point(((LineSegment)curPf_.Segments[3]).Point.X, ((LineSegment)curPf_.Segments[3]).Point.Y + maxCh_Width);
-                        }
-                        else if (curPf_.Segments[1] is ArcSegment)
-                        {
-                            ((ArcSegment)curPf_.Segments[3]).Point = new Point(((ArcSegment)curPf_.Segments[3]).Point.X, ((ArcSegment)curPf_.Segments[3]).Point.Y + maxCh_Width);
-                        }
-                        else
-                        {
-                            for (int j = 0; j < (((PolyLineSegment)curPf_.Segments[3]).Points.Count); j++)
-                            {
-                                ((PolyLineSegment)curPf_.Segments[3]).Points[j] = new Point(((PolyLineSegment)curPf_.Segments[3]).Points[j].X, ((PolyLineSegment)curPf_.Segments[3]).Points[j].Y + maxCh_Width);
-                            }
-                        }
-                        //层
-                        for (i = 2; i < geometryGroup_.Children.Count; i += 2)
-                        {
-                            PathGeometry curPg = (PathGeometry)geometryGroup_.Children[i - 1];
-                            PathFigure curPf = curPg.Figures.ElementAt(0);
-                            Point startP = new Point(curPf.StartPoint.X, curPf.StartPoint.Y + maxCh_Width);
-                            curPf.StartPoint = startP;
-                            if (curPf.Segments[0] is LineSegment)
-                            {
-                                ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
-                            }
-                            else if (curPf.Segments[0] is ArcSegment)
-                            {
-                                ((ArcSegment)curPf.Segments[0]).Point = new Point(((ArcSegment)curPf.Segments[0]).Point.X, ((ArcSegment)curPf.Segments[0]).Point.Y + maxCh_Width);
-                            }
-                            else
-                            {
-                                for (int j = 0; j < (((PolyLineSegment)curPf.Segments[0]).Points.Count); j++)
-                                {
-                                    ((PolyLineSegment)curPf.Segments[0]).Points[j] = new Point(((PolyLineSegment)curPf.Segments[0]).Points[j].X, ((PolyLineSegment)curPf.Segments[0]).Points[j].Y + maxCh_Width);
-                                }
-                            }
-                            ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + maxCh_Width);
-                            if (curPf.Segments[2] is LineSegment)
-                            {
-                                ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
-                            }
-                            else if (curPf.Segments[2] is ArcSegment)
-                            {
-                                ((ArcSegment)curPf.Segments[2]).Point = new Point(((ArcSegment)curPf.Segments[2]).Point.X, ((ArcSegment)curPf.Segments[2]).Point.Y + maxCh_Width);
-                            }
-                            else
-                            {
-                                for (int j = 0; j < (((PolyLineSegment)curPf.Segments[2]).Points.Count); j++)
-                                {
-                                    ((PolyLineSegment)curPf.Segments[2]).Points[j] = new Point(((PolyLineSegment)curPf.Segments[2]).Points[j].X, ((PolyLineSegment)curPf.Segments[2]).Points[j].Y + maxCh_Width);
-                                }
-                            }
-
-                            PathGeometry curPg2 = (PathGeometry)geometryGroup_.Children[i];
-                            PathFigure curPf2 = curPg2.Figures.ElementAt(0);
-                            Point startP2 = new Point(curPf2.StartPoint.X, curPf2.StartPoint.Y + maxCh_Width);
-                            curPf2.StartPoint = startP2;
-                            ((LineSegment)curPf2.Segments[0]).Point = new Point(((LineSegment)curPf2.Segments[0]).Point.X, ((LineSegment)curPf2.Segments[0]).Point.Y + maxCh_Width);
-                            if (curPf2.Segments[1] is LineSegment)
-                            {
-                                ((LineSegment)curPf2.Segments[1]).Point = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y + maxCh_Width);
-                            }
-                            else if (curPf2.Segments[1] is ArcSegment)
-                            {
-                                ((ArcSegment)curPf2.Segments[1]).Point = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y + maxCh_Width);
-                            }
-                            else
-                            {
-                                for (int j = 0; j < (((PolyLineSegment)curPf2.Segments[1]).Points.Count); j++)
-                                {
-                                    ((PolyLineSegment)curPf2.Segments[1]).Points[j] = new Point(((PolyLineSegment)curPf2.Segments[1]).Points[j].X, ((PolyLineSegment)curPf2.Segments[1]).Points[j].Y + maxCh_Width);
-                                }
-                            }
-                            ((LineSegment)curPf2.Segments[2]).Point = new Point(((LineSegment)curPf2.Segments[2]).Point.X, ((LineSegment)curPf2.Segments[2]).Point.Y + maxCh_Width);
-                            if (curPf2.Segments.Count > 3)
-                            {
-                                if (curPf2.Segments[3] is LineSegment)
-                                {
-                                    ((LineSegment)curPf2.Segments[3]).Point = new Point(((LineSegment)curPf2.Segments[3]).Point.X, ((LineSegment)curPf2.Segments[3]).Point.Y + maxCh_Width);
-                                }
-                                else if (curPf2.Segments[3] is ArcSegment)
-                                {
-                                    ((ArcSegment)curPf2.Segments[3]).Point = new Point(((ArcSegment)curPf2.Segments[3]).Point.X, ((ArcSegment)curPf2.Segments[3]).Point.Y + maxCh_Width);
-                                }
-                                else
-                                {
-                                    for (int j = 0; j < (((PolyLineSegment)curPf2.Segments[3]).Points.Count); j++)
-                                    {
-                                        ((PolyLineSegment)curPf2.Segments[3]).Points[j] = new Point(((PolyLineSegment)curPf2.Segments[3]).Points[j].X, ((PolyLineSegment)curPf2.Segments[3]).Points[j].Y + maxCh_Width);
-                                    }
-                                }
-                            }
-                        }
-
-                        i -= 2;
-
-                        if (i == 0)
-                        {
-                            PathGeometry curPg_top = (PathGeometry)geometryGroup.Children[i+1];
-                            PathFigure curPf_top = curPg_top.Figures.ElementAt(0);
-                            //创建上下层路径
-                            PathGeometry topPg = new PathGeometry();
-                            PathGeometry bottomPg = new PathGeometry();
-
-                            PathFigure topPf = new PathFigure();
-                            PathFigure bottomPf = new PathFigure();
-
-                            //绘制上层路径
-                            topPf.StartPoint = curPf_top.StartPoint;
-                            if (curPf_top.Segments[0] is LineSegment)
-                            {
-                                LineSegment ls_top = new LineSegment();
-                                ls_top.Point = ((LineSegment)curPf_top.Segments[0]).Point;
-                                topPf.Segments.Add(ls_top);
-                            }
-                            else if (curPf_top.Segments[0] is ArcSegment)
-                            {
-                                ArcSegment ls_top = new ArcSegment();
-                                ls_top.Point = ((LineSegment)curPf_top.Segments[0]).Point;
-                                ls_top.Size = ((ArcSegment)curPf_top.Segments[0]).Size;
-                                ls_top.SweepDirection = ((ArcSegment)curPf_top.Segments[0]).SweepDirection;
-                                topPf.Segments.Add(ls_top);
-                            }
-                            else
-                            {
-                                PolyLineSegment ls_top = new PolyLineSegment();
-                                for (int j = 0; j <= ((PolyLineSegment)curPf_top.Segments[0]).Points.Count - 1; j++)
-                                    ls_top.Points.Add(((PolyLineSegment)curPf_top.Segments[0]).Points[j]);
-                                topPf.Segments.Add(ls_top);
-                            }
-                            LineSegment ls2_top = new LineSegment();
-                            Point thirdPoint_top = ((LineSegment)curPf_top.Segments[1]).Point;
-                            ls2_top.Point = thirdPoint_top;
-                            topPf.Segments.Add(ls2_top);
-
-
-                            if(curPf_top.Segments[2] is LineSegment)
-                            {
-                                LineSegment ls3_top = new LineSegment();
-                                Point forthPoint_top = ((LineSegment)curPf_top.Segments[2]).Point;
-                                ls3_top.Point = forthPoint_top;
-                                topPf.Segments.Add(ls3_top);
-                            }
-                            else if (curPf_top.Segments[2] is ArcSegment)
-                            {
-                                ArcSegment ls3_top = new ArcSegment();
-                                Point forthPoint_top = ((ArcSegment)curPf_top.Segments[2]).Point;
-                                ls3_top.Point = forthPoint_top;
-                                ls3_top.Size = ((ArcSegment)curPf_top.Segments[2]).Size;
-                                ls3_top.SweepDirection = ((ArcSegment)curPf_top.Segments[2]).SweepDirection;
-                                topPf.Segments.Add(ls3_top);
-                            }
-                            else
-                            {
-                                PolyLineSegment ls3_top = new PolyLineSegment();
-                                for (int m = 0; m < ((PolyLineSegment)curPf_top.Segments[2]).Points.Count; m++)
-                                {
-                                    ls3_top.Points.Add(new Point(((PolyLineSegment)curPf_top.Segments[2]).Points[m].X, ((PolyLineSegment)curPf_top.Segments[2]).Points[m].Y));
-                                }
-                                topPf.Segments.Add(ls3_top);
-                            }                  
-                            topPg.Figures.Add(topPf);
-                            topPf.IsClosed = true;
-
-                            Color color = new Color();
-                            if (DataBaseMaterials != null)
-                            {
-                                for (int j = 0; j < DataBaseMaterials.Count; j++)
-                                {
-                                    Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                    Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                    string mColor = cdic["content"];
-                                    string materialName = mdic["content"];
-                                    
-                                    if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                                    {
-                                        color = (Color)ColorConverter.ConvertFromString(mColor);
-                                    }
-                                }
-                            }
-
-                            ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
-                            
-                            
-                            //绘制下层路径
-                            PathGeometry curPg_bottom = (PathGeometry)geometryGroup.Children[i + 2];
-                            PathFigure curPf_bottom = curPg_bottom.Figures.ElementAt(0);
-
-                            bottomPf.StartPoint = curPf_bottom.StartPoint;
-                            LineSegment ls_bottom = new LineSegment();
-                            Point secondPoint_bottom = ((LineSegment)curPf_bottom.Segments[0]).Point;
-                            ls_bottom.Point = secondPoint_bottom;
-                            bottomPf.Segments.Add(ls_bottom);
-
-                            if (curPf_bottom.Segments[1] is LineSegment)
-                            {
-                                LineSegment ls2_bottom = new LineSegment();
-                                Point thirdPoint_bottom = ((LineSegment)curPf_bottom.Segments[1]).Point;
-                                ls2_bottom.Point = thirdPoint_bottom;
-                                bottomPf.Segments.Add(ls2_bottom);
-                            }
-                            else if (curPf_bottom.Segments[1] is ArcSegment)
-                            {
-                                ArcSegment ls2_bottom = new ArcSegment();
-                                Point thirdPoint_bottom = new Point(((ArcSegment)curPf_bottom.Segments[1]).Point.X, ((ArcSegment)curPf_bottom.Segments[1]).Point.Y);
-                                ls2_bottom.Point = thirdPoint_bottom;
-                                ls2_bottom.Size = ((ArcSegment)curPf_bottom.Segments[1]).Size;
-                                ls2_bottom.SweepDirection = ((ArcSegment)curPf_bottom.Segments[1]).SweepDirection;
-                                bottomPf.Segments.Add(ls2_bottom);
-                            }
-                            else
-                            {
-                                PolyLineSegment pls_bottom = new PolyLineSegment();
-                                for (int j = 0; j < ((PolyLineSegment)curPf_bottom.Segments[1]).Points.Count; j++)
-                                {
-                                    pls_bottom.Points.Add(new Point(((PolyLineSegment)curPf_bottom.Segments[1]).Points[j].X, ((PolyLineSegment)curPf_bottom.Segments[1]).Points[j].Y));
-                                }
-                                bottomPf.Segments.Add(pls_bottom);
-                            }
-
-                            LineSegment ls3_bottom = new LineSegment();
-                            Point forthPoint_bottom = new Point(((LineSegment)curPf_bottom.Segments[2]).Point.X, ((LineSegment)curPf_bottom.Segments[2]).Point.Y);
-                            ls3_bottom.Point = forthPoint_bottom;
-                            bottomPf.Segments.Add(ls3_bottom);
-
-                            if (curPf_bottom.Segments.Count > 3)
-                            {
-                                if (curPf_bottom.Segments[3] is LineSegment)
-                                {
-                                    LineSegment ls4_bottom = new LineSegment();
-                                    ls4_bottom.Point = bottomPf.StartPoint;
-                                    bottomPf.Segments.Add(ls4_bottom);
-                                }
-                                else if (curPf_bottom.Segments[3] is ArcSegment)
-                                {
-                                    ArcSegment ls4_bottom = new ArcSegment();
-                                    ls4_bottom.Point = bottomPf.StartPoint;
-                                    ls4_bottom.Size = ((ArcSegment)curPf_bottom.Segments[3]).Size;
-                                    ls4_bottom.SweepDirection = ((ArcSegment)curPf_bottom.Segments[3]).SweepDirection;
-                                    bottomPf.Segments.Add(ls4_bottom);
-                                }
-                                else
-                                {
-                                    PolyLineSegment pls2_bottom = new PolyLineSegment();
-                                    for (int j = 0; j <= ((PolyLineSegment)curPf_bottom.Segments[3]).Points.Count - 1; j++)
-                                    {
-                                        pls2_bottom.Points.Add(((PolyLineSegment)curPf_bottom.Segments[3]).Points[j]);
-                                    }
-                                    bottomPf.Segments.Add(pls2_bottom);
-                                }
-                            }
-
-                            bottomPg.Figures.Add(bottomPf);
-
-                            if (DataBaseMaterials != null)
-                            {
-                                for (int j = 0; j < DataBaseMaterials.Count; j++)
-                                {
-                                    Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                    Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                    string mColor = cdic["content"];
-                                    string materialName = mdic["content"];
-                                    
-                                    if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                                    {
-                                        color = (Color)ColorConverter.ConvertFromString(mColor);
-                                    }
-                                   
-                                }
-                            }
-
-                            
-                            ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
-                           
-                            
-                            //将上下层路径添加到组中
-                            geometryGroup_.Children.Add(topPg);
-                            geometryGroup_.Children.Add(bottomPg);
-
-                            comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
-                            comp.height = comp.newPath.Height;
-
-
-                            //自动调整图形位置
-                            autoResize();
-                        }
-                        else
-                        {
-                            if (i < comp.layerNum)
-                            {
-                                PathGeometry curPg = (PathGeometry)geometryGroup_.Children[i - 1];
-                                PathFigure curPf = curPg.Figures.ElementAt(0);
-                                //创建上下层路径
-                                PathGeometry topPg = new PathGeometry();
-                                PathFigure topPf = new PathFigure();
-
-                                //绘制上层路径
-                                if (curPf.Segments[2] is LineSegment)
-                                {
-                                    topPf.StartPoint = ((LineSegment)curPf.Segments[2]).Point;
-                                    LineSegment ls_top = new LineSegment();
-                                    ls_top.Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y);
-                                    topPf.Segments.Add(ls_top);
-
-                                    LineSegment ls2_top = new LineSegment();
-                                    Point thirdPoint_top = new Point(ls_top.Point.X, ls_top.Point.Y - rightWidth);
-                                    ls2_top.Point = thirdPoint_top;
-                                    topPf.Segments.Add(ls2_top);
-
-                                    LineSegment ls3_top = new LineSegment();
-                                    Point forthPoint_top = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftWidth);
-                                    ls3_top.Point = forthPoint_top;
-                                    topPf.Segments.Add(ls3_top);
-                                }
-                                else if (curPf.Segments[2] is ArcSegment)
-                                {
-                                    topPf.StartPoint = ((ArcSegment)curPf.Segments[2]).Point;
-
-                                    ArcSegment ls_top = new ArcSegment();
-                                    ls_top.Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y);
-                                    ls_top.Size = ((ArcSegment)curPf.Segments[2]).Size;
-                                    //ls_top.SweepDirection = SweepDirection.Clockwise;
-                                    if (((ArcSegment)curPf.Segments[2]).SweepDirection == SweepDirection.Clockwise)
-                                    {
-                                        ls_top.SweepDirection = SweepDirection.Counterclockwise;
-                                    }
-                                    else
-                                    {
-                                        ls_top.SweepDirection = SweepDirection.Clockwise;
-                                    }
-                                    topPf.Segments.Add(ls_top);
-
-                                    LineSegment ls2_top = new LineSegment();
-                                    Point thirdPoint_top = new Point(ls_top.Point.X, ls_top.Point.Y - rightWidth);
-                                    ls2_top.Point = thirdPoint_top;
-                                    topPf.Segments.Add(ls2_top);
-
-                                    ArcSegment ls3_top = new ArcSegment();
-                                    Point forthPoint_top = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - leftWidth);
-                                    ls3_top.Point = forthPoint_top;
-                                    ls3_top.Size = ((ArcSegment)curPf.Segments[2]).Size;
-                                    //ls3_top.SweepDirection = SweepDirection.Counterclockwise;
-                                    ls3_top.SweepDirection = ((ArcSegment)curPf.Segments[2]).SweepDirection;
-                                    topPf.Segments.Add(ls3_top);
-                                }
-                                else
-                                {
-                                    topPf.StartPoint = ((PolyLineSegment)curPf.Segments[2]).Points[((PolyLineSegment)curPf.Segments[2]).Points.Count - 1];
-
-                                    PolyLineSegment pls_top = new PolyLineSegment();
-                                    for (int j = ((PolyLineSegment)curPf.Segments[2]).Points.Count - 1; j >= 0; j--)
-                                    {
-                                        pls_top.Points.Add(((PolyLineSegment)curPf.Segments[2]).Points[j]);
-                                    }
-                                    topPf.Segments.Add(pls_top);
-
-                                    LineSegment ls2_top = new LineSegment();
-                                    Point thirdPoint_top = new Point(pls_top.Points[pls_top.Points.Count - 1].X, pls_top.Points[pls_top.Points.Count - 1].Y - rightWidth);
-                                    ls2_top.Point = thirdPoint_top;
-                                    topPf.Segments.Add(ls2_top);
-
-                                    PolyLineSegment pls2_top = new PolyLineSegment();
-                                    for (int j = 0; j <= ((PolyLineSegment)curPf.Segments[2]).Points.Count - 1; j++)
-                                    {
-                                        Point forthPoint_top = new Point(((PolyLineSegment)curPf.Segments[2]).Points[j].X, ((PolyLineSegment)curPf.Segments[2]).Points[j].Y - leftWidth);
-                                        pls2_top.Points.Add(forthPoint_top);
-                                        //pls2_top.Points.Add(((PolyLineSegment)curPf.Segments[2]).Points[j]);
-                                    }
-                                    topPf.Segments.Add(pls2_top);
-                                }
-                                topPg.Figures.Add(topPf);
-                                topPf.IsClosed = true;
-
-                                Color color = new Color();
-                                if (DataBaseMaterials != null)
-                                {
-                                    for (int j = 0; j < DataBaseMaterials.Count; j++)
-                                    {
-                                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                        string mColor = cdic["content"];
-                                        string materialName = mdic["content"];
-                                        
-                                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                                        {
-                                            color = (Color)ColorConverter.ConvertFromString(mColor);
-                                        }
-                                        
-                                    }
-                                }
-
-                               
-                                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
-                                
-                                //将上下层路径添加到组中
-                                geometryGroup_.Children.Add(topPg);
-                            }
-                            if (i < comp.layerNum)
-                            {
-                                PathGeometry curPg2 = (PathGeometry)geometryGroup_.Children[i];
-                                PathFigure curPf2 = curPg2.Figures.ElementAt(0);
-                                PathGeometry bottomPg = new PathGeometry();
-                                PathFigure bottomPf = new PathFigure();
-
-                                //绘制下层路径
-                                bottomPf.StartPoint = ((LineSegment)curPf2.Segments[0]).Point;
-                                LineSegment ls_bottom = new LineSegment();
-                                Point secondPoint_bottom = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + leftWidth);
-                                ls_bottom.Point = secondPoint_bottom;
-                                bottomPf.Segments.Add(ls_bottom);
-
-                                if (curPf2.Segments[1] is LineSegment)
-                                {
-                                    LineSegment ls2_bottom = new LineSegment();
-                                    Point thirdPoint_bottom = new Point(((LineSegment)curPf2.Segments[1]).Point.X, ((LineSegment)curPf2.Segments[1]).Point.Y + rightWidth);
-                                    ls2_bottom.Point = thirdPoint_bottom;
-                                    bottomPf.Segments.Add(ls2_bottom);
-                                }
-                                else if (curPf2.Segments[1] is ArcSegment)
-                                {
-                                    ArcSegment ls2_bottom = new ArcSegment();
-                                    Point thirdPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y + rightWidth);
-                                    ls2_bottom.Point = thirdPoint_bottom;
-                                    ls2_bottom.Size = ((ArcSegment)curPf2.Segments[1]).Size;
-                                    //ls2_bottom.SweepDirection = SweepDirection.Counterclockwise;
-                                    ls2_bottom.SweepDirection = ((ArcSegment)curPf2.Segments[1]).SweepDirection;
-                                    bottomPf.Segments.Add(ls2_bottom);
-                                }
-                                else
-                                {
-                                    PolyLineSegment pls_bottom = new PolyLineSegment();
-                                    for (int j = 0; j <= ((PolyLineSegment)curPf2.Segments[1]).Points.Count - 1; j++)
-                                    {
-                                        pls_bottom.Points.Add(new Point(((PolyLineSegment)curPf2.Segments[1]).Points[j].X, ((PolyLineSegment)curPf2.Segments[1]).Points[j].Y + rightWidth));
-                                    }
-                                    bottomPf.Segments.Add(pls_bottom);
-                                }
-
-                                LineSegment ls3_bottom = new LineSegment();
-                                //if (curPf2.Segments[1] is LineSegment)
-                                //{
-                                Point forthPoint_bottom = new Point(((LineSegment)curPf2.Segments[2]).Point.X, ((LineSegment)curPf2.Segments[2]).Point.Y + rightWidth);
-                                ls3_bottom.Point = forthPoint_bottom;
-                                //}
-                                //else
-                                //{
-                                // Point forthPoint_bottom = new Point(((ArcSegment)curPf2.Segments[1]).Point.X, ((ArcSegment)curPf2.Segments[1]).Point.Y);
-                                // ls3_bottom.Point = forthPoint_bottom; ;
-                                //}
-                                bottomPf.Segments.Add(ls3_bottom);
-
-                                if (curPf2.Segments.Count > 3)
-                                {
-                                    if (curPf2.Segments[3] is LineSegment)
-                                    {
-
-                                    }
-                                    else if (curPf2.Segments[3] is ArcSegment)
-                                    {
-                                        ArcSegment ls4_bottom = new ArcSegment();
-                                        Point forthPoint_bottom2 = bottomPf.StartPoint;
-                                        ls4_bottom.Point = forthPoint_bottom2;
-                                        ls4_bottom.Size = ((ArcSegment)curPf2.Segments[1]).Size;
-                                        //ls4_bottom.SweepDirection = SweepDirection.Clockwise;
-                                        if (((ArcSegment)curPf2.Segments[1]).SweepDirection == SweepDirection.Clockwise)
-                                        {
-                                            ls4_bottom.SweepDirection = SweepDirection.Counterclockwise;
-                                        }
-                                        else
-                                        {
-                                            ls4_bottom.SweepDirection = SweepDirection.Clockwise;
-                                        }
-                                        bottomPf.Segments.Add(ls4_bottom);
-                                    }
-                                    else
-                                    {
-                                        PolyLineSegment pls2_bottom = new PolyLineSegment();
-                                        for (int j = 0; j <= ((PolyLineSegment)curPf2.Segments[3]).Points.Count - 1; j++)
-                                        {
-                                            pls2_bottom.Points.Add(new Point(((PolyLineSegment)curPf2.Segments[3]).Points[j].X, ((PolyLineSegment)curPf2.Segments[3]).Points[j].Y + rightWidth));
-                                        }
-                                        bottomPf.Segments.Add(pls2_bottom);
-                                    }
-                                }
-
-                                bottomPg.Figures.Add(bottomPf);
-                                bottomPf.IsClosed = true;
-
-                                Color color = new Color();
-                                if (DataBaseMaterials != null)
-                                {
-                                    for (int j = 0; j < DataBaseMaterials.Count; j++)
-                                    {
-                                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
-                                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
-                                        string mColor = cdic["content"];
-                                        string materialName = mdic["content"];
-                                        
-                                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
-                                        {
-                                            color = (Color)ColorConverter.ConvertFromString(mColor);
-                                        }
-                                    }
-                                }
-                                
-                                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
-                               
-
-                                //将上下层路径添加到组中
-                                geometryGroup_.Children.Add(bottomPg);
-
-                            }
-                            comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
-                            comp.height = comp.newPath.Height;
-
-                            //
-                            autoResize();
+                            color = (Color)ColorConverter.ConvertFromString(mColor);
                         }
                     }
                 }
+
+                    
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, topPf, 0, color);
+                    
+                //绘制下层路径
+                PathGeometry curPg_bottom = (PathGeometry)geometryGroup.Children[temp + 1];
+                PathFigure curPf_bottom = curPg_bottom.Figures.ElementAt(0);
+
+                bottomPf.StartPoint = curPf_bottom.StartPoint;
+                LineSegment ls_bottom = new LineSegment();
+                Point secondPoint_bottom = ((LineSegment)curPf_bottom.Segments[0]).Point;
+                ls_bottom.Point = secondPoint_bottom;
+                bottomPf.Segments.Add(ls_bottom);
+
+                if (curPf_bottom.Segments[1] is LineSegment)
+                {
+                    LineSegment ls2_bottom = new LineSegment();
+                    Point thirdPoint_bottom = new Point(((LineSegment)curPf_bottom.Segments[1]).Point.X, ((LineSegment)curPf_bottom.Segments[1]).Point.Y);
+                    ls2_bottom.Point = thirdPoint_bottom;
+                    bottomPf.Segments.Add(ls2_bottom);
+                }
+                else
+                {
+                    PolyLineSegment pls_bottom = new PolyLineSegment();
+                    for (int i = 0; i < ((PolyLineSegment)curPf_bottom.Segments[1]).Points.Count; i++)
+                    {
+                        pls_bottom.Points.Add(new Point(((PolyLineSegment)curPf_bottom.Segments[1]).Points[i].X, ((PolyLineSegment)curPf_bottom.Segments[1]).Points[i].Y));
+                    }
+                    bottomPf.Segments.Add(pls_bottom);
+                }
+
+                LineSegment ls3_bottom = new LineSegment();
+                Point forthPoint_bottom = new Point(((LineSegment)curPf_bottom.Segments[2]).Point.X, ((LineSegment)curPf_bottom.Segments[2]).Point.Y);
+                ls3_bottom.Point = forthPoint_bottom;
+                bottomPf.Segments.Add(ls3_bottom);
+
+                if (curPf_bottom.Segments.Count > 3)
+                {
+                    if (curPf_bottom.Segments[1] is LineSegment)
+                    {
+                        LineSegment ls4_bottom = new LineSegment();
+                        ls4_bottom.Point = bottomPf.StartPoint;
+                        bottomPf.Segments.Add(ls4_bottom);
+                    }
+                    else
+                    {
+                        PolyLineSegment pls2_bottom = new PolyLineSegment();
+                        for (int i = 0; i <= ((PolyLineSegment)curPf_bottom.Segments[3]).Points.Count - 1; i++)
+                        {
+                            pls2_bottom.Points.Add(((PolyLineSegment)curPf_bottom.Segments[3]).Points[i]);
+                        }
+                        bottomPf.Segments.Add(pls2_bottom);
+                    }
+                }
+
+                bottomPg.Figures.Add(bottomPf);
+
+                if (DataBaseMaterials != null)
+                {
+                    for (int j = 0; j < DataBaseMaterials.Count; j++)
+                    {
+                        Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
+                        Dictionary<string, string> mdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["materialName"];
+                        string mColor = cdic["content"];
+                        string materialName = mdic["content"];
+                            
+                        if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
+                        {
+                            color = (Color)ColorConverter.ConvertFromString(mColor);
+                        }
+                    }
+                }
+
+                    
+                ColorProc.processWhenAddLayer(this.canvas, this.stackpanel, comp.newPath, bottomPf, 1, color);
+                    
+
+                //将上下层路径添加到组中
+                geometryGroup_.Children.Add(topPg);
+                geometryGroup_.Children.Add(bottomPg);
+
+                comp.newPath.Height += 2 * (leftWidth > rightWidth ? leftWidth : rightWidth);
+                comp.height = comp.newPath.Height;
+
+                //自动调整图形位置
+                autoResize();
+               
             }
 
             //自动调整图形位置
@@ -4190,6 +3599,7 @@ namespace GraphicalStructure
                 {
                     currentComp = (Components)components[index];
 
+                    changeTitle = 0;
 
                     if ((isHaveLeftEndCap && index == 0) || (isHaveRightEndCap && index == components.Count - 1))
                     {

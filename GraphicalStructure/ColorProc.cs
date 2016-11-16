@@ -183,31 +183,34 @@ namespace GraphicalStructure
                 ls3.Point = new Point(((Point)arr[3]).X, ((Point)arr[3]).Y);
                 newpf.Segments.Add(ls3);
 
-                if (pf.Segments.Count < 4 || pf.Segments[3] is LineSegment )
+                if (pf.Segments.Count > 3)
                 {
-                    LineSegment ls4 = new LineSegment();
-                    ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
-                    newpf.Segments.Add(ls4);
-                }
-                else if (pf.Segments[3] is ArcSegment)
-                {
-                    ArcSegment ls4 = new ArcSegment();
-                    ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
-                    ls4.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
-                    ls4.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
-                    newpf.Segments.Add(ls4);
-                }
-                else
-                {
-                    PolyLineSegment ls4 = new PolyLineSegment();
-                    for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                    if (pf.Segments[3] is LineSegment)
                     {
-                        double delta_x, delta_y;
-                        delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
-                        delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
-                        ls4.Points.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
+                        LineSegment ls4 = new LineSegment();
+                        ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+                        newpf.Segments.Add(ls4);
                     }
-                    newpf.Segments.Add(ls4);
+                    else if (pf.Segments[3] is ArcSegment)
+                    {
+                        ArcSegment ls4 = new ArcSegment();
+                        ls4.Point = new Point(((Point)arr[0]).X, ((Point)arr[0]).Y);
+                        ls4.Size = new Size(((ArcSegment)pf.Segments[3]).Size.Width, ((ArcSegment)pf.Segments[3]).Size.Height);
+                        ls4.SweepDirection = ((ArcSegment)pf.Segments[3]).SweepDirection;
+                        newpf.Segments.Add(ls4);
+                    }
+                    else
+                    {
+                        PolyLineSegment ls4 = new PolyLineSegment();
+                        for (int i = 0; i < ((PolyLineSegment)pf.Segments[3]).Points.Count - 1; i++)
+                        {
+                            double delta_x, delta_y;
+                            delta_x = (((Point)arr[0]).X - pf.StartPoint.X);
+                            delta_y = (((Point)arr[0]).Y - pf.StartPoint.Y);
+                            ls4.Points.Add(new Point(((PolyLineSegment)pf.Segments[3]).Points[i].X + delta_x, ((PolyLineSegment)pf.Segments[3]).Points[i].Y + delta_y));
+                        }
+                        newpf.Segments.Add(ls4);
+                    }
                 }
 
                 newpf.IsClosed = true;
