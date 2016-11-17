@@ -274,7 +274,7 @@ namespace GraphicalStructure
         private double _zoomValue = 1.0;
         private void UIElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Delta > 0)
+            /*if (e.Delta > 0)
             {
                 _zoomValue += 0.1;
             }
@@ -288,9 +288,17 @@ namespace GraphicalStructure
             }
 
             ScaleTransform scale = new ScaleTransform(_zoomValue, _zoomValue);
-            scale.CenterX = (this.canvas.Width / 2) * _zoomValue;
-            scale.CenterY = this.canvas.Height / 2;
+            scale.CenterX = this.canvas.Width / 2.0;
+            scale.CenterY = this.canvas.Height / 2.0;
             canvas.LayoutTransform = scale;
+            e.Handled = true;*/
+            var element = sender as UIElement;
+            var position = e.GetPosition(element);
+            var transform = element.RenderTransform as MatrixTransform;
+            var matrix = transform.Matrix;
+            var scale = e.Delta >= 0 ? 1.01 : 1/1.01; // choose appropriate scaling factor
+            matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
+            transform.Matrix = matrix;
             e.Handled = true;
         }
 

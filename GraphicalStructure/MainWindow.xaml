@@ -72,15 +72,16 @@
         </ToolBarTray>-->
 
         <Canvas x:Name="front_canvas" Margin="10,14,10,14" Background="White" MouseRightButtonDown="canvas_MouseRightButtonDown" RenderTransformOrigin="0.5,0.5" MouseWheel="UIElement_OnMouseWheel">
-            <Canvas.RenderTransform>
+            <!--Canvas.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
                     <SkewTransform/>
                     <RotateTransform Angle="-0.206"/>
                     <TranslateTransform/>
-                </TransformGroup>
+                </TransformGroup-->
+            <Canvas.RenderTransform>
+                <MatrixTransform/>
             </Canvas.RenderTransform>
-
         </Canvas>
 
 
