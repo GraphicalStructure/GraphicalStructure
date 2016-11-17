@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
+using System.Collections;
 
 namespace GraphicalStructure
 {
@@ -39,6 +40,8 @@ namespace GraphicalStructure
 
         private Dictionary<string, Dictionary<string, string>> soeNameToSoeDetail;
 
+        private UseAccessDB adb;
+
         public NewMaterialWindow()
         {
             //init
@@ -63,6 +66,9 @@ namespace GraphicalStructure
             // 初始化时：gatherMat，gatherSoe初始化为matNameToMatDetail， soeNameToSoeDetail
 
             InitializeComponent();
+
+            adb = new UseAccessDB();
+            adb.OpenDb();
         }
 
         // 处理修改的mat参数数据
@@ -203,6 +209,9 @@ namespace GraphicalStructure
                 val.type = "all";
                 val.data = materialForUpdate;
                 val.data.Add("index", new Dictionary<string, string>() { { "content", "" + updateWhich } });
+
+
+                updateDatabaseMaterial(materialForUpdate);
             }
             
             PassValuesEvent(this, val);
@@ -212,6 +221,100 @@ namespace GraphicalStructure
         private void cancelButtonClick(object sender, RoutedEventArgs e) {
             // 取消新建材料
             Close();
+        }
+
+        private void updateDatabaseMaterial(Dictionary<string, Dictionary<string, string>> update_dict)
+        {
+            //只添加新创建的材料，已有的材料就不添加了
+            ArrayList result = adb.queryALLMaterialFromTable("select * from Material");
+            
+            bool isHaveMaterial = false;
+            string materialName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["materialName"])["content"];
+                
+            for (int j = 0; j < result.Count; j++)
+            {
+                if (materialName == ((ArrayList)result[j])[1].ToString())
+                {
+                    isHaveMaterial = true;
+                    break;
+                }
+            }
+
+            if (isHaveMaterial == true)
+            {
+                string matName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["matName"])["content"];
+                string eosName = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["soeName"])["content"];
+                Dictionary<string, string> matData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["mat"];
+                Dictionary<string, string> eosData = (Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["soe"];
+                string refer = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["refer"])["content"];
+                string density = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["density"])["content"];
+                string color = ((Dictionary<string, string>)((Dictionary<string, Dictionary<string, string>>)update_dict)["color"])["content"];
+                string mid = matData["MID"];
+                string eosid = eosData["EOSID"];
+
+                //更新一条材料   需要更新三个表
+                bool success;
+                string matTableName = "Mat_" + matName;
+                string eosTableName = "Eos_" + eosName;
+
+                //组装sql语句
+                //插入mat表
+                string matSql1 = "update " + matTableName;
+                string matSql2 = " set ";
+                for (int k = 0; k < matData.Count; k++)
+                {
+                    matSql2 += matData.Keys.ElementAt(k) + '=' + matData[matData.Keys.ElementAt(k)];
+
+                    if (k != matData.Count - 1)
+                        matSql2 += ",";
+                }
+                matSql2 += " where MID='" + mid + "'";
+                string matsql = matSql1 + matSql2;
+                success = adb.updateTableData(matsql);
+                if (success)
+                    Console.WriteLine("更新mat表成功");
+                else
+                    Console.WriteLine("更新mat表失败");
+
+                //插入eos表
+                string eosSql1 = "update " + eosTableName;
+                string eosSql2 = " set ";
+                for (int l = 0; l < eosData.Count; l++)
+                {
+                    eosSql2 += eosData.Keys.ElementAt(l) + '=' + eosData[eosData.Keys.ElementAt(l)];
+                   
+                    if (l != eosData.Count - 1)
+                        eosSql2 += ",";
+                }
+                eosSql2 += " where EOSID='" + eosid + "'";
+                string eosSql = eosSql1 + eosSql2;
+                success = adb.updateTableData(eosSql);
+                if (success)
+                    Console.WriteLine("更新eos表成功");
+                else
+                    Console.WriteLine("更新eos表失败");
+
+                //插入material表
+                //得到material表字段名
+                List<string> matFieldName = adb.GetTableFieldNameList("Material");
+                string materialSql1 = "update Material";
+                string materialSql2 = " set ";
+                ArrayList materialType = adb.queryALLMaterialFromTable("select * from Material_Type where mat_name ='" + matName + "'");
+                string material_type_name = ((ArrayList)materialType[0])[1].ToString();
+                materialSql2 += matFieldName[1] + "='" + materialName + "'," + matFieldName[2] + "='" + material_type_name + "'," + matFieldName[3] + "='" + mid.ToString() + "'," + matFieldName[4] + "='" + eosid.ToString() + "'," + matFieldName[5] + "='" + refer + "'," + matFieldName[6] + "='" + density + "'," + matFieldName[7] + "='" + color +"'";
+                materialSql2 += " where material_name='" + materialName + "'";
+                string materialSql = materialSql1 + materialSql2;
+                success = adb.updateTableData(materialSql);
+                if (success)
+                    Console.WriteLine("更新materila表成功");
+                else
+                    Console.WriteLine("更新materila表失败");
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("该材料不在数据库中","警告");
+                return;
+            }
         }
 
         private string changeDictToString(Dictionary<string, string> dict) {

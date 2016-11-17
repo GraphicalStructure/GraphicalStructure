@@ -270,6 +270,7 @@ namespace GraphicalStructure
                                 PathFigure bcurPf = bcurPg.Figures.ElementAt(0);
                                 bcurPf.StartPoint = new Point(bcurPf.StartPoint.X, bcurPf.StartPoint.Y - changeValue);
                                 ((LineSegment)bcurPf.Segments[0]).Point = new Point(((LineSegment)bcurPf.Segments[0]).Point.X, ((LineSegment)bcurPf.Segments[0]).Point.Y - changeValue);
+                                ((LineSegment)bcurPf.Segments[3]).Point = new Point(((LineSegment)bcurPf.Segments[3]).Point.X, ((LineSegment)bcurPf.Segments[3]).Point.Y - changeValue);
                             }
                         }
                     }
@@ -310,6 +311,7 @@ namespace GraphicalStructure
                                 PathFigure bcurPf = bcurPg.Figures.ElementAt(0);
                                 bcurPf.StartPoint = new Point(bcurPf.StartPoint.X, bcurPf.StartPoint.Y + changeValue);
                                 ((LineSegment)bcurPf.Segments[0]).Point = new Point(((LineSegment)bcurPf.Segments[0]).Point.X, ((LineSegment)bcurPf.Segments[0]).Point.Y + changeValue);
+                                ((LineSegment)bcurPf.Segments[3]).Point = new Point(((LineSegment)bcurPf.Segments[3]).Point.X, ((LineSegment)bcurPf.Segments[3]).Point.Y + changeValue);
                             }
                         }
 
@@ -325,6 +327,7 @@ namespace GraphicalStructure
                                 ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + temp);
                                 ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + temp);
                                 ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + temp);
+                                ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + temp);
                             }
                             currentCom.newPath.Height += temp * 2;
                             currentCom.height = currentCom.newPath.Height;
@@ -380,6 +383,7 @@ namespace GraphicalStructure
                                 PathFigure bcurPf = bcurPg.Figures.ElementAt(0);
                                 bcurPf.StartPoint = new Point(bcurPf.StartPoint.X, bcurPf.StartPoint.Y - changeValue);
                                 ((LineSegment)bcurPf.Segments[0]).Point = new Point(((LineSegment)bcurPf.Segments[0]).Point.X, ((LineSegment)bcurPf.Segments[0]).Point.Y - changeValue);
+                                ((LineSegment)bcurPf.Segments[3]).Point = new Point(((LineSegment)bcurPf.Segments[3]).Point.X, ((LineSegment)bcurPf.Segments[3]).Point.Y - changeValue);
                             }
                         }
                     }
@@ -420,6 +424,7 @@ namespace GraphicalStructure
                                 PathFigure bcurPf = bcurPg.Figures.ElementAt(0);
                                 bcurPf.StartPoint = new Point(bcurPf.StartPoint.X, bcurPf.StartPoint.Y + changeValue);
                                 ((LineSegment)bcurPf.Segments[0]).Point = new Point(((LineSegment)bcurPf.Segments[0]).Point.X, ((LineSegment)bcurPf.Segments[0]).Point.Y + changeValue);
+                                ((LineSegment)bcurPf.Segments[3]).Point = new Point(((LineSegment)bcurPf.Segments[3]).Point.X, ((LineSegment)bcurPf.Segments[3]).Point.Y + changeValue);
                             }
                         }
 
@@ -436,6 +441,7 @@ namespace GraphicalStructure
                                 ((LineSegment)curPf.Segments[0]).Point = new Point(((LineSegment)curPf.Segments[0]).Point.X, ((LineSegment)curPf.Segments[0]).Point.Y + temp);
                                 ((LineSegment)curPf.Segments[1]).Point = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y + temp);
                                 ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + temp);
+                                ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + temp);
                             }
 
                             currentCom.newPath.Height += temp * 2;
