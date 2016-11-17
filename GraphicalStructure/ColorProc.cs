@@ -1077,15 +1077,37 @@ namespace GraphicalStructure
                             PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure topPf = topPg.Figures.ElementAt(0);
 
-                            topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
-                            if (topPf.Segments[2] is LineSegment)
+                            Path nextP = (Path)CoverToPathMap.Keys.ElementAt(isTop + 1);
+                            GeometryGroup geometryGroup_next = (GeometryGroup)nextP.Data;
+                            PathGeometry topPg_next = (PathGeometry)geometryGroup_next.Children[0];
+                            PathFigure topPf_next = topPg_next.Figures.ElementAt(0);
+
+                            if (topPf.StartPoint.Y > topPf_next.StartPoint.Y)
                             {
-                                ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                                topPf_next.StartPoint = new Point(topPf_next.StartPoint.X, topPf_next.StartPoint.Y - offset);
+                                if (topPf_next.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf_next.Segments[2]).Point = new Point(((LineSegment)topPf_next.Segments[2]).Point.X, ((LineSegment)topPf_next.Segments[2]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                //上层！！！！！！
+                                topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
+                                if (topPf.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
                         }
                         else
@@ -1095,20 +1117,46 @@ namespace GraphicalStructure
                             PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
 
-                            bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
-                            if (bottomPf.Segments[1] is LineSegment)
+                            Path frontP = (Path)CoverToPathMap.Keys.ElementAt(isTop - 1);
+                            GeometryGroup geometryGroup_front = (GeometryGroup)frontP.Data;
+                            PathGeometry bottomPg_front = (PathGeometry)geometryGroup_front.Children[0];
+                            PathFigure bottomPf_front = bottomPg_front.Figures.ElementAt(0);
+
+                            if (bottomPf.StartPoint.Y >= bottomPf_front.StartPoint.Y)
                             {
-                                ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
-                                if (bottomPf.Segments.Count > 3)
+                                bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
+                                if (bottomPf.Segments[1] is LineSegment)
                                 {
-                                    ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                    ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
+                                    if (bottomPf.Segments.Count > 3)
+                                    {
+                                        ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                    }
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
                                 }
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                bottomPf_front.StartPoint = new Point(bottomPf_front.StartPoint.X, bottomPf_front.StartPoint.Y + offset);
+                                if (bottomPf_front.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf_front.Segments[0]).Point = new Point(((LineSegment)bottomPf_front.Segments[0]).Point.X, ((LineSegment)bottomPf_front.Segments[0]).Point.Y + offset);
+                                    if (bottomPf_front.Segments.Count > 3)
+                                    {
+                                        ((LineSegment)bottomPf_front.Segments[3]).Point = new Point(((LineSegment)bottomPf_front.Segments[3]).Point.X, ((LineSegment)bottomPf_front.Segments[3]).Point.Y + offset);
+                                    }
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
+                            
                         }
                     }
 
@@ -1128,16 +1176,38 @@ namespace GraphicalStructure
                             PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure topPf = topPg.Figures.ElementAt(0);
 
-                            if (topPf.Segments[2] is LineSegment)
+                            Path nextP = (Path)CoverToPathMap.Keys.ElementAt(isTop + 1);
+                            GeometryGroup geometryGroup_next = (GeometryGroup)nextP.Data;
+                            PathGeometry topPg_next = (PathGeometry)geometryGroup_next.Children[0];
+                            PathFigure topPf_next = topPg_next.Figures.ElementAt(0);
+
+                            if (topPf.StartPoint.Y > topPf_next.StartPoint.Y)
                             {
-                                ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                                if (topPf_next.Segments[0] is LineSegment)
+                                {
+                                    ((LineSegment)topPf_next.Segments[0]).Point = new Point(((LineSegment)topPf_next.Segments[0]).Point.X, ((LineSegment)topPf_next.Segments[0]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)topPf_next.Segments[1]).Point = new Point(((LineSegment)topPf_next.Segments[1]).Point.X, ((LineSegment)topPf_next.Segments[1]).Point.Y - offset);
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                if (topPf.Segments[0] is LineSegment)
+                                {
+                                    ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
+
                             }
-                            ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
                         }
                         else
                         {
@@ -1146,16 +1216,39 @@ namespace GraphicalStructure
                             PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
 
-                            if (bottomPf.Segments[1] is LineSegment)
+                             Path frontP = (Path)CoverToPathMap.Keys.ElementAt(isTop - 1);
+                            GeometryGroup geometryGroup_front = (GeometryGroup)frontP.Data;
+                            PathGeometry bottomPg_front = (PathGeometry)geometryGroup_front.Children[0];
+                            PathFigure bottomPf_front = bottomPg_front.Figures.ElementAt(0);
+
+                            //下层！！！
+                            if (bottomPf.StartPoint.Y >= bottomPf_front.StartPoint.Y)
                             {
-                                ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                                if (bottomPf.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                if (bottomPf_front.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf_front.Segments[1]).Point = new Point(((LineSegment)bottomPf_front.Segments[1]).Point.X, ((LineSegment)bottomPf_front.Segments[1]).Point.Y + offset);
+                                    
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)bottomPf_front.Segments[2]).Point = new Point(((LineSegment)bottomPf_front.Segments[2]).Point.X, ((LineSegment)bottomPf_front.Segments[2]).Point.Y + offset);
                             }
-                            ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
                         }
                     }
 
@@ -1889,6 +1982,109 @@ namespace GraphicalStructure
             }
         }
 
+        //public static void processWhenChangeCylindricalHeight_CC(Path path, int isLeft, double offset)
+        //{
+        //    int isTop = 0;
+        //    if (isLeft == 1)
+        //    {
+        //        foreach (Path pa in CoverToPathMap_CC.Keys)
+        //        {
+        //            if (CoverToPathMap_CC[pa] == path)
+        //            {
+        //                if (isTop % 2 == 0)
+        //                {
+        //                    //处理上层cover
+        //                    GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+        //                    PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+        //                    PathFigure topPf = topPg.Figures.ElementAt(0);
+
+        //                    topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
+        //                    if (topPf.Segments[2] is LineSegment)
+        //                    {
+        //                        ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+        //                    }
+        //                    else
+        //                    {
+        //                        //
+        //                        MessageBox.Show("不能调整段的宽度", "警告");
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    //处理下层cover
+        //                    GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+        //                    PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+        //                    PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+        //                    bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
+        //                    if (bottomPf.Segments[1] is LineSegment)
+        //                    {
+        //                        ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
+        //                        if (bottomPf.Segments.Count > 3)
+        //                        {
+        //                            ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        //
+        //                        MessageBox.Show("不能调整段的宽度", "警告");
+        //                    }
+        //                }
+        //            }
+
+        //            isTop++;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        foreach (Path pa in CoverToPathMap_CC.Keys)
+        //        {
+        //            if (CoverToPathMap_CC[pa] == path)
+        //            {
+        //                if (isTop % 2 == 0)
+        //                {
+        //                    //处理上层cover
+        //                    GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+        //                    PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
+        //                    PathFigure topPf = topPg.Figures.ElementAt(0);
+
+        //                    if (topPf.Segments[2] is LineSegment)
+        //                    {
+        //                        ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+        //                    }
+        //                    else
+        //                    {
+        //                        //
+        //                        MessageBox.Show("不能调整段的宽度", "警告");
+        //                    }
+        //                    ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
+        //                }
+        //                else
+        //                {
+        //                    //处理下层cover
+        //                    GeometryGroup geometryGroup = (GeometryGroup)pa.Data;
+        //                    PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
+        //                    PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
+
+        //                    if (bottomPf.Segments[1] is LineSegment)
+        //                    {
+        //                        ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+        //                    }
+        //                    else
+        //                    {
+        //                        //
+        //                        MessageBox.Show("不能调整段的宽度", "警告");
+        //                    }
+        //                    ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
+        //                }
+        //            }
+
+        //            isTop++;
+        //        }
+        //    }
+        //}
+
         public static void processWhenChangeCylindricalHeight_CC(Path path, int isLeft, double offset)
         {
             int isTop = 0;
@@ -1905,15 +2101,37 @@ namespace GraphicalStructure
                             PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure topPf = topPg.Figures.ElementAt(0);
 
-                            topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
-                            if (topPf.Segments[2] is LineSegment)
+                            Path nextP = (Path)CoverToPathMap_CC.Keys.ElementAt(isTop + 1);
+                            GeometryGroup geometryGroup_next = (GeometryGroup)nextP.Data;
+                            PathGeometry topPg_next = (PathGeometry)geometryGroup_next.Children[0];
+                            PathFigure topPf_next = topPg_next.Figures.ElementAt(0);
+
+                            if (topPf.StartPoint.Y > topPf_next.StartPoint.Y)
                             {
-                                ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                                topPf_next.StartPoint = new Point(topPf_next.StartPoint.X, topPf_next.StartPoint.Y - offset);
+                                if (topPf_next.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf_next.Segments[2]).Point = new Point(((LineSegment)topPf_next.Segments[2]).Point.X, ((LineSegment)topPf_next.Segments[2]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                //上层！！！！！！
+                                topPf.StartPoint = new Point(topPf.StartPoint.X, topPf.StartPoint.Y - offset);
+                                if (topPf.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf.Segments[2]).Point = new Point(((LineSegment)topPf.Segments[2]).Point.X, ((LineSegment)topPf.Segments[2]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
                         }
                         else
@@ -1923,20 +2141,46 @@ namespace GraphicalStructure
                             PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
 
-                            bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
-                            if (bottomPf.Segments[1] is LineSegment)
+                            Path frontP = (Path)CoverToPathMap_CC.Keys.ElementAt(isTop - 1);
+                            GeometryGroup geometryGroup_front = (GeometryGroup)frontP.Data;
+                            PathGeometry bottomPg_front = (PathGeometry)geometryGroup_front.Children[0];
+                            PathFigure bottomPf_front = bottomPg_front.Figures.ElementAt(0);
+
+                            if (bottomPf.StartPoint.Y >= bottomPf_front.StartPoint.Y)
                             {
-                                ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
-                                if (bottomPf.Segments.Count > 3)
+                                bottomPf.StartPoint = new Point(bottomPf.StartPoint.X, bottomPf.StartPoint.Y + offset);
+                                if (bottomPf.Segments[1] is LineSegment)
                                 {
-                                    ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                    ((LineSegment)bottomPf.Segments[0]).Point = new Point(((LineSegment)bottomPf.Segments[0]).Point.X, ((LineSegment)bottomPf.Segments[0]).Point.Y + offset);
+                                    if (bottomPf.Segments.Count > 3)
+                                    {
+                                        ((LineSegment)bottomPf.Segments[3]).Point = new Point(((LineSegment)bottomPf.Segments[3]).Point.X, ((LineSegment)bottomPf.Segments[3]).Point.Y + offset);
+                                    }
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
                                 }
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                bottomPf_front.StartPoint = new Point(bottomPf_front.StartPoint.X, bottomPf_front.StartPoint.Y + offset);
+                                if (bottomPf_front.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf_front.Segments[0]).Point = new Point(((LineSegment)bottomPf_front.Segments[0]).Point.X, ((LineSegment)bottomPf_front.Segments[0]).Point.Y + offset);
+                                    if (bottomPf_front.Segments.Count > 3)
+                                    {
+                                        ((LineSegment)bottomPf_front.Segments[3]).Point = new Point(((LineSegment)bottomPf_front.Segments[3]).Point.X, ((LineSegment)bottomPf_front.Segments[3]).Point.Y + offset);
+                                    }
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
                             }
+
                         }
                     }
 
@@ -1956,16 +2200,38 @@ namespace GraphicalStructure
                             PathGeometry topPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure topPf = topPg.Figures.ElementAt(0);
 
-                            if (topPf.Segments[2] is LineSegment)
+                            Path nextP = (Path)CoverToPathMap_CC.Keys.ElementAt(isTop + 1);
+                            GeometryGroup geometryGroup_next = (GeometryGroup)nextP.Data;
+                            PathGeometry topPg_next = (PathGeometry)geometryGroup_next.Children[0];
+                            PathFigure topPf_next = topPg_next.Figures.ElementAt(0);
+
+                            if (topPf.StartPoint.Y > topPf_next.StartPoint.Y)
                             {
-                                ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                                if (topPf_next.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf_next.Segments[0]).Point = new Point(((LineSegment)topPf_next.Segments[0]).Point.X, ((LineSegment)topPf_next.Segments[0]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)topPf_next.Segments[1]).Point = new Point(((LineSegment)topPf_next.Segments[1]).Point.X, ((LineSegment)topPf_next.Segments[1]).Point.Y - offset);
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                if (topPf.Segments[2] is LineSegment)
+                                {
+                                    ((LineSegment)topPf.Segments[0]).Point = new Point(((LineSegment)topPf.Segments[0]).Point.X, ((LineSegment)topPf.Segments[0]).Point.Y - offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
+
                             }
-                            ((LineSegment)topPf.Segments[1]).Point = new Point(((LineSegment)topPf.Segments[1]).Point.X, ((LineSegment)topPf.Segments[1]).Point.Y - offset);
                         }
                         else
                         {
@@ -1974,16 +2240,39 @@ namespace GraphicalStructure
                             PathGeometry bottomPg = (PathGeometry)geometryGroup.Children[0];
                             PathFigure bottomPf = bottomPg.Figures.ElementAt(0);
 
-                            if (bottomPf.Segments[1] is LineSegment)
+                            Path frontP = (Path)CoverToPathMap_CC.Keys.ElementAt(isTop - 1);
+                            GeometryGroup geometryGroup_front = (GeometryGroup)frontP.Data;
+                            PathGeometry bottomPg_front = (PathGeometry)geometryGroup_front.Children[0];
+                            PathFigure bottomPf_front = bottomPg_front.Figures.ElementAt(0);
+
+                            //下层！！！
+                            if (bottomPf.StartPoint.Y >= bottomPf_front.StartPoint.Y)
                             {
-                                ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                                if (bottomPf.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf.Segments[1]).Point = new Point(((LineSegment)bottomPf.Segments[1]).Point.X, ((LineSegment)bottomPf.Segments[1]).Point.Y + offset);
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
                             }
                             else
                             {
-                                //
-                                MessageBox.Show("不能调整段的宽度", "警告");
+                                if (bottomPf_front.Segments[1] is LineSegment)
+                                {
+                                    ((LineSegment)bottomPf_front.Segments[1]).Point = new Point(((LineSegment)bottomPf_front.Segments[1]).Point.X, ((LineSegment)bottomPf_front.Segments[1]).Point.Y + offset);
+
+                                }
+                                else
+                                {
+                                    //
+                                    MessageBox.Show("不能调整段的宽度", "警告");
+                                }
+                                ((LineSegment)bottomPf_front.Segments[2]).Point = new Point(((LineSegment)bottomPf_front.Segments[2]).Point.X, ((LineSegment)bottomPf_front.Segments[2]).Point.Y + offset);
                             }
-                            ((LineSegment)bottomPf.Segments[2]).Point = new Point(((LineSegment)bottomPf.Segments[2]).Point.X, ((LineSegment)bottomPf.Segments[2]).Point.Y + offset);
                         }
                     }
 

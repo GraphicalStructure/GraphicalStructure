@@ -257,16 +257,19 @@ namespace GraphicalStructure
             centerLine.Y1 = canvas.Height / 2;
             centerLine.X2 = canvas.Width - 20;
             centerLine.Y2 = canvas.Height / 2;
-            //if (e.HeightChanged) {
-            //    double hChanged = e.PreviousSize.Height - e.NewSize.Height;
-            //    for (int i = 0; i < canvas.Children.Count; i++) {
-            //        if (canvas.Children[i] is System.Windows.Shapes.Path) {
-            //            System.Windows.Shapes.Path path = (System.Windows.Shapes.Path)canvas.Children[i];
-            //            //Canvas.SetTop(path, Canvas.GetTop(path) - hChanged);
-            //            ColorProc.moveVertical(path, -hChanged/2.0);
-            //        }
-            //    }
-            //}
+            if (e.HeightChanged)
+            {
+                double hChanged = e.PreviousSize.Height - e.NewSize.Height;
+                for (int i = 0; i < canvas.Children.Count; i++)
+                {
+                    if (canvas.Children[i] is System.Windows.Shapes.Path)
+                    {
+                        System.Windows.Shapes.Path path = (System.Windows.Shapes.Path)canvas.Children[i];
+                        //Canvas.SetTop(path, Canvas.GetTop(path) - hChanged);
+                        ColorProc.moveVertical(path, -hChanged / 2.0);
+                    }
+                }
+            }
             autoResize();
         }
 
@@ -274,7 +277,7 @@ namespace GraphicalStructure
         private double _zoomValue = 1.0;
         private void UIElement_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            /*if (e.Delta > 0)
+            if (e.Delta > 0)
             {
                 _zoomValue += 0.1;
             }
@@ -291,15 +294,15 @@ namespace GraphicalStructure
             scale.CenterX = this.canvas.Width / 2.0;
             scale.CenterY = this.canvas.Height / 2.0;
             canvas.LayoutTransform = scale;
-            e.Handled = true;*/
-            var element = sender as UIElement;
-            var position = e.GetPosition(element);
-            var transform = element.RenderTransform as MatrixTransform;
-            var matrix = transform.Matrix;
-            var scale = e.Delta >= 0 ? 1.01 : 1/1.01; // choose appropriate scaling factor
-            matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
-            transform.Matrix = matrix;
             e.Handled = true;
+            //var element = sender as UIElement;
+            //var position = e.GetPosition(element);
+            //var transform = element.RenderTransform as MatrixTransform;
+            //var matrix = transform.Matrix;
+            //var scale = e.Delta >= 0 ? 1.01 : 1/1.01; // choose appropriate scaling factor
+            //matrix.ScaleAtPrepend(scale, scale, position.X, position.Y);
+            //transform.Matrix = matrix;
+            //e.Handled = true;
         }
 
         private void ColorButton_Click(object sender, RoutedEventArgs e)
@@ -579,6 +582,11 @@ namespace GraphicalStructure
             ((LineSegment)curPf.Segments[2]).Point = new Point(((LineSegment)curPf.Segments[2]).Point.X, ((LineSegment)curPf.Segments[2]).Point.Y + 10);
             ((LineSegment)curPf.Segments[3]).Point = new Point(((LineSegment)curPf.Segments[3]).Point.X, ((LineSegment)curPf.Segments[3]).Point.Y + 10);
 
+            ((Components)centralCubes[centralCubeIndex]).startPoint.Y += 10;
+            ((Components)centralCubes[centralCubeIndex]).point2.Y += 10;
+            ((Components)centralCubes[centralCubeIndex]).point3.Y += 10;
+            ((Components)centralCubes[centralCubeIndex]).point4.Y += 10;
+
             //创建上下层路径
             PathGeometry topPg = new PathGeometry();
             PathGeometry bottomPg = new PathGeometry();
@@ -622,6 +630,10 @@ namespace GraphicalStructure
             Point forthPoint_bottom = new Point(((LineSegment)curPf.Segments[1]).Point.X, ((LineSegment)curPf.Segments[1]).Point.Y);
             ls3_bottom.Point = forthPoint_bottom;
             bottomPf.Segments.Add(ls3_bottom);
+
+            LineSegment ls4_bottom = new LineSegment();
+            ls4_bottom.Point = new Point(bottomPf.StartPoint.X,bottomPf.StartPoint.Y);
+            bottomPf.Segments.Add(ls4_bottom);
 
             bottomPg.Figures.Add(bottomPf);
 
@@ -4479,6 +4491,9 @@ namespace GraphicalStructure
             {
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(saveFileName))
                 {
+                    //保存数据库中材料
+                    storeMaterialToFile(saveFileName);
+
                     int num = 0;
                     foreach (Components c in components)
                     {
@@ -4507,7 +4522,6 @@ namespace GraphicalStructure
                         {
                             file.Write('|'); file.Write(c.radius); file.Write(","); file.Write(1);
                         }
-
                         file.WriteLine();
                         //段材料  对应颜色
                         file.Write(c.newPath.Fill.ToString()); file.WriteLine();
@@ -4622,6 +4636,10 @@ namespace GraphicalStructure
                         //位置  大小  颜色
                         for (int i = 0; i < centralCubePanel.Children.Count; i++)
                         {
+                            if (i != 0)
+                            {
+                                file.Write("空心管"); file.WriteLine();
+                            }
                             if (centralCubePanel.Children[i] is System.Windows.Shapes.Path)
                             {
                                 Components c = (Components)centralCubes[i];
@@ -4629,7 +4647,8 @@ namespace GraphicalStructure
                                 file.Write(c.startPoint.X); file.Write(","); file.Write(c.startPoint.Y); file.Write('|');
                                 file.Write(c.point2.X); file.Write(","); file.Write(c.point2.Y); file.Write('|');
                                 file.Write(c.point3.X); file.Write(","); file.Write(c.point3.Y); file.Write('|');
-                                file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y); file.Write('|');
+                                file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y);
+                                file.Write('|'); file.Write(c.cubeOffset); file.Write(","); file.Write(0);
                                 if (c.isChangeOgive)
                                 {
                                     file.Write('|'); file.Write(1); file.Write(","); file.Write(1); file.Write('|');
@@ -4640,7 +4659,7 @@ namespace GraphicalStructure
                                     file.Write('|'); file.Write(2); file.Write(","); file.Write(2); file.Write('|');
                                     file.Write(c.radius); file.Write(","); file.Write(1);
                                 }
-                                file.Write('|'); file.Write(c.cubeOffset); file.Write(","); file.Write(0);
+
                                 file.WriteLine();
 
 
@@ -4673,8 +4692,7 @@ namespace GraphicalStructure
                                 }
                                 else
                                 {
-                                    file.Write("无");
-                                    file.WriteLine();
+                                    file.Write("无"); file.WriteLine();
                                 }
                             }
                         }
@@ -4693,6 +4711,9 @@ namespace GraphicalStructure
                 //File.WriteAllText(saveFileDialog.FileName, "");
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(saveFileDialog.FileName))
                 {
+                    //保存数据库中材料
+                    storeMaterialToFile(saveFileDialog.FileName);
+
                     int num = 0;
                     foreach (Components c in components)
                     {
@@ -4713,6 +4734,14 @@ namespace GraphicalStructure
                         file.Write(c.point2.X); file.Write(","); file.Write(c.point2.Y); file.Write('|');
                         file.Write(c.point3.X); file.Write(","); file.Write(c.point3.Y); file.Write('|');
                         file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y);
+                        if (c.isChangeOgive)
+                        {
+                            file.Write('|'); file.Write(c.radius); file.Write(","); file.Write(0);
+                        }
+                        if (c.isChangeIOgive)
+                        {
+                            file.Write('|'); file.Write(c.radius); file.Write(","); file.Write(1);
+                        }
                         file.WriteLine();
                         //段材料  对应颜色
                         file.Write(c.newPath.Fill.ToString()); file.WriteLine();
@@ -4825,17 +4854,66 @@ namespace GraphicalStructure
                     if (isHaveCentralTube)
                     {
                         //位置  大小  颜色
-                        for (int i = 0; i < canvas.Children.Count; i++)
+                        for (int i = 0; i < centralCubePanel.Children.Count; i++)
                         {
-                            if (canvas.Children[i] is Rectangle)
+                            if (i != 0)
                             {
-                                Rectangle rect = (Rectangle)canvas.Children[i];
-                                file.Write(Canvas.GetLeft(rect)); file.Write('|');
-                                file.Write(Canvas.GetTop(rect)); file.Write('|');
-                                file.Write(rect.Width); file.Write('|');
-                                file.Write(rect.Height); file.Write('|');
-                                file.Write(rect.Fill.ToString());
+                                file.Write("空心管"); file.WriteLine();
+                            }
+                            if (centralCubePanel.Children[i] is System.Windows.Shapes.Path)
+                            {
+                                Components c = (Components)centralCubes[i];
+                                System.Windows.Shapes.Path rect = centralCubePanel.Children[i] as System.Windows.Shapes.Path;
+                                file.Write(c.startPoint.X); file.Write(","); file.Write(c.startPoint.Y); file.Write('|');
+                                file.Write(c.point2.X); file.Write(","); file.Write(c.point2.Y); file.Write('|');
+                                file.Write(c.point3.X); file.Write(","); file.Write(c.point3.Y); file.Write('|');
+                                file.Write(c.point4.X); file.Write(","); file.Write(c.point4.Y);
+                                file.Write('|'); file.Write(c.cubeOffset); file.Write(","); file.Write(0);
+                                if (c.isChangeOgive)
+                                {
+                                    file.Write('|'); file.Write(1); file.Write(","); file.Write(1); file.Write('|');
+                                    file.Write(c.radius); file.Write(","); file.Write(0);
+                                }
+                                if (c.isChangeIOgive)
+                                {
+                                    file.Write('|'); file.Write(2); file.Write(","); file.Write(2); file.Write('|');
+                                    file.Write(c.radius); file.Write(","); file.Write(1);
+                                }
+
                                 file.WriteLine();
+
+
+                                GeometryGroup geometryGroup = (GeometryGroup)c.newPath.Data;
+
+                                if (geometryGroup.Children.Count != 1)
+                                {
+                                    file.Write("空心层 "); file.Write(geometryGroup.Children.Count - 1); file.WriteLine();
+
+                                    for (int j = 1; j < geometryGroup.Children.Count; j++)
+                                    {
+                                        //层号
+                                        file.Write(c.layerNums[j - 1]); file.Write('|');
+                                        //层的类型
+                                        file.Write(c.layerType[j - 1]); file.Write('|');
+                                        //层的材料
+                                        file.Write(c.layerMaterial[j - 1]); file.Write('|');
+                                        //层的size
+                                        file.Write(((Hashtable)(c.layerSize[j]))["diameter"]); file.Write('|');
+                                        file.Write(((Hashtable)(c.layerSize[j]))["longLength"]); file.Write('|');
+                                        file.Write(((Hashtable)(c.layerSize[j]))["width"]); file.Write('|');
+                                        file.Write(((Hashtable)(c.layerSize[j]))["height"]); file.Write('|');
+                                        file.Write(((Hashtable)(c.layerSize[j]))["ObliqueAngle"]); file.Write('|');
+                                        //层的左厚度
+                                        file.Write(c.layerLeftThickness[j - 1]); file.Write('|');
+                                        //层的右厚度
+                                        file.Write(c.layerRightThickness[j - 1]);
+                                        file.WriteLine();
+                                    }
+                                }
+                                else
+                                {
+                                    file.Write("无"); file.WriteLine();
+                                }
                             }
                         }
                     }
@@ -4844,6 +4922,8 @@ namespace GraphicalStructure
                         file.Write("无");
                         file.WriteLine();
                     }
+
+                    saveFileName = saveFileDialog.FileName;
                 }
             }
         }
@@ -4872,6 +4952,7 @@ namespace GraphicalStructure
                     double radius = -1;
                     int isConvex = -1;
                     int CylinderIndex = 0;
+                    changeTitle = 0;
 
                     foreach (string s in temp)
                     {
