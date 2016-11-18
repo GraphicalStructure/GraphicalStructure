@@ -102,7 +102,7 @@ namespace GraphicalStructure
 
             // Create a blue and a black Brush
             SolidColorBrush blueBrush = new SolidColorBrush();
-            blueBrush.Color = Colors.Orange;
+            blueBrush.Color = Colors.Black;
             SolidColorBrush blackBrush = new SolidColorBrush();
             blackBrush.Color = Colors.Blue;
 
@@ -179,7 +179,7 @@ namespace GraphicalStructure
 
             // Create a blue and a black Brush
             SolidColorBrush blueBrush = new SolidColorBrush();
-            blueBrush.Color = Colors.Orange;
+            blueBrush.Color = Colors.Black;
             SolidColorBrush blackBrush = new SolidColorBrush();
             blackBrush.Color = Colors.Blue;
 

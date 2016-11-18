@@ -80,20 +80,28 @@ using System.IO;namespace GraphicalStructure
 
         public ArrayList queryALLMaterialFromTable(string sql)
         {
-            ArrayList result = new ArrayList();
-            OleDbCommand cmd = new OleDbCommand(sql,oleDbConn);
-            cmd.CommandType = CommandType.Text;
-            OleDbDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
+            try
             {
-                ArrayList data = new ArrayList();
-                for (int i = 0; i < dr.FieldCount; i++)
+                ArrayList result = new ArrayList();
+                OleDbCommand cmd = new OleDbCommand(sql, oleDbConn);
+                cmd.CommandType = CommandType.Text;
+                OleDbDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
                 {
-                    data.Add(dr.GetValue(i));
+                    ArrayList data = new ArrayList();
+                    for (int i = 0; i < dr.FieldCount; i++)
+                    {
+                        data.Add(dr.GetValue(i));
+                    }
+                    result.Add(data);
                 }
-                result.Add(data);
+                return result;
             }
-            return result;
+            catch
+            {
+                MessageBox.Show("查找数据库出错，请检查数据库中数据是否正确。","警告");
+                return null;
+            }
         }
 
         public List<string> GetTableFieldNameList(string TableName)
