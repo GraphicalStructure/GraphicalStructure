@@ -1519,6 +1519,7 @@ namespace GraphicalStructure
                     Color color = new Color();
                     if (DataBaseMaterials != null)
                     {
+                        bool flag = false;
                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                         {
                             Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -1527,8 +1528,13 @@ namespace GraphicalStructure
                             string materialName = mdic["content"];
                             if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
+                                flag = true;
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                             }
+                        }
+                        if (!flag)
+                        {
+                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                         }
                     }
 
@@ -1562,6 +1568,7 @@ namespace GraphicalStructure
 
                     if (DataBaseMaterials != null)
                     {
+                        bool flag = false;
                         for (int j = 0; j < DataBaseMaterials.Count; j++)
                         {
                             Dictionary<string, string> cdic = ((Dictionary<string, Dictionary<string, string>>)DataBaseMaterials[j])["color"];
@@ -1571,8 +1578,13 @@ namespace GraphicalStructure
 
                             if (materialName == ((Components)components[index + 1]).layerMaterial[((Components)components[index + 1]).layerNum - 2].ToString())
                             {
+                                flag = true;
                                 color = (Color)ColorConverter.ConvertFromString(mColor);
                             }
+                        }
+                        if (!flag)
+                        {
+                            color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
                         }
                     }
 
@@ -3682,6 +3694,7 @@ namespace GraphicalStructure
                 editWindow ew = new editWindow();
                 ew.setComponent((Components)components[index + 1]);
                 ew.Owner = this;
+                ew.color = (Color)ColorConverter.ConvertFromString(((Components)components[index + 1]).newPath.Fill.ToString());
                 if (isHaveRightEndCap && index == stackpanel.Children.Count - 2)
                 {
                     ew.isLeftEndCap = "#FF0000FF";
