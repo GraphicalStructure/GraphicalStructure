@@ -506,9 +506,14 @@ namespace GraphicalStructure
                     string matsql = matSql1 + matSql2;
                     success = adb.insertTableData(matsql);
                     if (success)
+                    {
                         Console.WriteLine("插入mat表成功");
+                    }
                     else
+                    {
                         Console.WriteLine("插入mat表失败");
+                        return;
+                    }
 
                     //插入eos表
                     string eosSql1 = "insert into " + eosTableName + "(" + "EOSID,";
@@ -530,9 +535,16 @@ namespace GraphicalStructure
                     string eosSql = eosSql1 + eosSql2;
                     success = adb.insertTableData(eosSql);
                     if (success)
+                    {
                         Console.WriteLine("插入eos表成功");
+                    }
                     else
+                    {
                         Console.WriteLine("插入eos表失败");
+                        string delete_sql = "delete from "+ matTableName + "where MID = '" + (mid+1) +"'";
+                        adb.deleteFromTableData(delete_sql,0);
+                        return;
+                    }
 
                     //插入material表
                     //得到material表字段名
@@ -553,9 +565,18 @@ namespace GraphicalStructure
                     string materialSql = materialSql1 + materialSql2;
                     success = adb.insertTableData(materialSql);
                     if (success)
+                    {
                         Console.WriteLine("插入materila表成功");
+                    }
                     else
+                    {
                         Console.WriteLine("插入materila表失败");
+                        string delete_Mat_sql = "delete from " + matTableName + "where MID = '" + (mid + 1) + "'";
+                        adb.deleteFromTableData(delete_Mat_sql, 0);
+                        string delete_Eos_sql = "delete from " + matTableName + "where EOSID = '" + (eosid + 1) + "'";
+                        adb.deleteFromTableData(delete_Eos_sql, 0);
+                        return;
+                    }
                 }
             }
         }

@@ -272,9 +272,12 @@ namespace GraphicalStructure
                 string matsql = matSql1 + matSql2;
                 success = adb.updateTableData(matsql);
                 if (success)
+                {
                     Console.WriteLine("更新mat表成功");
-                else
+                }
+                else{
                     Console.WriteLine("更新mat表失败");
+                }
 
                 //插入eos表
                 string eosSql1 = "update " + eosTableName;
@@ -290,9 +293,13 @@ namespace GraphicalStructure
                 string eosSql = eosSql1 + eosSql2;
                 success = adb.updateTableData(eosSql);
                 if (success)
+                {
                     Console.WriteLine("更新eos表成功");
+                }
                 else
+                {
                     Console.WriteLine("更新eos表失败");
+                }
 
                 //插入material表
                 //得到material表字段名
@@ -306,9 +313,13 @@ namespace GraphicalStructure
                 string materialSql = materialSql1 + materialSql2;
                 success = adb.updateTableData(materialSql);
                 if (success)
+                {
                     Console.WriteLine("更新materila表成功");
+                }
                 else
+                {
                     Console.WriteLine("更新materila表失败");
+                }
             }
             else
             {
