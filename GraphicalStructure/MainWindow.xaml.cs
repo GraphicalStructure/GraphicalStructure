@@ -3541,7 +3541,10 @@ namespace GraphicalStructure
 
         private void btEdit_Click(object sender, RoutedEventArgs e)
         {
-            changeTitle = 0;
+            if (changeTitle != 1)
+            {
+                changeTitle = 0;
+            }
             editWindow ew = new editWindow();
             ew.list = DataBaseMaterials;
             ew.changeTitle = changeTitle;

@@ -63,7 +63,7 @@ namespace GraphicalStructure
         public DataTable dt;
          * */
 
-        public Color color = (Color)ColorConverter.ConvertFromString("#FFFFA500");
+        public Color color = (Color)ColorConverter.ConvertFromString("#FF000000");
 
         private static IMainWindow mainWindow;
 
